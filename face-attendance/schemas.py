@@ -86,4 +86,4 @@ class RecognizeResult(BaseModel):
     name: str
     code: str
     score: float
-    action: str   # "check_in" | "check_out" | "already_checked"
+    action: str   # "check_in" | "check_out" | "already_checked" | "unknown" | "spoof_detected"

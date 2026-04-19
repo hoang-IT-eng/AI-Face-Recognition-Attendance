@@ -5,10 +5,10 @@ from deepface import DeepFace
 
 MODEL_NAME = "Facenet512"
 DETECTOR = "mtcnn"
-THRESHOLD = 0.6
+THRESHOLD = 0.45
 
 
-def get_embeddings_from_image(img_path: str) -> list[np.ndarray]:
+def get_embeddings_from_image(img_path: str) -> list[dict]:
     """Lấy tất cả embeddings từ file ảnh."""
     try:
         results = DeepFace.represent(
@@ -18,7 +18,10 @@ def get_embeddings_from_image(img_path: str) -> list[np.ndarray]:
             detector_backend=DETECTOR,
             anti_spoofing=False,
         )
-        return [np.array(r["embedding"]) for r in results]
+        for r in results:
+            r["is_real"] = True
+            r["spoof_score"] = 1.0
+        return results
     except Exception as e:
         raise ValueError(f"Không detect được mặt: {e}")
 
@@ -33,6 +36,9 @@ def get_embeddings_from_frame(frame: np.ndarray) -> list[dict]:
             detector_backend=DETECTOR,
             anti_spoofing=False,
         )
+        for r in results:
+            r["is_real"] = True
+            r["spoof_score"] = 1.0
         return results
     except Exception:
         return []
@@ -43,10 +49,6 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def recognize(embedding: np.ndarray, db_embeddings: list[dict], threshold: float = THRESHOLD):
-    """
-    db_embeddings: [{"user_id": int, "embedding": np.ndarray}, ...]
-    Trả về (user_id, score) hoặc (None, score)
-    """
     best_id, best_score = None, -1.0
     scores_by_user: dict[int, list[float]] = {}
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 import pandas as pd
+import numpy as np
 import tempfile, os
 
 from database import get_db
@@ -79,17 +80,24 @@ async def register_face(user_id: int, file: UploadFile = File(...), db: Session 
         tmp_path = tmp.name
 
     try:
-        embeddings = get_embeddings_from_image(tmp_path)
+        faces = get_embeddings_from_image(tmp_path)
     except ValueError as e:
         raise HTTPException(400, str(e))
     finally:
         os.unlink(tmp_path)
 
-    for emb in embeddings:
+    count = 0
+    for face in faces:
+        if not face.get("is_real", True):
+            continue  # bỏ qua ảnh giả khi đăng ký
+        emb = np.array(face["embedding"])
         db.add(FaceEmbedding(user_id=user_id, embedding=embedding_to_str(emb)))
+        count += 1
     db.commit()
 
-    return {"message": f"Đã thêm {len(embeddings)} khuôn mặt cho '{user.name}'"}
+    if count == 0:
+        raise HTTPException(400, "Không tìm thấy khuôn mặt thật trong ảnh")
+    return {"message": f"Đã thêm {count} khuôn mặt cho '{user.name}'"}
 
 
 @router.delete("/{user_id}/faces")
