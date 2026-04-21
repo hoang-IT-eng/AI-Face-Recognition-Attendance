@@ -178,7 +178,7 @@ def _generate_frames(camera_id: int):
                     db_embs = _load_db_embeddings(db)
                     last_reload = time.time()
 
-                time.sleep(0.1)  # ~10 lần nhận diện/giây
+                time.sleep(0.5)  # nhận diện 2 lần/giây, đủ cho điểm danh
         finally:
             db.close()
 

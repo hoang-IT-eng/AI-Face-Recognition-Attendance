@@ -3,8 +3,10 @@ import json
 import cv2
 from deepface import DeepFace
 
-MODEL_NAME = "Facenet512"
+MODEL_NAME = "ArcFace"      # nhanh hơn Facenet512 ~30%, độ chính xác tương đương
+STREAM_MODEL = "ArcFace"   # dùng chung 1 model, không cần 2 embedding
 DETECTOR = "mtcnn"
+STREAM_DETECTOR = "opencv"
 THRESHOLD = 0.45
 
 
@@ -27,13 +29,13 @@ def get_embeddings_from_image(img_path: str) -> list[dict]:
 
 
 def get_embeddings_from_frame(frame: np.ndarray) -> list[dict]:
-    """Lấy embeddings + bbox từ frame camera."""
+    """Lấy embeddings từ frame camera — dùng model nhẹ hơn cho stream."""
     try:
         results = DeepFace.represent(
             img_path=frame,
-            model_name=MODEL_NAME,
+            model_name=STREAM_MODEL,
             enforce_detection=True,
-            detector_backend=DETECTOR,
+            detector_backend=STREAM_DETECTOR,
             anti_spoofing=False,
         )
         for r in results:
