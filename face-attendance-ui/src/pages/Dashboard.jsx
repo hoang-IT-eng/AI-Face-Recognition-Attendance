@@ -93,10 +93,6 @@ export default function Dashboard() {
             </span>
           </p>
         </div>
-        <button onClick={handleExportCSV}
-          className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm hover:bg-gray-50 transition">
-          ⬇ Xuất báo cáo hôm nay
-        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

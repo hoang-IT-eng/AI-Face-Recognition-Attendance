@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone, date
@@ -9,6 +9,7 @@ import threading
 import time
 import base64
 import json
+import asyncio
 
 from database import get_db, SessionLocal
 from models import Attendance, User, FaceEmbedding, Schedule, AttendanceStatus
@@ -22,6 +23,10 @@ from face_service import (
 from liveness import LivenessChecker, is_available as liveness_available
 
 router = APIRouter(prefix="/camera", tags=["Camera"])
+
+# Queue lưu kết quả nhận diện từ stream để push về frontend qua SSE
+_stream_results: list[dict] = []
+_stream_results_lock = threading.Lock()
 
 
 def _load_db_embeddings(db: Session) -> list[dict]:
@@ -52,15 +57,11 @@ def _record_attendance(user_id: int, schedule: Schedule | None, db: Session) -> 
     ).first()
 
     if not existing:
-        status = AttendanceStatus.present
-        if schedule:
-            now_local = datetime.now()
-            start = datetime.strptime(f"{today} {schedule.start_time}", "%Y-%m-%d %H:%M")
-            if (now_local - start).total_seconds() > schedule.late_threshold * 60:
-                status = AttendanceStatus.late
         record = Attendance(
             user_id=user_id, date=today,
-            schedule_id=schedule_id, check_in=now, status=status,
+            schedule_id=schedule_id,
+            check_in=now,
+            status=AttendanceStatus.present,
         )
         db.add(record)
         db.commit()
@@ -69,11 +70,6 @@ def _record_attendance(user_id: int, schedule: Schedule | None, db: Session) -> 
 
     if existing.check_out is None:
         existing.check_out = now
-        if schedule:
-            now_local = datetime.now()
-            end = datetime.strptime(f"{today} {schedule.end_time}", "%Y-%m-%d %H:%M")
-            if (end - now_local).total_seconds() > 10 * 60:
-                existing.status = AttendanceStatus.early_leave
         db.commit()
         db.refresh(existing)
         return "check_out", existing
@@ -133,8 +129,7 @@ def _generate_frames(camera_id: int):
 
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cap.set(cv2.CAP_PROP_FPS, 30)
-    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)  # giảm buffer lag
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     # State chia sẻ giữa thread đọc frame và thread nhận diện
     latest_frame = [None]
@@ -143,11 +138,12 @@ def _generate_frames(camera_id: int):
     running = [True]
 
     def recognition_worker():
-        """Thread riêng chạy nhận diện, không block video stream."""
+        """Thread giám sát — không ghi điểm danh, chỉ cảnh báo người lạ."""
         db = SessionLocal()
+        # Cooldown cảnh báo: tránh spam alert cùng 1 người lạ
+        last_alert: dict[str, float] = {}
         try:
             db_embs = _load_db_embeddings(db)
-            schedule = _get_schedule(db)
             last_reload = time.time()
             while running[0]:
                 with lock:
@@ -163,22 +159,37 @@ def _generate_frames(camera_id: int):
                     region = face.get("facial_area", {})
                     x, y, w, h = region.get("x",0), region.get("y",0), region.get("w",0), region.get("h",0)
                     user_id, score = recognize(emb, db_embs)
+
                     if user_id:
                         user = db.query(User).filter(User.id == user_id).first()
-                        _record_attendance(user_id, schedule, db)
                         labels.append((x, y, w, h, f"{user.name} ({score:.0%})", (0, 255, 0)))
                     else:
-                        labels.append((x, y, w, h, "Unknown", (0, 165, 255)))
+                        # Người lạ — cảnh báo với cooldown 5 giây
+                        now_ts = time.time()
+                        key = f"{x}_{y}"
+                        if now_ts - last_alert.get(key, 0) > 5:
+                            last_alert[key] = now_ts
+                            with _stream_results_lock:
+                                _stream_results.append({
+                                    "type": "alert",
+                                    "name": "Người lạ",
+                                    "code": "",
+                                    "score": round(score, 3),
+                                    "action": "unknown",
+                                    "time": datetime.now().strftime("%H:%M:%S"),
+                                })
+                                if len(_stream_results) > 50:
+                                    _stream_results.pop(0)
+                        labels.append((x, y, w, h, "CANH BAO: Nguoi la", (0, 0, 255)))
 
                 with lock:
                     latest_labels[0] = labels
 
-                # Reload embeddings mỗi 30 giây
                 if time.time() - last_reload > 30:
                     db_embs = _load_db_embeddings(db)
                     last_reload = time.time()
 
-                time.sleep(0.5)  # nhận diện 2 lần/giây, đủ cho điểm danh
+                time.sleep(0.5)
         finally:
             db.close()
 
@@ -260,14 +271,30 @@ async def liveness_ws(websocket: WebSocket):
 
             result = None
             if liveness_result["passed"] and not recognized:
-                # Liveness passed → nhận diện khuôn mặt
                 faces = get_embeddings_from_frame(frame)
                 if faces:
                     emb = np.array(faces[0]["embedding"])
                     user_id, score = recognize(emb, db_embs)
                     if user_id:
                         user = db.query(User).filter(User.id == user_id).first()
-                        action, _ = _record_attendance(user_id, schedule, db)
+                        # Liveness chỉ ghi check-in
+                        today = date.today().isoformat()
+                        existing = db.query(Attendance).filter(
+                            Attendance.user_id == user_id,
+                            Attendance.date == today,
+                        ).first()
+                        if existing:
+                            action = "already_checked"
+                        else:
+                            record = Attendance(
+                                user_id=user_id,
+                                date=today,
+                                check_in=datetime.now(timezone.utc),
+                                status=AttendanceStatus.present,
+                            )
+                            db.add(record)
+                            db.commit()
+                            action = "check_in"
                         result = {
                             "user_id": user_id,
                             "name": user.name,
@@ -291,3 +318,24 @@ async def liveness_ws(websocket: WebSocket):
     finally:
         checker.close()
         db.close()
+
+
+# ── SSE: push kết quả stream về frontend ─────────────
+@router.get("/stream-results")
+async def stream_results_sse(request: Request):
+    """Server-Sent Events — push kết quả nhận diện từ stream về frontend."""
+    last_index = [0]
+
+    async def event_generator():
+        while True:
+            if await request.is_disconnected():
+                break
+            with _stream_results_lock:
+                new = _stream_results[last_index[0]:]
+                last_index[0] = len(_stream_results)
+            for r in new:
+                yield f"data: {json.dumps(r)}\n\n"
+            await asyncio.sleep(0.3)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})

@@ -3,8 +3,8 @@ import json
 import cv2
 from deepface import DeepFace
 
-MODEL_NAME = "ArcFace"      # nhanh hơn Facenet512 ~30%, độ chính xác tương đương
-STREAM_MODEL = "ArcFace"   # dùng chung 1 model, không cần 2 embedding
+MODEL_NAME = "Facenet512"
+STREAM_MODEL = "Facenet512"
 DETECTOR = "mtcnn"
 STREAM_DETECTOR = "opencv"
 THRESHOLD = 0.45
