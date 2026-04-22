@@ -11,6 +11,7 @@ const STATUS_COLOR = {
   already_checked:"bg-gray-100 text-gray-500",
   unknown:        "bg-red-100 text-red-700",
   spoof_detected: "bg-red-100 text-red-600",
+  no_checkin:     "bg-orange-100 text-orange-600",
 };
 const STATUS_LABEL = {
   check_in:       "Check-in",
@@ -18,6 +19,7 @@ const STATUS_LABEL = {
   already_checked:"Đã điểm danh",
   unknown:        "Cảnh báo: Người lạ",
   spoof_detected: "Gian lận",
+  no_checkin:     "Chưa check-in",
 };
 
 export default function Camera() {
@@ -35,6 +37,7 @@ export default function Camera() {
   const [streaming,   setStreaming]   = useState(false);
   const [liveness,    setLiveness]    = useState(null);
   const [livenessActive, setLivenessActive] = useState(false);
+  const [livenessMode, setLivenessMode] = useState("checkin"); // checkin | checkout
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((list) => {
@@ -64,7 +67,7 @@ export default function Camera() {
   const startLiveness = () => {
     if (wsRef.current) wsRef.current.close();
     setLiveness(null);
-    const ws = new WebSocket(WS_URL);
+    const ws = new WebSocket(`${WS_URL}?mode=${livenessMode}`);
     wsRef.current = ws;
 
     ws.onmessage = (e) => {
@@ -148,6 +151,20 @@ export default function Camera() {
         {/* Chống gian lận (Liveness) */}
         {mode === "liveness" && (
           <div className="space-y-3">
+            {/* Chọn chế độ */}
+            <div className="flex rounded-lg border border-white/10 overflow-hidden">
+              {[["checkin","Điểm danh vào"],["checkout","Điểm danh ra"]].map(([key, label]) => (
+                <button key={key} onClick={() => { stopLiveness(); setLivenessMode(key); }}
+                  disabled={livenessActive}
+                  className={`flex-1 py-2 text-sm font-medium transition ${
+                    livenessMode === key
+                      ? key === "checkin" ? "bg-green-600 text-white" : "bg-orange-500 text-white"
+                      : "bg-white/3 text-white/40 hover:text-white/70"
+                  }`}>
+                  {label}
+                </button>
+              ))}
+            </div>
             <div className="bg-gray-900 rounded-xl overflow-hidden relative">
               <Webcam key={deviceId + "liveness"} ref={webcamRef} screenshotFormat="image/jpeg"
                 videoConstraints={{ width: 640, height: 480, deviceId: deviceId || undefined }}
@@ -180,9 +197,11 @@ export default function Camera() {
             )}
             <button onClick={livenessActive ? stopLiveness : startLiveness}
               className={`w-full py-2 rounded-lg font-medium text-sm transition ${
-                livenessActive ? "bg-red-500 text-white hover:bg-red-600" : "bg-blue-600 text-white hover:bg-blue-700"
+                livenessActive ? "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                : livenessMode === "checkin" ? "bg-green-600 text-white hover:bg-green-500"
+                : "bg-orange-500 text-white hover:bg-orange-400"
               }`}>
-              {livenessActive ? "Dừng" : "Bắt đầu điểm danh"}
+              {livenessActive ? "Dừng" : livenessMode === "checkin" ? "Bắt đầu điểm danh vào" : "Bắt đầu điểm danh ra"}
             </button>
             <p className="text-xs text-gray-400 text-center">Yêu cầu chớp mắt 2 lần — ảnh tĩnh và video không thể qua được</p>
           </div>

@@ -162,6 +162,22 @@ def _generate_frames(camera_id: int):
 
                     if user_id:
                         user = db.query(User).filter(User.id == user_id).first()
+                        now_ts = time.time()
+                        key = f"known_{user_id}"
+                        # Push người quen với cooldown 10 giây
+                        if now_ts - last_alert.get(key, 0) > 10:
+                            last_alert[key] = now_ts
+                            with _stream_results_lock:
+                                _stream_results.append({
+                                    "type": "known",
+                                    "name": user.name,
+                                    "code": user.code,
+                                    "score": round(score, 3),
+                                    "action": "recognized",
+                                    "time": datetime.now().strftime("%H:%M:%S"),
+                                })
+                                if len(_stream_results) > 50:
+                                    _stream_results.pop(0)
                         labels.append((x, y, w, h, f"{user.name} ({score:.0%})", (0, 255, 0)))
                     else:
                         # Người lạ — cảnh báo với cooldown 5 giây
@@ -181,7 +197,6 @@ def _generate_frames(camera_id: int):
                                 if len(_stream_results) > 50:
                                     _stream_results.pop(0)
                         labels.append((x, y, w, h, "CANH BAO: Nguoi la", (0, 0, 255)))
-
                 with lock:
                     latest_labels[0] = labels
 
@@ -233,14 +248,10 @@ def video_stream(camera_id: int = 0, db: Session = Depends(get_db)):
 
 # ── WebSocket liveness + nhận diện ───────────────────
 @router.websocket("/ws/liveness")
-async def liveness_ws(websocket: WebSocket):
+async def liveness_ws(websocket: WebSocket, mode: str = "checkin"):
     """
-    WebSocket cho chế độ điểm danh có liveness check.
-    Client gửi: { "frame": "<base64 jpg>" }
-    Server trả: {
-        "liveness": { "passed": bool, "blink_count": int, "required": int },
-        "result": null | { "user_id", "name", "code", "score", "action" }
-    }
+    mode=checkin  → ghi check-in
+    mode=checkout → ghi check-out
     """
     await websocket.accept()
     checker = LivenessChecker(required_blinks=2)
@@ -248,28 +259,24 @@ async def liveness_ws(websocket: WebSocket):
 
     try:
         db_embs = _load_db_embeddings(db)
-        schedule = _get_schedule(db)
-        recognized = False  # chỉ nhận diện 1 lần sau khi pass liveness
+        recognized = False
 
         while True:
             data = await websocket.receive_text()
             msg = json.loads(data)
             frame_b64 = msg.get("frame", "")
-
             if not frame_b64:
                 continue
 
-            # Decode base64 → numpy frame
             img_bytes = base64.b64decode(frame_b64)
             arr = np.frombuffer(img_bytes, np.uint8)
             frame = cv2.imdecode(arr, cv2.IMREAD_COLOR)
             if frame is None:
                 continue
 
-            # Kiểm tra liveness
             liveness_result = checker.process(frame)
-
             result = None
+
             if liveness_result["passed"] and not recognized:
                 faces = get_embeddings_from_frame(frame)
                 if faces:
@@ -277,24 +284,34 @@ async def liveness_ws(websocket: WebSocket):
                     user_id, score = recognize(emb, db_embs)
                     if user_id:
                         user = db.query(User).filter(User.id == user_id).first()
-                        # Liveness chỉ ghi check-in
                         today = date.today().isoformat()
                         existing = db.query(Attendance).filter(
                             Attendance.user_id == user_id,
                             Attendance.date == today,
                         ).first()
-                        if existing:
-                            action = "already_checked"
-                        else:
-                            record = Attendance(
-                                user_id=user_id,
-                                date=today,
-                                check_in=datetime.now(timezone.utc),
-                                status=AttendanceStatus.present,
-                            )
-                            db.add(record)
-                            db.commit()
-                            action = "check_in"
+
+                        if mode == "checkin":
+                            if existing:
+                                action = "already_checked"
+                            else:
+                                record = Attendance(
+                                    user_id=user_id, date=today,
+                                    check_in=datetime.now(timezone.utc),
+                                    status=AttendanceStatus.present,
+                                )
+                                db.add(record)
+                                db.commit()
+                                action = "check_in"
+                        else:  # checkout
+                            if not existing:
+                                action = "no_checkin"
+                            elif existing.check_out:
+                                action = "already_checked"
+                            else:
+                                existing.check_out = datetime.now(timezone.utc)
+                                db.commit()
+                                action = "check_out"
+
                         result = {
                             "user_id": user_id,
                             "name": user.name,
