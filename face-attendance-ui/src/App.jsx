@@ -1,38 +1,35 @@
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
-import Users from "./pages/Users";
-import Camera from "./pages/Camera";
-import Attendance from "./pages/Attendance";
+import Stream from "./pages/Stream";
+import Register from "./pages/Register";
 
 const nav = [
-  { to: "/", label: "👤 Người dùng" },
-  { to: "/camera", label: "📸 Điểm danh" },
-  { to: "/attendance", label: "📋 Lịch sử" },
+  { to: "/",         label: "Giám sát" },
+  { to: "/register", label: "Đăng ký" },
 ];
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-blue-700 text-white px-6 py-3 flex gap-6 items-center shadow">
-          <span className="font-bold text-lg mr-4">Face Attendance</span>
-          {nav.map((n) => (
-            <NavLink
-              key={n.to}
-              to={n.to}
-              end={n.to === "/"}
-              className={({ isActive }) =>
-                `px-3 py-1 rounded transition ${isActive ? "bg-white text-blue-700 font-semibold" : "hover:bg-blue-600"}`
-              }
-            >
-              {n.label}
-            </NavLink>
-          ))}
-        </nav>
-        <main className="p-6 max-w-6xl mx-auto">
+      <div className="min-h-screen bg-[#0f1117] text-white flex flex-col">
+        <header className="border-b border-white/10 px-8 py-4 flex items-center gap-8">
+          <span className="font-semibold text-white tracking-wide text-sm">HỆ THỐNG ĐIỂM DANH</span>
+          <nav className="flex gap-1">
+            {nav.map((n) => (
+              <NavLink key={n.to} to={n.to} end={n.to === "/"}
+                className={({ isActive }) =>
+                  `px-4 py-1.5 rounded-md text-sm transition ${
+                    isActive ? "bg-white/10 text-white" : "text-white/50 hover:text-white hover:bg-white/5"
+                  }`
+                }>
+                {n.label}
+              </NavLink>
+            ))}
+          </nav>
+        </header>
+        <main className="flex-1 p-6">
           <Routes>
-            <Route path="/" element={<Users />} />
-            <Route path="/camera" element={<Camera />} />
-            <Route path="/attendance" element={<Attendance />} />
+            <Route path="/"         element={<Stream />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </main>
       </div>
