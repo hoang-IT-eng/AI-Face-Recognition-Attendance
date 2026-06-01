@@ -1,5 +1,15 @@
 # AI Face Recognition Attendance System
 
+> **Cho người clone từ GitHub:** xem chi tiết thư viện, file cần push và cách chạy từ đầu trong **[HUONG_DAN_CAI_DAT.md](./HUONG_DAN_CAI_DAT.md)**.
+
+## Push lên GitHub — tóm tắt
+
+| Push | Không push |
+|------|------------|
+| `face-attendance/` (mã nguồn + `requirements.txt`) | `venv/`, `node_modules/`, `attendance.db` |
+| `face-attendance-ui/` + `package-lock.json` | `.deepface/`, `.env`, `face_landmarker.task`, `silent_fas/` |
+| `README.md`, `HUONG_DAN_CAI_DAT.md`, `.gitignore` | Log tạm (`eror.txt`, `loi..txt`) |
+
 ## Cấu trúc project
 
 ```
@@ -44,11 +54,8 @@ py -3.11 -m venv venv
 # Activate venv
 venv\Scripts\activate
 
-# Cài dependencies
+# Cài dependencies (đã gồm mediapipe, websockets)
 pip install -r requirements.txt
-
-# Cài thêm websockets và mediapipe
-pip install websockets mediapipe
 ```
 
 ### Frontend
