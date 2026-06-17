@@ -1,197 +1,243 @@
 import { useEffect, useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { getTodayAttendance, getAttendance, getUsers, exportExcel } from "../api";
-
-const API = "http://localhost:8000";
+import Icon from "../components/Icon";
 
 const DAYS = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
-function StatCard({ label, value, sub, accent }) {
-  const colors = {
-    blue:  "border-l-blue-500",
-    red:   "border-l-red-500",
-    gray:  "border-l-gray-300",
-    indigo:"border-l-indigo-500",
-  };
+function KpiCard({ label, value, sub, icon, accent = "primary", progress }) {
   return (
-    <div className={`bg-white rounded-xl p-4 border-l-4 ${colors[accent] || colors.gray} shadow-sm`}>
-      <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
-      <p className="text-3xl font-bold mt-1">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+    <div className="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-4 opacity-10">
+        <Icon name={icon} className="text-[64px]" />
+      </div>
+      <p className="text-xs font-medium text-on-surface-variant uppercase mb-2 tracking-wide">{label}</p>
+      <div className="flex items-end gap-3">
+        <span className={`text-[32px] font-bold ${accent === "error" ? "text-error" : "text-primary"}`}>{value}</span>
+        {sub && <span className="text-xs text-on-surface-variant mb-2">{sub}</span>}
+      </div>
+      {progress != null && (
+        <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-4">
+          <div className="bg-secondary h-full rounded-full transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
     </div>
   );
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [todayRecords, setTodayRecords] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [weekData, setWeekData] = useState([]);
-  const [streaming, setStreaming] = useState(false);
-  const imgRef = useRef(null);
+  const [clock, setClock] = useState(new Date());
 
   const load = async () => {
-    const [todayRes, usersRes] = await Promise.all([
-      getTodayAttendance(),
-      getUsers(),
-    ]);
+    const [todayRes, usersRes] = await Promise.all([getTodayAttendance(), getUsers()]);
     setTodayRecords(todayRes.data);
     setTotalUsers(usersRes.data.length);
 
-    // Lấy dữ liệu 7 ngày gần nhất
     const today = new Date();
     const promises = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() - (6 - i));
       const dateStr = d.toISOString().slice(0, 10);
-      return getAttendance({ date_from: dateStr, date_to: dateStr })
-        .then(r => ({
-          day: DAYS[d.getDay()],
-          present: r.data.filter(x => x.status === "present" || x.status === "late").length,
-          absent: r.data.filter(x => x.status === "absent").length,
-        }));
+      return getAttendance({ date_from: dateStr, date_to: dateStr }).then((r) => ({
+        day: DAYS[d.getDay()],
+        present: r.data.filter((x) => x.status === "present" || x.status === "late").length,
+        absent: r.data.filter((x) => x.status === "absent").length,
+      }));
     });
-    const week = await Promise.all(promises);
-    setWeekData(week);
+    setWeekData(await Promise.all(promises));
   };
 
-  useEffect(() => { load(); const t = setInterval(load, 30000); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    load();
+    const t = setInterval(load, 30000);
+    const c = setInterval(() => setClock(new Date()), 1000);
+    return () => { clearInterval(t); clearInterval(c); };
+  }, []);
 
-  const present = todayRecords.filter(r => r.status === "present" || r.status === "late").length;
-  const late    = todayRecords.filter(r => r.status === "late").length;
-  const absent  = todayRecords.filter(r => r.status === "absent").length;
-  const recent  = [...todayRecords].sort((a, b) => new Date(b.check_in || 0) - new Date(a.check_in || 0)).slice(0, 6);
+  const present = todayRecords.filter((r) => r.status === "present" || r.status === "late").length;
+  const late = todayRecords.filter((r) => r.status === "late").length;
+  const absent = todayRecords.filter((r) => r.status === "absent").length;
+  const recent = [...todayRecords]
+    .sort((a, b) => new Date(b.check_in || 0) - new Date(a.check_in || 0))
+    .slice(0, 8);
 
-  const startStream = () => {
-    if (imgRef.current) imgRef.current.src = `${API}/camera/stream/0?t=${Date.now()}`;
-    setStreaming(true);
-  };
-  const stopStream = () => {
-    if (imgRef.current) imgRef.current.src = "";
-    setStreaming(false);
-  };
-
-  const handleExportCSV = async () => {
+  const handleExport = async () => {
     const today = new Date().toISOString().slice(0, 10);
     const res = await exportExcel({ date_from: today, date_to: today });
     const url = URL.createObjectURL(res.data);
     const a = document.createElement("a");
-    a.href = url; a.download = `diemdanh_${today}.xlsx`; a.click();
+    a.href = url;
+    a.download = `diemdanh_${today}.xlsx`;
+    a.click();
   };
 
-  const fmt = (dt) => dt ? new Date(dt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : "--:--";
+  const fmt = (dt) =>
+    dt ? new Date(dt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "—";
+
+  const pct = totalUsers > 0 ? Math.round((present / totalUsers) * 100) : 0;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
+    <div className="space-y-8">
+      <div className="flex flex-wrap justify-between items-end gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tổng quan hệ thống</h1>
-          <p className="text-gray-500 mt-1">
-            Điểm danh thời gian thực —{" "}
-            <span className="text-blue-600 font-medium">
-              {new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })}
-            </span>
+          <h1 className="text-3xl font-bold text-primary mb-1">Xin chào, Admin</h1>
+          <p className="text-on-surface-variant flex items-center gap-2 text-sm flex-wrap">
+            <Icon name="calendar_today" className="text-base" />
+            {clock.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
+            <span className="mx-1">•</span>
+            <Icon name="schedule" className="text-base" />
+            {clock.toLocaleTimeString("vi-VN")}
           </p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/stream")}
+            className="flex items-center gap-2 bg-secondary text-on-secondary px-6 py-2.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-all"
+          >
+            <Icon name="videocam" />
+            Bắt đầu giám sát
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            className="flex items-center gap-2 bg-surface-container-highest text-primary px-6 py-2.5 rounded-lg font-bold border border-outline-variant hover:bg-surface-container-high transition-all"
+          >
+            <Icon name="download" />
+            Xuất báo cáo
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cột trái: Camera + Chart */}
-        <div className="lg:col-span-2 space-y-5">
-          {/* Camera stream */}
-          <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-lg relative">
-            <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-black/50 px-3 py-1 rounded-full">
-              <span className={`w-2 h-2 rounded-full ${streaming ? "bg-green-400 animate-pulse" : "bg-gray-400"}`} />
-              <span className="text-white text-xs font-medium">
-                {streaming ? "LIVE RECOGNITION ACTIVE" : "STREAM OFFLINE"}
-              </span>
-            </div>
-            <div className="absolute top-3 right-3 z-10 flex gap-2">
-              <button onClick={streaming ? stopStream : startStream}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition ${streaming ? "bg-red-500 text-white" : "bg-white text-gray-800"}`}>
-                {streaming ? "⏹ Stop" : "▶ Start"}
-              </button>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <KpiCard label="Tổng nhân viên" value={totalUsers} icon="groups" />
+        <KpiCard
+          label="Có mặt hôm nay"
+          value={present}
+          sub={`/ ${totalUsers}`}
+          icon="how_to_reg"
+          progress={pct}
+        />
+        <KpiCard
+          label="Trễ / Vắng"
+          value={late + absent}
+          icon="person_off"
+          accent="error"
+        />
+        <KpiCard
+          label="Tỉ lệ có mặt"
+          value={`${pct}%`}
+          icon="analytics"
+          sub={streamingLabel(present, totalUsers)}
+        />
+      </div>
 
-            <img ref={imgRef} alt="stream" className={`w-full ${streaming ? "block" : "hidden"}`}
-              style={{ minHeight: 280 }} onError={() => setStreaming(false)} />
-            {!streaming && (
-              <div className="flex items-center justify-center text-gray-500 text-sm" style={{ height: 280 }}>
-                Nhấn Start để bắt đầu stream nhận diện
-              </div>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-outline-variant flex justify-between items-center">
+            <h3 className="font-semibold text-primary flex items-center gap-2 text-lg">
+              <Icon name="history" />
+              Hoạt động gần đây
+            </h3>
+            <Link to="/reports" className="text-secondary font-bold text-sm hover:underline">
+              Xem tất cả
+            </Link>
           </div>
-
-          {/* Weekly chart */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <div className="flex justify-between items-start mb-1">
-              <div>
-                <p className="font-semibold text-gray-800">Xu hướng điểm danh tuần</p>
-                <p className="text-xs text-gray-400">7 ngày gần nhất</p>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={180}>
-              <AreaChart data={weekData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="gPresent" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Area type="monotone" dataKey="present" stroke="#3b82f6" fill="url(#gPresent)"
-                  strokeWidth={2} name="Có mặt" />
-                <Area type="monotone" dataKey="absent" stroke="#f87171" fill="none"
-                  strokeWidth={2} strokeDasharray="4 2" name="Vắng" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-surface-container-low">
+                <tr>
+                  {["Nhân viên", "Thời gian", "Trạng thái"].map((h) => (
+                    <th key={h} className="px-6 py-3 text-xs font-bold text-on-surface-variant uppercase">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant">
+                {recent.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-10 text-center text-on-surface-variant">
+                      Chưa có dữ liệu hôm nay
+                    </td>
+                  </tr>
+                ) : (
+                  recent.map((r, i) => (
+                    <tr key={i} className="hover:bg-secondary-container/5 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+                            <span className="text-on-primary-container font-bold text-sm">
+                              {r.user_name?.[0] || "?"}
+                            </span>
+                            <div className="tracking-corner tracking-tl" />
+                            <div className="tracking-corner tracking-tr" />
+                            <div className="tracking-corner tracking-bl" />
+                            <div className="tracking-corner tracking-br" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-primary">{r.user_name || "Unknown"}</p>
+                            <p className="text-xs text-on-surface-variant font-mono">{r.user_code}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-on-surface">{fmt(r.check_in)}</td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={r.status} />
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Cột phải: Stats + Recent */}
-        <div className="space-y-4">
-          {/* Stat cards */}
-          <StatCard label="Có mặt hôm nay" value={present}
-            sub={`Đã đăng ký: ${totalUsers}`} accent="blue" />
-          <StatCard label="Đi trễ" value={late}
-            sub="Cần xem xét" accent="red" />
-          <StatCard label="Vắng mặt" value={absent}
-            sub={`Tổng hôm nay: ${todayRecords.length}`} accent="gray" />
-          <StatCard label="Tỉ lệ có mặt" accent="indigo"
-            value={totalUsers > 0 ? `${Math.round(present / totalUsers * 100)}%` : "—"}
-            sub="So với tổng đăng ký" />
-
-          {/* Recent activity */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex justify-between items-center mb-3">
-              <p className="font-semibold text-gray-800">Hoạt động gần đây</p>
-            </div>
-            <div className="space-y-3">
-              {recent.length === 0 && (
-                <p className="text-xs text-gray-400 text-center py-4">Chưa có dữ liệu hôm nay</p>
-              )}
-              {recent.map((r, i) => (
-                <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${r.status === "absent" ? "bg-red-50" : "hover:bg-gray-50"}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${r.status === "absent" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
-                    {r.user_name?.[0] || "?"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium truncate ${r.status === "absent" ? "text-red-600" : "text-gray-800"}`}>
-                      {r.user_name || "Unknown"}
-                    </p>
-                    <p className={`text-xs truncate ${r.status === "absent" ? "text-red-400" : "text-gray-400"}`}>
-                      {r.user_code} • {r.status === "present" ? "Có mặt" : r.status === "late" ? "Trễ" : "Vắng"}
-                    </p>
-                  </div>
-                  <p className="text-xs text-gray-400 flex-shrink-0">{fmt(r.check_in)}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6">
+          <h3 className="font-semibold text-primary mb-1 flex items-center gap-2">
+            <Icon name="show_chart" />
+            Xu hướng 7 ngày
+          </h3>
+          <p className="text-xs text-on-surface-variant mb-4">Có mặt / Vắng</p>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={weekData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="gPresent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#57dffe" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#57dffe" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="day" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip />
+              <Area type="monotone" dataKey="present" stroke="#00687a" fill="url(#gPresent)" strokeWidth={2} name="Có mặt" />
+              <Area type="monotone" dataKey="absent" stroke="#ba1a1a" fill="none" strokeWidth={2} strokeDasharray="4 2" name="Vắng" />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
   );
+}
+
+function StatusBadge({ status }) {
+  const map = {
+    present: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    late: "bg-amber-50 text-amber-700 border-amber-100",
+    absent: "bg-red-50 text-red-700 border-red-100",
+  };
+  const label = { present: "CÓ MẶT", late: "TRỄ", absent: "VẮNG" };
+  return (
+    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${map[status] || map.absent}`}>
+      {label[status] || status?.toUpperCase()}
+    </span>
+  );
+}
+
+function streamingLabel(present, total) {
+  if (total === 0) return "Chưa có nhân viên";
+  return `${present} / ${total} đã điểm danh`;
 }
