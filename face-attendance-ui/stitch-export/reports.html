@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance Reports | SecureFace AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#e6e8ea",
+                    "on-surface-variant": "#45464d",
+                    "primary-container": "#131b2e",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-secondary-fixed-variant": "#004e5c",
+                    "surface-bright": "#f7f9fb",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#002113",
+                    "background": "#f7f9fb",
+                    "on-secondary-container": "#006172",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-container": "#eceef0",
+                    "on-primary-fixed": "#131b2e",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-tertiary-fixed": "#002113",
+                    "surface": "#f7f9fb",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#6ffbbe",
+                    "primary": "#000000",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "secondary-container": "#57dffe",
+                    "secondary-fixed": "#acedff",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary": "#000000",
+                    "on-background": "#191c1e",
+                    "primary-fixed": "#dae2fd",
+                    "secondary-fixed-dim": "#4cd7f6",
+                    "on-primary-container": "#7c839b",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#009668",
+                    "outline": "#76777d",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001f26",
+                    "surface-container-low": "#f2f4f6",
+                    "secondary": "#00687a",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#d8dadc",
+                    "on-surface": "#191c1e",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#bec6e0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "2rem",
+                    "stack-gap": "1rem",
+                    "section-margin": "3rem",
+                    "grid-gutter": "1.5rem",
+                    "sidebar-width": "280px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "code-sm": ["Geist"],
+                    "label-md": ["Geist"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .tracking-corner {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #57dffe;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-hidden">
+<!-- SideNavBar Shell -->
+<aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface-container-lowest flex flex-col py-6 px-4 border-r border-outline-variant shadow-sm z-50">
+<div class="flex items-center gap-3 px-2 mb-10">
+<img alt="Logo" class="w-10 h-10 object-contain" src="data:image/png;base64,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"/>
+<div>
+<h1 class="text-headline-md font-headline-md text-primary leading-tight">SecureFace AI</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Admin Control Center</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-body-md">Employees</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-body-md">Live Stream</span>
+</a>
+<!-- Active Tab: Reports -->
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container font-bold rounded-lg scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<button class="mb-8 w-full py-3 bg-primary text-on-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+            Enroll New User
+        </button>
+<div class="pt-6 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="h-16 w-[calc(100%-280px)] ml-[280px] sticky top-0 z-40 bg-surface flex justify-between items-center px-8 border-b border-surface-variant">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-md font-headline-md text-primary">System Monitor</h2>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<span class="text-on-surface-variant font-medium">Attendance Reports</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-md focus:ring-2 focus:ring-secondary w-64 transition-all" placeholder="Search logs..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer transition-colors">notifications</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer transition-colors">wifi</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer transition-colors">sensors</span>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="text-body-md font-bold text-primary leading-none">Admin User</p>
+<p class="text-code-sm text-on-surface-variant">Super Administrator</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-secondary-container p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="Close up professional portrait of a security administrator in a modern office setting, wearing a dark navy blazer, neutral expression, high-end commercial photography style with soft bokeh background and cool blue studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCizs6KIur5OYKKSIMWQynvie56mmp9f3uBFl-KgZAXDuS2BLYl-r3YDzN6grGjpybpVkKzQ9wZ1L86n-O0s_BgPieuutQrfiWf2bA5mwf0TTDR2fvEuVvl9BhCVO-Ai25oGgaez3N9FsnnztRtFGxKp8SwC_nJ0mzctG7mb24JBU6gBOfOJekZ_gtG6e7Lz6GEjO7zDfhQ2TsAK2qExdQPTU66lxJvWx3TOqM_g9IrSImqmccnyyWJSPUTCT7BcgBsVkOJm_5irbNB"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] w-[calc(100%-280px)] h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar p-8 bg-background">
+<!-- Header & Chart Section (Bento Grid Style) -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Weekly Trend Chart -->
+<div class="col-span-8 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="text-body-lg font-bold text-primary">Attendance Analytics</h3>
+<p class="text-label-md text-on-surface-variant uppercase tracking-wider">Last 7 Days Traffic</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-emerald-500/10 text-emerald-600 rounded-full text-code-sm font-bold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Success: 98.2%
+                        </span>
+</div>
+</div>
+<div class="h-48 flex items-end justify-between gap-4 px-2">
+<!-- Simple Bar Chart Simulation -->
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-24"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Mon</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-28"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Tue</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-30"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Wed</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-20"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Thu</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-26"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Fri</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors opacity-40">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-4"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Sat</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full bg-surface-container rounded-t-lg relative h-32 group-hover:bg-secondary-container transition-colors opacity-40">
+<div class="absolute bottom-0 w-full bg-secondary rounded-t-lg h-2"></div>
+</div>
+<span class="mt-2 text-code-sm text-on-surface-variant">Sun</span>
+</div>
+</div>
+</div>
+<!-- Export & Fast Actions -->
+<div class="col-span-4 grid grid-rows-2 gap-6">
+<div class="bg-primary-container p-6 rounded-xl shadow-lg flex flex-col justify-between text-on-primary">
+<h3 class="text-body-lg font-bold text-white opacity-90">Quick Reports</h3>
+<div class="flex flex-col gap-3">
+<button class="w-full py-2.5 bg-secondary-container text-on-secondary-container rounded-lg font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined">download</span>
+                            Download CSV
+                        </button>
+<button class="w-full py-2.5 bg-white/10 text-white border border-white/20 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-white/20 transition-all">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+                            Export PDF
+                        </button>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[32px]">groups</span>
+</div>
+<div>
+<p class="text-headline-md font-bold text-primary">1,248</p>
+<p class="text-label-md text-on-surface-variant">Active Personnel Today</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-sm mb-6 flex flex-wrap items-center gap-6">
+<div class="flex-1 flex items-center gap-4">
+<div class="space-y-1 min-w-[200px]">
+<label class="text-code-sm font-bold text-on-surface-variant px-1">DATE RANGE</label>
+<div class="relative">
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-md focus:ring-2 focus:ring-secondary" type="text" value="Oct 20, 2023 - Oct 27, 2023"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">calendar_today</span>
+</div>
+</div>
+<div class="space-y-1 min-w-[180px]">
+<label class="text-code-sm font-bold text-on-surface-variant px-1">DEPARTMENT</label>
+<select class="w-full py-2 bg-surface-container-low border-none rounded-lg text-body-md focus:ring-2 focus:ring-secondary">
+<option>All Departments</option>
+<option>Engineering</option>
+<option>Operations</option>
+<option>Human Resources</option>
+<option>Security</option>
+</select>
+</div>
+<div class="space-y-1 flex-1">
+<label class="text-code-sm font-bold text-on-surface-variant px-1">SEARCH</label>
+<div class="relative">
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-md focus:ring-2 focus:ring-secondary" placeholder="Search by Name or ID..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">person_search</span>
+</div>
+</div>
+</div>
+<div class="flex items-end h-full">
+<button class="h-10 px-6 bg-secondary text-on-secondary rounded-lg font-bold flex items-center gap-2 hover:opacity-90">
+<span class="material-symbols-outlined">filter_list</span>
+                    Apply Filters
+                </button>
+</div>
+</div>
+<!-- History Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider">Employee</th>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider">Time In</th>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider">Time Out</th>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider">Mode</th>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-code-sm font-bold text-on-surface-variant uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10 rounded-lg overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close up face detection square of a young professional woman with brown hair, soft diffuse lighting, technological tracking brackets visible in corners, high clarity corporate biometric photo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLpYAXrrCkJkhibLz6cVr2u8tuLXtTfkJc6ph6CwLYQvTYmvz8lPTeQTgBdhYzq_fuWfMNaTzjHEuAKBoREpZ2Bj0MsopQypAGTg4I9TBPo4tV0T_qp440t_GZprdv3zcWIjjgBrHpqH9QKQnahuRyJDx2NUTjTBJKM9076BkdYK8o1cbZ53K6vcJk9chxJhWgl2JPJgCuNJ6Wnl-svW_jnbM34WVbUgVlAbNFkL5Oxmqkc7j2GEJAi9QW4MwNglRCE5X-ZprXbrD0"/>
+<div class="tracking-corner top-0 left-0 border-t border-l"></div>
+<div class="tracking-corner bottom-0 right-0 border-b border-r"></div>
+</div>
+<div>
+<p class="text-body-md font-bold text-primary">Elena Rodriguez</p>
+<p class="text-code-sm text-on-surface-variant">ID: SF-9042</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">Oct 27, 2023</td>
+<td class="px-6 py-4 text-body-md font-medium text-primary">08:42 AM</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">05:15 PM</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-secondary-container/20 text-secondary text-code-sm rounded-md font-bold uppercase tracking-tighter">Live Stream</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-code-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Success
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10 rounded-lg overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close up face detection square of a middle-aged man with glasses, professional business attire, sharp focus on facial features, biometric data visualization overlay subtly suggested, soft corporate studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9oxGRxxO7ks2H7tdLqeRGSAyxw5v1p0kXQxuvL4LbfLvqwTWy1Jf-WgYvZIHDQ7_yF0wf43nOAHFLoK25lRRVmufGGEuKEGh7NG-FXlYXjGP77L6AnpinTRhOoXhfD953g_7bAepeNgsCCEwxXHPevBvioJWtomKqMq3usryEeQmIAQLkbI2OTStM4ROYCoUpV3URSgBxOKNk1Fo_uCnvrBaA7qTQenS9DAEStkIz6ZY9ppQo5aXHqxQp-Mk1yzpkJI5D2qw4Aks-"/>
+<div class="tracking-corner top-0 left-0 border-t border-l"></div>
+<div class="tracking-corner bottom-0 right-0 border-b border-r"></div>
+</div>
+<div>
+<p class="text-body-md font-bold text-primary">Marcus Thorne</p>
+<p class="text-code-sm text-on-surface-variant">ID: SF-1120</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">Oct 27, 2023</td>
+<td class="px-6 py-4 text-body-md font-medium text-primary">09:05 AM</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">--:--</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant text-code-sm rounded-md font-bold uppercase tracking-tighter">Photo Upload</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 text-code-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">warning</span> Low Match
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10 rounded-lg overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close up face detection square of a person wearing a mask, showing high-tech eye-recognition tracking points, dark navy background, cinematic lighting, ultra-sharp detail for biometric verification." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTFBvNkSP3_LeFL7tfuCA8qRnwI12jEGDsKIjzk-FKLf8p4pAiIjmZ3CAyr_GfQS95fQpc8fxo8mb8tMH0voxeL1QLj7bRaeri3FJhyx8M0lVzuCSlSLp_gvl-sur_8r__7DGQlWLcTEKvm5k4c9Sel35bF8PDTXXIz2ROEpwN4XvF8Gk419fedNqMSsDd5lP3sIqwpADZX0XDOTVxI1T1U3jnqw-mdVdRG25h-b82P8tgX6Y_sjUI47rXoEsBcYDkz1orVnu6baVA"/>
+<div class="tracking-corner top-0 left-0 border-t border-l"></div>
+<div class="tracking-corner bottom-0 right-0 border-b border-r"></div>
+</div>
+<div>
+<p class="text-body-md font-bold text-primary">Julia Chen</p>
+<p class="text-code-sm text-on-surface-variant">ID: SF-8831</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">Oct 27, 2023</td>
+<td class="px-6 py-4 text-body-md font-medium text-primary">08:15 AM</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">04:30 PM</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-tertiary-fixed/20 text-on-tertiary-fixed-variant text-code-sm rounded-md font-bold uppercase tracking-tighter">Liveness Check</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-code-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">verified</span> Success
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10 rounded-lg overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close up face detection square of a man with a short beard, wearing a corporate polo shirt, natural lighting, high-tech tracking frame around face, professional security identity photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlqofWameTY2pWq4LYd16r8Kc8WCvUZMg9zyX5Ee5Ja7LCie9HzQOpQQ-18ag0XDG4mxyV2IKhTvZXiCQNogLuThgGMH1BxIso27VefwJGDpqPesFJJyMYjYGdhgPon9IYvFGD734nMEWQyRnYLjEjhB-qaarftUwGSJWIjg8wJQU5NJpLfweY04t4csfzsuM_zIYdyU0u73LyvPzimtXfhsXxS6TrnOI125wH3kcEgE9W0US1sMSLxrgzvL9ENKJKQLuewEvqn_-h"/>
+<div class="tracking-corner top-0 left-0 border-t border-l"></div>
+<div class="tracking-corner bottom-0 right-0 border-b border-r"></div>
+</div>
+<div>
+<p class="text-body-md font-bold text-primary">David Wilson</p>
+<p class="text-code-sm text-on-surface-variant">ID: SF-4521</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">Oct 26, 2023</td>
+<td class="px-6 py-4 text-body-md font-medium text-primary">08:55 AM</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">06:00 PM</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-secondary-container/20 text-secondary text-code-sm rounded-md font-bold uppercase tracking-tighter">Live Stream</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-code-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Success
+                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 border-t border-outline-variant flex justify-between items-center bg-surface-container-low">
+<span class="text-code-sm text-on-surface-variant font-medium">Showing 1-10 of 248 entries</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest hover:bg-surface-container text-code-sm disabled:opacity-50" disabled="">Previous</button>
+<button class="px-3 py-1 bg-secondary text-on-secondary rounded text-code-sm font-bold">1</button>
+<button class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest hover:bg-surface-container text-code-sm">2</button>
+<button class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest hover:bg-surface-container text-code-sm">3</button>
+<button class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest hover:bg-surface-container text-code-sm">Next</button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple micro-interaction for the table rows
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mousedown', () => {
+                row.style.transform = 'scale(0.998)';
+                row.style.transition = 'transform 0.1s ease';
+            });
+            row.addEventListener('mouseup', () => {
+                row.style.transform = 'scale(1)';
+            });
+        });
+
+        // Search highlight simulation
+        const searchInput = document.querySelector('input[placeholder="Search logs..."]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('w-80');
+        });
+        searchInput.addEventListener('blur', () => {
+            if(!searchInput.value) searchInput.parentElement.classList.remove('w-80');
+        });
+    </script>
+</body></html>

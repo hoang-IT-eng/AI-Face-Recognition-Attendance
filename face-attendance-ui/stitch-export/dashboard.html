@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SecureFace AI - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#e6e8ea",
+                    "on-surface-variant": "#45464d",
+                    "primary-container": "#131b2e",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-secondary-fixed-variant": "#004e5c",
+                    "surface-bright": "#f7f9fb",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#002113",
+                    "background": "#f7f9fb",
+                    "on-secondary-container": "#006172",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-container": "#eceef0",
+                    "on-primary-fixed": "#131b2e",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-tertiary-fixed": "#002113",
+                    "surface": "#f7f9fb",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#6ffbbe",
+                    "primary": "#000000",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "secondary-container": "#57dffe",
+                    "secondary-fixed": "#acedff",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary": "#000000",
+                    "on-background": "#191c1e",
+                    "primary-fixed": "#dae2fd",
+                    "secondary-fixed-dim": "#4cd7f6",
+                    "on-primary-container": "#7c839b",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#009668",
+                    "outline": "#76777d",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001f26",
+                    "surface-container-low": "#f2f4f6",
+                    "secondary": "#00687a",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#d8dadc",
+                    "on-surface": "#191c1e",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#bec6e0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "2rem",
+                    "stack-gap": "1rem",
+                    "section-margin": "3rem",
+                    "grid-gutter": "1.5rem",
+                    "sidebar-width": "280px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "code-sm": ["Geist"],
+                    "label-md": ["Geist"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .tracking-corner {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #57dffe;
+        }
+        .tracking-tl { top: 4px; left: 4px; border-top-width: 2px; border-left-width: 2px; }
+        .tracking-tr { top: 4px; right: 4px; border-top-width: 2px; border-right-width: 2px; }
+        .tracking-bl { bottom: 4px; left: 4px; border-bottom-width: 2px; border-left-width: 2px; }
+        .tracking-br { bottom: 4px; right: 4px; border-bottom-width: 2px; border-right-width: 2px; }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- SideNavBar Component -->
+<aside class="bg-surface-container-lowest dark:bg-primary-container w-[280px] h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline shadow-sm flex flex-col h-full py-6 px-4 z-50">
+<div class="flex items-center gap-3 mb-10 px-2">
+<img alt="SecureFace AI Logo" class="w-10 h-10 rounded-md" src="data:image/png;base64,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"/>
+<div>
+<h1 class="text-headline-md font-headline-md text-primary dark:text-primary-fixed leading-tight">SecureFace AI</h1>
+<p class="text-on-surface-variant text-label-md">Admin Control Center</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed font-bold rounded-lg transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-high dark:hover:bg-primary-fixed-dim rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-body-md text-body-md">Employees</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-high dark:hover:bg-primary-fixed-dim rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-body-md text-body-md">Live Stream</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-high dark:hover:bg-primary-fixed-dim rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant pt-4">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 px-4 rounded-lg font-bold mb-4 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">person_add</span>
+                Enroll New User
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error-container rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Component -->
+<header class="h-16 w-[calc(100%-280px)] ml-[280px] sticky top-0 z-40 bg-surface dark:bg-background border-b border-surface-variant dark:border-outline-variant flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-md font-headline-md text-primary dark:text-primary-fixed">System Monitor</h2>
+<div class="h-4 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-2 bg-tertiary-fixed-dim/10 text-on-tertiary-container px-3 py-1 rounded-full border border-tertiary-fixed-dim/20">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-label-md uppercase tracking-wider">System Operational</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative focus-within:ring-2 focus-within:ring-secondary rounded-lg">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-md w-64 focus:ring-0" placeholder="Search logs..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined">wifi</span></button>
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined">sensors</span></button>
+</div>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<div class="text-right">
+<p class="text-body-md font-bold text-primary">Admin User</p>
+<p class="text-label-md text-on-surface-variant">Lead Security</p>
+</div>
+<img class="w-10 h-10 rounded-full object-cover border-2 border-secondary-container" data-alt="A professional headshot of a corporate security administrator in a dark navy suit, high-end photography with soft office background lighting. The image style is clean, modern, and trustworthy, using a cool blue and slate color palette to match the biometric security dashboard aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOSvzAvhvSZUWaNarlrld3nR6zm0ePEkpVojNkTeKavWMGwVq5idK0Dy3-yPdWx9YdlkiChCyYiI41hMvi-Qx1BPqE1Qd-IicsLGR4qo8JSlzknROheD_-r2mSjOTKAxa1x0TR5ZTC28UMk8UU9_O44_dmulwosOURwboh_mWf38G7CMWMVADJHdnOh_5EP2np5s6LGfzyTyO-4fIMPqr9b2s3rC_26lHrleAdUAr5zptQu623hV9ig67zQzekRoWUYQXe5M5q9QX9"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[280px] p-8 min-h-screen">
+<!-- Welcome Header -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-primary mb-1">Welcome back, Admin</h1>
+<p class="text-body-lg text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined">calendar_today</span>
+<span id="current-date">October 24, 2023</span>
+<span class="mx-2">•</span>
+<span class="material-symbols-outlined">schedule</span>
+<span id="current-time">09:42:15 AM</span>
+</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-secondary text-on-secondary px-6 py-2.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">videocam</span>
+                    Start Live Stream
+                </button>
+<button class="flex items-center gap-2 bg-surface-container-highest text-primary px-6 py-2.5 rounded-lg font-bold border border-outline-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">download</span>
+                    Export Daily Report
+                </button>
+</div>
+</div>
+<!-- KPI Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-[64px]">groups</span>
+</div>
+<p class="text-label-md font-medium text-on-surface-variant uppercase mb-2">Total Employees</p>
+<div class="flex items-end gap-3">
+<span class="text-[32px] font-bold text-primary">1,284</span>
+<span class="text-emerald-600 text-label-md font-bold mb-2 flex items-center">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                        +12
+                    </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-[64px]">how_to_reg</span>
+</div>
+<p class="text-label-md font-medium text-on-surface-variant uppercase mb-2">Attended Today</p>
+<div class="flex items-end gap-3">
+<span class="text-[32px] font-bold text-primary">942</span>
+<span class="text-label-md text-on-surface-variant mb-2">/ 1,284</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-4">
+<div class="bg-secondary h-full rounded-full" style="width: 73%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 text-error">
+<span class="material-symbols-outlined text-[64px]">person_off</span>
+</div>
+<p class="text-label-md font-medium text-on-surface-variant uppercase mb-2">Late / Absent</p>
+<div class="flex items-end gap-3">
+<span class="text-[32px] font-bold text-error">342</span>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold mb-2">ACTION REQ</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 text-secondary">
+<span class="material-symbols-outlined text-[64px]">videocam</span>
+</div>
+<p class="text-label-md font-medium text-on-surface-variant uppercase mb-2">Active Cameras</p>
+<div class="flex items-end gap-3">
+<span class="text-[32px] font-bold text-primary">24 / 24</span>
+<div class="flex gap-1 mb-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-emerald-600 text-[10px] font-bold">LIVE</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Recent Activity List (2/3 width) -->
+<div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">history</span>
+                        Recent Activity Feed
+                    </h3>
+<button class="text-secondary font-bold text-body-md hover:underline">View All Logs</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-3 text-label-md font-bold text-on-surface-variant uppercase">Employee</th>
+<th class="px-6 py-3 text-label-md font-bold text-on-surface-variant uppercase">Timestamp</th>
+<th class="px-6 py-3 text-label-md font-bold text-on-surface-variant uppercase">Confidence</th>
+<th class="px-6 py-3 text-label-md font-bold text-on-surface-variant uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Activity Rows -->
+<tr class="hover:bg-secondary-container/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10">
+<img class="w-full h-full rounded object-cover" data-alt="A close-up, sharp biometric headshot of a middle-aged male executive in a grey business suit. Clear lighting, high resolution, with subtle technological HUD elements like tracking corners around the face to signify AI recognition process. High-tech corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJo2CAyKpBkc4PC5AcK0g0H29IC_klqED8ZspRwPQWJJuXdFeDYtl5r9Z10y5cmJHl0R63VUIAMaaHik_FR8G-PSnecUY-tEnpQErFslKiBAvbJwV5ZgUU6UHZs99jnN44zt5rv4vxnQ5_ySZQWWy5q2craAZpni95kLfET-7eVSWvdVPGPkvZAtyjOFFHMctlvff5R9BMy4uFiyXjNnb6--sZ12WmmSz6sfZMXXNLjCvBMciOdPCCa3uq1kSnV-dav40eKWUNJ9Wp"/>
+<div class="tracking-corner tracking-tl"></div>
+<div class="tracking-corner tracking-tr"></div>
+<div class="tracking-corner tracking-bl"></div>
+<div class="tracking-corner tracking-br"></div>
+</div>
+<div>
+<p class="font-bold text-primary">Marcus Holloway</p>
+<p class="text-code-sm text-on-surface-variant">ID: EMP-9821</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">09:41:22 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full" style="width: 98.4%;"></div>
+</div>
+<span class="text-code-sm font-bold text-emerald-600">98.4%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-label-md font-bold border border-emerald-100">PRESENT</span>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10">
+<img class="w-full h-full rounded object-cover" data-alt="Professional biometric identification portrait of a young female software engineer with glasses. Neutral expression, studio lighting, soft corporate background. Face recognition frame overlays with L-bracket corners in a glowing cyan color." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjIWIeQ6MEQ_Ai0PzzyL4905OyDqogoi9bAFCRhhFYE0_QAYlnoZGxcSs-Ze1i1LWEW1CpVTHKStTdEvSlhzK-4GAceZAiSCHInG6Ds_B0QkGRJ9GXJGz21GHnk8YQiBpw1lxqFP5zbCkJOa55Qr4VdxssXwGs7JgwqDfzL_T8zenY35ySvyG44CY-4aTzED4rHoL_eB1W1twp6vpPhdYlxYm5fokV9Pkd7IbZ1KJNPr9pMel6rXsuTFEr4mlsZRxidrfGNFYYWt_J"/>
+<div class="tracking-corner tracking-tl"></div>
+<div class="tracking-corner tracking-tr"></div>
+<div class="tracking-corner tracking-bl"></div>
+<div class="tracking-corner tracking-br"></div>
+</div>
+<div>
+<p class="font-bold text-primary">Elena Rodriguez</p>
+<p class="text-code-sm text-on-surface-variant">ID: EMP-7742</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">09:40:15 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full" style="width: 96.2%;"></div>
+</div>
+<span class="text-code-sm font-bold text-emerald-600">96.2%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-label-md font-bold border border-emerald-100">PRESENT</span>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10">
+<img class="w-full h-full rounded object-cover" data-alt="High-quality identification photo of an Asian businessman in a white shirt. The photo is styled for a high-security clearance database, featuring crystal-clear facial features and soft, professional illumination against a neutral slate background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrx4SRY5s9_D_EoMAft87I1ljD3VJhZwHQbsJfEH6Hv1tTzhLYZWTPlUgyUarhU9x1COsmA3Dih_PK4N7ZrCGOhk2m41-NS452LkEVI8gzpwGB0bgtrxqvWopJP3ZZseoet3Q7KuwCirXeMw5UTCDbCsM4aWjU1RTgkA5ZVLQIga3AY7wHApR8DjLvr0405X5FMuykr-xJb3xUPHM4_DlVCcW70cRvIVAwakDVq_7XrHQ4RJKhLycJ6kzVSphuxSXIP1rSeeLfFMS-"/>
+<div class="tracking-corner tracking-tl"></div>
+<div class="tracking-corner tracking-tr"></div>
+<div class="tracking-corner tracking-bl"></div>
+<div class="tracking-corner tracking-br"></div>
+</div>
+<div>
+<p class="font-bold text-primary">Chen Wei</p>
+<p class="text-code-sm text-on-surface-variant">ID: EMP-3321</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">09:38:44 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 82.1%;"></div>
+</div>
+<span class="text-code-sm font-bold text-secondary">82.1%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-on-secondary-container text-label-md font-bold border border-secondary/20">LATE</span>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10">
+<img class="w-full h-full rounded object-cover" data-alt="Identification portrait of a mature African-American woman in formal attire. Sharp clarity and even lighting emphasize reliability and professionalism. Subtle digital frame indicators signify the AI scanning process in a corporate security environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSoulRzQx3teRcwaefMIWxVSiEceEhnWVgrqPww5bpSP5KK1sAhIQoHudTpkcdSUz0IQuLI0CPHBRiEZu_HvQpHb800kHKKFRXir2UqcS5tlNnu7yb8rjZQOo-NCwp4Tekpi7rLmTH-7y2v33PjAY5bJkxpm_yfkcdPXdOBbW7cf0dhb-_fWrclH3Vu-KcAnLS6VJrWq2N2shedwfFG1PTqvV6F5zekNvlBRzkSekhvc-jgWqof2D9ceTvF0HJg3IB9i9A7PcworkG"/>
+<div class="tracking-corner tracking-tl"></div>
+<div class="tracking-corner tracking-tr"></div>
+<div class="tracking-corner tracking-bl"></div>
+<div class="tracking-corner tracking-br"></div>
+</div>
+<div>
+<p class="font-bold text-primary">Sarah Jenkins</p>
+<p class="text-code-sm text-on-surface-variant">ID: EMP-5510</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">09:35:01 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full" style="width: 99.1%;"></div>
+</div>
+<span class="text-code-sm font-bold text-emerald-600">99.1%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-label-md font-bold border border-emerald-100">PRESENT</span>
+</td>
+</tr>
+<tr class="hover:bg-secondary-container/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative w-10 h-10 bg-surface-container-high rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">no_accounts</span>
+</div>
+<div>
+<p class="font-bold text-error">Unidentified Subject</p>
+<p class="text-code-sm text-on-surface-variant">Security Flag</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface">09:32:19 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full" style="width: 14.5%;"></div>
+</div>
+<span class="text-code-sm font-bold text-error">14.5%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-error-container text-on-error-container text-label-md font-bold">REJECTED</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Sidebar Widgets (1/3 width) -->
+<div class="space-y-8">
+<!-- System Health Indicator -->
+<div class="bg-primary-container text-on-primary-container p-6 rounded-xl shadow-lg border border-primary/20">
+<h3 class="font-bold text-body-lg mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">analytics</span>
+                        System Real-time Health
+                    </h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-body-md opacity-80">Database Backend</span>
+<div class="flex items-center gap-2">
+<span class="text-label-md font-bold text-tertiary-fixed-dim">STABLE</span>
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-md opacity-80">AI Inference Engine</span>
+<div class="flex items-center gap-2">
+<span class="text-label-md font-bold text-tertiary-fixed-dim">98.2 TPS</span>
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-md opacity-80">Cloud Sync Status</span>
+<div class="flex items-center gap-2">
+<span class="text-label-md font-bold text-tertiary-fixed-dim">SYNCED</span>
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+</div>
+</div>
+<div class="h-px bg-on-primary-fixed-variant/30 my-2"></div>
+<div class="flex justify-between items-center">
+<span class="text-body-md opacity-80">Network Latency</span>
+<span class="text-body-md font-code-sm font-bold">12ms</span>
+</div>
+</div>
+</div>
+<!-- Active Cameras Status -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm">
+<h3 class="font-headline-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">security_key</span>
+                        Camera Nodes
+                    </h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+<p class="text-label-md text-on-surface-variant font-bold mb-1">NORTH GATE</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-body-md">Online</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+<p class="text-label-md text-on-surface-variant font-bold mb-1">SOUTH LOBBY</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-body-md">Online</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+<p class="text-label-md text-on-surface-variant font-bold mb-1">LEVEL 2 HUB</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-body-md">Online</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/50">
+<p class="text-label-md text-on-surface-variant font-bold mb-1">PARKING PK3</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-body-md">Online</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 text-secondary font-bold text-body-md border border-secondary rounded-lg hover:bg-secondary-container transition-all">
+                        Camera Management
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Real-time Clock
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Simple Row Hover Micro-interaction
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'transform 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body></html>

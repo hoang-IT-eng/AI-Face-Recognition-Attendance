@@ -1,0 +1,7 @@
+﻿npx.cmd : Error: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+At C:\Users\huyhoang\AppData\Local\Temp\ps-script-66467c9d-5948-4bfe-87af-20f38d19620a.ps1:89 char:3
++   npx.cmd -y @_davideast/stitch-mcp tool get_screen_code -d "{`"proje ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Error: Expected...ine 1 column 2):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
