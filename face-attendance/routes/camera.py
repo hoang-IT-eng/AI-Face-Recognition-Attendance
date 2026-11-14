@@ -45,7 +45,42 @@ def _get_schedule(db: Session) -> Schedule | None:
     return None
 
 
-def _record_attendance(user_id: int, schedule: Schedule | None, db: Session) -> tuple[str, Attendance]:
+def _compute_checkin_status(now: datetime, schedule: Schedule | None) -> AttendanceStatus:
+    if not schedule:
+        return AttendanceStatus.present
+    try:
+        local = now.astimezone() if now.tzinfo else now
+        sh, sm = map(int, schedule.start_time.split(":"))
+        start = local.replace(hour=sh, minute=sm, second=0, microsecond=0)
+        threshold = schedule.late_threshold or 15
+        if local.timestamp() > start.timestamp() + threshold * 60:
+            return AttendanceStatus.late
+        return AttendanceStatus.present
+    except Exception:
+        return AttendanceStatus.present
+
+
+def _compute_checkout_status(check_in, check_out, schedule: Schedule | None, current: AttendanceStatus) -> AttendanceStatus:
+    if not schedule or not check_out:
+        return current
+    try:
+        local_out = check_out.astimezone() if check_out.tzinfo else check_out
+        eh, em = map(int, schedule.end_time.split(":"))
+        end = local_out.replace(hour=eh, minute=em, second=0, microsecond=0)
+        if local_out.timestamp() + 60 < end.timestamp():
+            return AttendanceStatus.early_leave
+        return current if current == AttendanceStatus.late else AttendanceStatus.present
+    except Exception:
+        return current
+
+
+def _record_attendance(
+    user_id: int,
+    schedule: Schedule | None,
+    db: Session,
+    confidence: float | None = None,
+    kiosk_id: str | None = "Camera",
+) -> tuple[str, Attendance]:
     now = datetime.now(timezone.utc)
     today = date.today().isoformat()
     schedule_id = schedule.id if schedule else None
@@ -57,11 +92,15 @@ def _record_attendance(user_id: int, schedule: Schedule | None, db: Session) -> 
     ).first()
 
     if not existing:
+        status = _compute_checkin_status(now, schedule)
         record = Attendance(
             user_id=user_id, date=today,
             schedule_id=schedule_id,
             check_in=now,
-            status=AttendanceStatus.present,
+            status=status,
+            confidence=confidence,
+            kiosk_id=kiosk_id,
+            method="face",
         )
         db.add(record)
         db.commit()
@@ -70,6 +109,9 @@ def _record_attendance(user_id: int, schedule: Schedule | None, db: Session) -> 
 
     if existing.check_out is None:
         existing.check_out = now
+        existing.status = _compute_checkout_status(existing.check_in, now, schedule, existing.status)
+        if confidence is not None:
+            existing.confidence = confidence
         db.commit()
         db.refresh(existing)
         return "check_out", existing
@@ -91,6 +133,9 @@ async def recognize_image(file: UploadFile = File(...), db: Session = Depends(ge
     finally:
         os.unlink(tmp_path)
 
+    from routes.alerts import create_alert
+    from models import AlertLevel
+
     db_embs = _load_db_embeddings(db)
     schedule = _get_schedule(db)
     results = []
@@ -99,6 +144,22 @@ async def recognize_image(file: UploadFile = File(...), db: Session = Depends(ge
         spoof_score = face.get("spoof_score", 1.0)
 
         if not is_real:
+            try:
+                create_alert(
+                    db,
+                    level=AlertLevel.high,
+                    type_="Nghi vấn giả mạo",
+                    rule="Anti-spoofing AI",
+                    icon="no_photography",
+                    target="Camera nhận diện",
+                    sub_target="Upload / Kiosk",
+                    detail="Phát hiện bề mặt giả (ảnh/video) khi nhận diện khuôn mặt.",
+                    tags=[f"Spoof score: {spoof_score:.2f}"],
+                    is_camera=True,
+                    modal_type="snapshot",
+                )
+            except Exception:
+                pass
             results.append(RecognizeResult(
                 user_id=None, name="FAKE", code="",
                 score=round(spoof_score, 3), action="spoof_detected"
@@ -109,12 +170,28 @@ async def recognize_image(file: UploadFile = File(...), db: Session = Depends(ge
         user_id, score = recognize(emb, db_embs)
         if user_id:
             user = db.query(User).filter(User.id == user_id).first()
-            action, _ = _record_attendance(user_id, schedule, db)
+            action, _ = _record_attendance(user_id, schedule, db, confidence=score)
             results.append(RecognizeResult(
                 user_id=user_id, name=user.name, code=user.code,
-                score=round(score, 3), action=action,
+                score=round(score, 3), action=action, group=user.group,
             ))
         else:
+            try:
+                create_alert(
+                    db,
+                    level=AlertLevel.high,
+                    type_="Người lạ đứng lâu",
+                    rule="Quy tắc: Unknown face",
+                    icon="person_alert",
+                    target="Camera nhận diện",
+                    sub_target="Upload / Kiosk",
+                    detail="Phát hiện khuôn mặt chưa đăng ký trong CSDL.",
+                    tags=[f"Độ tin cậy match: {score:.1%}"],
+                    is_camera=True,
+                    modal_type="video",
+                )
+            except Exception:
+                pass
             results.append(RecognizeResult(
                 user_id=None, name="Unknown", code="", score=round(score, 3), action="unknown"
             ))
@@ -162,6 +239,22 @@ def _generate_frames(camera_id: int):
 
                     if user_id:
                         user = db.query(User).filter(User.id == user_id).first()
+                        now_ts = time.time()
+                        key = f"known_{user_id}"
+                        # Push người quen với cooldown 10 giây
+                        if now_ts - last_alert.get(key, 0) > 10:
+                            last_alert[key] = now_ts
+                            with _stream_results_lock:
+                                _stream_results.append({
+                                    "type": "known",
+                                    "name": user.name,
+                                    "code": user.code,
+                                    "score": round(score, 3),
+                                    "action": "recognized",
+                                    "time": datetime.now().strftime("%H:%M:%S"),
+                                })
+                                if len(_stream_results) > 50:
+                                    _stream_results.pop(0)
                         labels.append((x, y, w, h, f"{user.name} ({score:.0%})", (0, 255, 0)))
                     else:
                         # Người lạ — cảnh báo với cooldown 5 giây
@@ -180,8 +273,25 @@ def _generate_frames(camera_id: int):
                                 })
                                 if len(_stream_results) > 50:
                                     _stream_results.pop(0)
+                            try:
+                                from routes.alerts import create_alert
+                                from models import AlertLevel
+                                create_alert(
+                                    db,
+                                    level=AlertLevel.high,
+                                    type_="Người lạ đứng lâu",
+                                    rule="Quy tắc: Loitering / Unknown",
+                                    icon="person_alert",
+                                    target=f"Camera #{camera_id}",
+                                    sub_target="Giám sát thời gian thực",
+                                    detail="Phát hiện đối tượng không có trong CSDL nhận diện.",
+                                    tags=[f"Độ tin cậy: {score:.1%}"],
+                                    is_camera=True,
+                                    modal_type="video",
+                                )
+                            except Exception:
+                                pass
                         labels.append((x, y, w, h, "CANH BAO: Nguoi la", (0, 0, 255)))
-
                 with lock:
                     latest_labels[0] = labels
 
@@ -233,14 +343,10 @@ def video_stream(camera_id: int = 0, db: Session = Depends(get_db)):
 
 # ── WebSocket liveness + nhận diện ───────────────────
 @router.websocket("/ws/liveness")
-async def liveness_ws(websocket: WebSocket):
+async def liveness_ws(websocket: WebSocket, mode: str = "checkin"):
     """
-    WebSocket cho chế độ điểm danh có liveness check.
-    Client gửi: { "frame": "<base64 jpg>" }
-    Server trả: {
-        "liveness": { "passed": bool, "blink_count": int, "required": int },
-        "result": null | { "user_id", "name", "code", "score", "action" }
-    }
+    mode=checkin  → ghi check-in
+    mode=checkout → ghi check-out
     """
     await websocket.accept()
     checker = LivenessChecker(required_blinks=2)
@@ -248,28 +354,24 @@ async def liveness_ws(websocket: WebSocket):
 
     try:
         db_embs = _load_db_embeddings(db)
-        schedule = _get_schedule(db)
-        recognized = False  # chỉ nhận diện 1 lần sau khi pass liveness
+        recognized = False
 
         while True:
             data = await websocket.receive_text()
             msg = json.loads(data)
             frame_b64 = msg.get("frame", "")
-
             if not frame_b64:
                 continue
 
-            # Decode base64 → numpy frame
             img_bytes = base64.b64decode(frame_b64)
             arr = np.frombuffer(img_bytes, np.uint8)
             frame = cv2.imdecode(arr, cv2.IMREAD_COLOR)
             if frame is None:
                 continue
 
-            # Kiểm tra liveness
             liveness_result = checker.process(frame)
-
             result = None
+
             if liveness_result["passed"] and not recognized:
                 faces = get_embeddings_from_frame(frame)
                 if faces:
@@ -277,24 +379,34 @@ async def liveness_ws(websocket: WebSocket):
                     user_id, score = recognize(emb, db_embs)
                     if user_id:
                         user = db.query(User).filter(User.id == user_id).first()
-                        # Liveness chỉ ghi check-in
                         today = date.today().isoformat()
                         existing = db.query(Attendance).filter(
                             Attendance.user_id == user_id,
                             Attendance.date == today,
                         ).first()
-                        if existing:
-                            action = "already_checked"
-                        else:
-                            record = Attendance(
-                                user_id=user_id,
-                                date=today,
-                                check_in=datetime.now(timezone.utc),
-                                status=AttendanceStatus.present,
-                            )
-                            db.add(record)
-                            db.commit()
-                            action = "check_in"
+
+                        if mode == "checkin":
+                            if existing:
+                                action = "already_checked"
+                            else:
+                                record = Attendance(
+                                    user_id=user_id, date=today,
+                                    check_in=datetime.now(timezone.utc),
+                                    status=AttendanceStatus.present,
+                                )
+                                db.add(record)
+                                db.commit()
+                                action = "check_in"
+                        else:  # checkout
+                            if not existing:
+                                action = "no_checkin"
+                            elif existing.check_out:
+                                action = "already_checked"
+                            else:
+                                existing.check_out = datetime.now(timezone.utc)
+                                db.commit()
+                                action = "check_out"
+
                         result = {
                             "user_id": user_id,
                             "name": user.name,
