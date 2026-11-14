@@ -5,15 +5,30 @@ export const WS_LIVENESS_URL = "ws://localhost:8000/camera/ws/liveness";
 
 const api = axios.create({ baseURL: API_BASE });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("sf_admin_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Auth
+export const login = (email, password) =>
+  api.post("/auth/login", { email, password });
+export const getMe = () => api.get("/auth/me");
+
 // Users
 export const getUsers = () => api.get("/users/");
 export const getUser = (id) => api.get(`/users/${id}`);
 export const createUser = (data) => api.post("/users/", data);
 export const updateUser = (id, data) => api.put(`/users/${id}`, data);
 export const deleteUser = (id) => api.delete(`/users/${id}`);
-export const registerFace = (userId, file) => {
+export const registerFace = (userId, file, { consent = false, source } = {}) => {
   const form = new FormData();
   form.append("file", file);
+  form.append("consent", consent ? "true" : "false");
+  if (source) form.append("source", source);
   return api.post(`/users/${userId}/faces`, form);
 };
 export const clearFaces = (userId) => api.delete(`/users/${userId}/faces`);
@@ -32,12 +47,39 @@ export const deleteSchedule = (id) => api.delete(`/schedules/${id}`);
 // Attendance
 export const getAttendance = (params) => api.get("/attendance/", { params });
 export const getTodayAttendance = () => api.get("/attendance/today");
+export const getAdjustments = (params) =>
+  api.get("/attendance/adjustments", { params });
 export const manualAttendance = (data) => api.post("/attendance/manual", data);
+export const backupAttendance = (data) => api.post("/attendance/backup", data);
+export const getBackupRecent = (params) =>
+  api.get("/attendance/backup/recent", { params });
 export const updateAttendance = (id, data) => api.put(`/attendance/${id}`, data);
 export const deleteAttendance = (id) => api.delete(`/attendance/${id}`);
-export const getStatsSummary = (params) => api.get("/attendance/stats/summary", { params });
+export const getStatsSummary = (params) =>
+  api.get("/attendance/stats/summary", { params });
 export const exportExcel = (params) =>
   api.get("/attendance/export/excel", { params, responseType: "blob" });
+
+// Alerts
+export const getAlerts = (params) => api.get("/alerts/", { params });
+export const getAlertStats = () => api.get("/alerts/stats");
+export const resolveAlert = (id, resolved = true) =>
+  api.patch(`/alerts/${id}`, { resolved });
+export const resolveAllAlerts = () => api.post("/alerts/resolve-all");
+
+// Privacy
+export const getPrivacySettings = () => api.get("/privacy/settings");
+export const updatePrivacySettings = (data) =>
+  api.put("/privacy/settings", data);
+export const getConsents = () => api.get("/privacy/consents");
+export const createConsent = (params) =>
+  api.post("/privacy/consents", null, { params });
+
+// Reports
+export const getPayrollReport = (params) =>
+  api.get("/reports/payroll", { params });
+export const getEmployeeReport = (code, params) =>
+  api.get(`/reports/employees/${code}`, { params });
 
 // Camera - recognize from image
 export const recognizeImage = (file) => {

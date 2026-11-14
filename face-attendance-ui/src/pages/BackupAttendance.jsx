@@ -1,54 +1,44 @@
 import { useEffect, useState } from "react";
-import { getUsers, manualAttendance } from "../api";
-
-const INITIAL_HISTORY = [
-  {
-    id: 1,
-    initials: "TN",
-    name: "Trần Nhật Nam (NV112)",
-    meta: "08:12:05 • Quét mã QR",
-  },
-  {
-    id: 2,
-    initials: "LH",
-    name: "Lý Hải Vân (NV089)",
-    meta: "08:04:42 • Nhập mã PIN",
-  },
-  {
-    id: 3,
-    initials: "VD",
-    name: "Vũ Đình Quân (NV014)",
-    meta: "07:58:19 • Quét mã QR",
-  },
-];
+import { getUsers, backupAttendance, getBackupRecent } from "../api";
 
 export default function BackupAttendance() {
   const [tab, setTab] = useState("pin"); // pin | qr
-  const [empCode, setEmpCode] = useState("NV045");
-  const [pin, setPin] = useState("12");
+  const [empCode, setEmpCode] = useState("");
+  const [pin, setPin] = useState("");
   const [users, setUsers] = useState([]);
-  const [history, setHistory] = useState(INITIAL_HISTORY);
+  const [history, setHistory] = useState([]);
+  const [error, setError] = useState("");
   const [lastReceipt, setLastReceipt] = useState({
-    name: "Phạm Quỳnh Như",
-    code: "NV045",
-    dept: "Phòng Kế toán & Tài chính",
-    time: "08:15:30",
-    method: "Mã PIN xác thực nội bộ",
+    name: "—",
+    code: "—",
+    dept: "—",
+    time: "--:--:--",
+    method: "Chưa có giao dịch",
   });
+
+  const loadRecent = () =>
+    getBackupRecent({ limit: 8 })
+      .then((r) => setHistory(r.data || []))
+      .catch(() => {});
 
   useEffect(() => {
     getUsers()
-      .then((r) => setUsers(r.data || []))
+      .then((r) => {
+        const list = r.data || [];
+        setUsers(list);
+        if (list[0]?.code) setEmpCode(list[0].code);
+      })
       .catch(() => {});
+    loadRecent();
   }, []);
 
   const matchedUser = users.find(
     (u) => u.code?.toLowerCase() === empCode.trim().toLowerCase()
   ) || {
     id: null,
-    code: empCode || "NV045",
-    name: "Phạm Quỳnh Như",
-    group: "Phòng Kế toán",
+    code: empCode || "—",
+    name: "Chưa khớp mã NV",
+    group: "",
   };
 
   const pressKey = (k) => {
@@ -57,49 +47,33 @@ export default function BackupAttendance() {
 
   const handleSubmit = async () => {
     if (tab === "pin" && pin.length < 4) {
-      alert("Vui lòng nhập đủ 4 chữ số mã PIN bảo mật.");
+      setError("Vui lòng nhập đủ 4 chữ số mã PIN bảo mật.");
       return;
     }
-
-    const nowTime = new Date().toLocaleTimeString("vi-VN", { hour12: false });
+    setError("");
     try {
-      if (matchedUser.id) {
-        await manualAttendance({
-          user_id: matchedUser.id,
-          date: new Date().toISOString().slice(0, 10),
-          status: "present",
-          note:
-            tab === "pin"
-              ? "Điểm danh thay thế bằng mã PIN"
-              : "Điểm danh thay thế bằng mã QR động",
-        });
-      }
-    } catch {}
-
-    setLastReceipt({
-      name: matchedUser.name,
-      code: matchedUser.code,
-      dept: matchedUser.group || "Phòng Kế toán & Tài chính",
-      time: nowTime,
-      method:
-        tab === "pin" ? "Mã PIN xác thực nội bộ" : "Mã QR động Time-based OTP",
-    });
-
-    setHistory((prev) => [
-      {
-        id: Date.now(),
-        initials:
-          matchedUser.name
-            ?.split(" ")
-            .slice(-2)
-            .map((w) => w[0])
-            .join("") || "NV",
-        name: `${matchedUser.name} (${matchedUser.code})`,
-        meta: `${nowTime} • ${tab === "pin" ? "Nhập mã PIN" : "Quét mã QR"}`,
-      },
-      ...prev.slice(0, 5),
-    ]);
-    setPin("");
+      const res = await backupAttendance({
+        code: empCode.trim(),
+        pin: tab === "pin" ? pin : undefined,
+        otp: tab === "qr" ? pin : undefined,
+        method: tab,
+      });
+      const d = res.data;
+      setLastReceipt({
+        name: d.name,
+        code: d.code,
+        dept: d.dept || matchedUser.group || "",
+        time: d.time,
+        method: d.method,
+      });
+      loadRecent();
+      setPin("");
+    } catch (err) {
+      setError(
+        err?.response?.data?.detail ||
+          "Xác thực thất bại. Kiểm tra mã NV và PIN (mặc định 1234)."
+      );
+    }
   };
 
   return (
@@ -331,6 +305,9 @@ export default function BackupAttendance() {
                 </button>
               </div>
 
+              {error && (
+                <p className="text-error font-body-sm text-body-sm mt-1">{error}</p>
+              )}
               <button
                 type="button"
                 onClick={handleSubmit}

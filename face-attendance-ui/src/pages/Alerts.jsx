@@ -1,126 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAlerts, resolveAlert, resolveAllAlerts } from "../api";
 
-const INITIAL_ALERTS = [
-  {
-    id: "alert-1",
-    level: "high",
-    levelLabel: "MỨC CAO",
-    time: "08:32:05",
-    ago: "2 phút trước",
-    type: "Người lạ đứng lâu",
-    rule: "Quy tắc: Loitering > 30s",
-    icon: "person_alert",
-    target: "Camera Cổng chính Kiosk A",
-    subTarget: "IP: 192.168.10.104 (Lối vào Lobby)",
-    isCamera: true,
-    detail:
-      "Phát hiện đối tượng không có trong CSDL nhận diện lảng vảng tại khu vực kiểm soát an ninh > 45 giây liên tục.",
-    tags: [
-      "Độ tin cậy: 98.7%",
-      "Tracking ID: #UNK-9941",
-      "Gợi ý: Cử bảo vệ Lobby A",
-    ],
-    modalType: "video",
-    resolved: false,
-  },
-  {
-    id: "alert-2",
-    level: "high",
-    levelLabel: "MỨC CAO",
-    time: "08:14:10",
-    ago: "20 phút trước",
-    type: "Nghi vấn giả mạo",
-    rule: "Anti-spoofing AI",
-    icon: "no_photography",
-    target: "Camera Cổng B",
-    subTarget: "IP: 192.168.10.108 (Cổng sau xưởng)",
-    isCamera: true,
-    detail:
-      "Phát hiện bề mặt phẳng 2D (màn hình smartphone) quét vào camera. Thuật toán Depth IR từ chối kích hoạt cửa quay.",
-    tags: [
-      "IR Depth Score: 0.12 / 1.0",
-      "Kèm ảnh chụp bằng chứng",
-      "Khóa thẻ điểm danh 15p",
-    ],
-    modalType: "snapshot",
-    resolved: false,
-  },
-  {
-    id: "alert-3",
-    level: "medium",
-    levelLabel: "TRUNG BÌNH",
-    time: "08:22:05",
-    ago: "12 phút trước",
-    type: "Đi muộn vượt quy định",
-    rule: "Vi phạm ca làm việc",
-    icon: "schedule",
-    target: "Đỗ Minh Tuấn",
-    subTarget: "NV028 · Phòng Kỹ thuật",
-    isCamera: false,
-    detail:
-      "Check-in lúc 08:22 (Quy định 08:00, ân hạn đến 08:15). Trễ 7 phút so với khung cho phép.",
-    tags: ["Ca: Hành chính (08:00 - 17:00)", "Lần vi phạm: 2/tháng"],
-    modalType: null,
-    resolved: false,
-  },
-  {
-    id: "alert-4",
-    level: "medium",
-    levelLabel: "TRUNG BÌNH",
-    time: "08:18:22",
-    ago: "16 phút trước",
-    type: "Đi muộn",
-    rule: "Vi phạm nhẹ",
-    icon: "timer",
-    target: "Phạm Quỳnh Như",
-    subTarget: "NV045 · Phòng Kế toán",
-    isCamera: false,
-    detail: "Check-in lúc 08:18. Trễ 3 phút so với khung giờ ân hạn 08:15.",
-    tags: ["Lần đầu trong kỳ chấm công", "Tự động trừ 0.25 công"],
-    modalType: null,
-    resolved: true,
-  },
-  {
-    id: "alert-5",
-    level: "low",
-    levelLabel: "MỨC THẤP",
-    time: "08:45:00",
-    ago: "Vừa xong",
-    type: "Vắng chưa điểm danh",
-    rule: "Tự động phát hiện vắng",
-    icon: "person_off",
-    target: "Ngô Thảo Linh",
-    subTarget: "NV102 · Ban Nhân sự",
-    isCamera: false,
-    detail:
-      "Quá 45 phút kể từ đầu ca chưa có bản ghi vào cổng. Chưa gửi đơn xin nghỉ phép trên portal HRM.",
-    tags: ["Trạng thái: Không phép tạm thời", "SĐT: 0912.***.892"],
-    modalType: null,
-    resolved: false,
-  },
-];
+function mapAlert(a) {
+  return {
+    id: a.id,
+    level: a.level,
+    levelLabel: a.level_label || a.levelLabel || String(a.level).toUpperCase(),
+    time: a.time || "",
+    ago: a.ago || "",
+    type: a.type,
+    rule: a.rule,
+    icon: a.icon || "warning",
+    target: a.target,
+    subTarget: a.sub_target || a.subTarget || "",
+    isCamera: a.is_camera ?? a.isCamera ?? false,
+    detail: a.detail || "",
+    tags: a.tags || [],
+    modalType: a.modal_type ?? a.modalType ?? null,
+    resolved: !!a.resolved,
+  };
+}
 
 export default function Alerts() {
-  const [alerts, setAlerts] = useState(INITIAL_ALERTS);
+  const [alerts, setAlerts] = useState([]);
   const [levelFilter, setLevelFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [snapshotModalOpen, setSnapshotModalOpen] = useState(false);
   const [toast, setToast] = useState("");
 
+  const loadAlerts = () =>
+    getAlerts({ scan: true })
+      .then((r) => setAlerts((r.data || []).map(mapAlert)))
+      .catch(() => {});
+
+  useEffect(() => {
+    loadAlerts();
+    const id = setInterval(loadAlerts, 20000);
+    return () => clearInterval(id);
+  }, []);
+
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 3000);
   };
 
-  const markResolved = (id) => {
+  const markResolved = async (id) => {
+    try {
+      await resolveAlert(id, true);
+    } catch {}
     setAlerts((prev) =>
       prev.map((a) => (a.id === id ? { ...a, resolved: true } : a))
     );
     showToast("Đã đánh dấu xử lý cảnh báo thành công");
   };
 
-  const markAllResolved = () => {
+  const markAllResolved = async () => {
+    try {
+      await resolveAllAlerts();
+    } catch {}
     setAlerts((prev) => prev.map((a) => ({ ...a, resolved: true })));
     showToast("Tất cả cảnh báo đã được xác nhận đã xem");
   };
@@ -196,7 +134,7 @@ export default function Alerts() {
           <div className="mt-4 flex items-baseline justify-between">
             <div className="flex items-baseline gap-2">
               <span className="font-headline-xl text-headline-xl text-error font-extrabold tracking-tight">
-                03
+                {String(alerts.filter((a) => a.level === "high" && !a.resolved).length).padStart(2, "0")}
               </span>
               <span className="font-label-lg text-label-lg text-error font-medium">
                 vụ việc
@@ -227,7 +165,7 @@ export default function Alerts() {
           <div className="mt-4 flex items-baseline justify-between">
             <div className="flex items-baseline gap-2">
               <span className="font-headline-xl text-headline-xl text-amber-800 font-extrabold tracking-tight">
-                06
+                {String(alerts.filter((a) => a.level === "medium" && !a.resolved).length).padStart(2, "0")}
               </span>
               <span className="font-label-lg text-label-lg text-amber-800 font-medium">
                 trường hợp
@@ -258,7 +196,7 @@ export default function Alerts() {
           <div className="mt-4 flex items-baseline justify-between">
             <div className="flex items-baseline gap-2">
               <span className="font-headline-xl text-headline-xl text-yellow-900 font-extrabold tracking-tight">
-                02
+                {String(alerts.filter((a) => a.level === "low" && !a.resolved).length).padStart(2, "0")}
               </span>
               <span className="font-label-lg text-label-lg text-yellow-900 font-medium">
                 nhân sự

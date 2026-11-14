@@ -1,80 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-const DAILY_LOG = [
-  {
-    date: "24/10/2024",
-    dayName: "Thứ Năm (Hôm nay)",
-    shift: "Ca Hành chính",
-    hours: "08:00 - 17:30",
-    checkIn: "07:54:12",
-    kioskIn: "Kiosk Cổng A • 99.6%",
-    checkOut: null,
-    kioskOut: "Đang làm việc",
-    totalHours: "--",
-    status: "ontime",
-    statusLabel: "Đúng giờ",
-    conf: "99.6%",
-  },
-  {
-    date: "23/10/2024",
-    dayName: "Thứ Tư",
-    shift: "Ca Hành chính",
-    hours: "08:00 - 17:30",
-    checkIn: "07:51:08",
-    kioskIn: "Kiosk Cổng A • 99.5%",
-    checkOut: "19:35:20",
-    kioskOut: "Kiosk Cổng B • 99.3%",
-    totalHours: "10h05m",
-    status: "ot",
-    statusLabel: "OT +2.0 giờ",
-    subNote: "Release Sprint",
-    conf: "99.5%",
-  },
-  {
-    date: "22/10/2024",
-    dayName: "Thứ Ba",
-    shift: "Ca Hành chính",
-    hours: "08:00 - 17:30",
-    checkIn: "07:48:44",
-    kioskIn: "Kiosk Cổng A • 99.8%",
-    checkOut: "17:34:10",
-    kioskOut: "Kiosk Cổng A • 99.4%",
-    totalHours: "8h00m",
-    status: "ontime",
-    statusLabel: "Đúng giờ",
-    conf: "99.8%",
-  },
-  {
-    date: "21/10/2024",
-    dayName: "Thứ Hai",
-    shift: "Ca Hành chính",
-    hours: "08:00 - 17:30",
-    checkIn: "07:55:10",
-    kioskIn: "Kiosk Cổng A • 99.2%",
-    checkOut: "20:05:15",
-    kioskOut: "Kiosk Cổng A • 99.7%",
-    totalHours: "10h35m",
-    status: "ot",
-    statusLabel: "OT +2.5 giờ",
-    subNote: "Triển khai Cloud",
-    conf: "99.2%",
-  },
-  {
-    date: "18/10/2024",
-    dayName: "Thứ Sáu",
-    shift: "Ca Hành chính",
-    hours: "08:00 - 17:30",
-    checkIn: "07:50:20",
-    kioskIn: "Kiosk Cổng B • 99.1%",
-    checkOut: "17:32:00",
-    kioskOut: "Kiosk Cổng B • 99.4%",
-    totalHours: "8h00m",
-    status: "ontime",
-    statusLabel: "Đúng giờ",
-    conf: "99.1%",
-  },
-];
+import { getEmployeeReport } from "../api";
 
 export default function EmployeeReportDetail() {
   const navigate = useNavigate();
@@ -84,11 +10,39 @@ export default function EmployeeReportDetail() {
   const [viewMode, setViewMode] = useState("table"); // table | calendar
   const [filterStatus, setFilterStatus] = useState("all");
   const [snapshotModal, setSnapshotModal] = useState(null);
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredLogs = DAILY_LOG.filter((item) => {
+  useEffect(() => {
+    setLoading(true);
+    getEmployeeReport(empCode)
+      .then((r) => setReport(r.data))
+      .catch(() => setReport(null))
+      .finally(() => setLoading(false));
+  }, [empCode]);
+
+  const dailyLogs = (report?.days || []).map((d) => ({
+    date: d.date,
+    dayName: d.day_name,
+    shift: d.shift,
+    hours: d.hours,
+    checkIn: d.check_in,
+    kioskIn: d.kiosk_in,
+    checkOut: d.check_out,
+    kioskOut: d.kiosk_out,
+    totalHours: d.total_hours,
+    status: d.status,
+    statusLabel: d.status_label,
+    subNote: d.sub_note,
+    conf: d.conf,
+  }));
+
+  const filteredLogs = dailyLogs.filter((item) => {
     if (filterStatus === "all") return true;
     return item.status === filterStatus;
   });
+
+  const empName = report?.name || empCode;
 
   return (
     <div className="flex flex-col w-full">
@@ -114,7 +68,7 @@ export default function EmployeeReportDetail() {
             </button>
             <span className="text-outline-variant">/</span>
             <span className="px-2 py-0.5 rounded bg-surface-container font-semibold text-on-surface">
-              {empCode} — Nguyễn Văn A
+              {empCode} — {empName}
             </span>
           </div>
 
@@ -185,7 +139,7 @@ export default function EmployeeReportDetail() {
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <h2 className="font-title-lg text-title-lg text-on-surface font-bold">
-                  Nguyễn Văn A
+                  {empName}
                 </h2>
                 <span className="px-2 py-0.5 rounded-full bg-secondary-fixed text-secondary font-code-telemetry text-label-sm font-semibold">
                   {empCode}
@@ -258,7 +212,7 @@ export default function EmployeeReportDetail() {
               </span>
               <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="font-headline-md text-headline-md text-secondary font-bold">
-                  14.5
+                  {report?.ot_hours ?? 0}
                 </span>
                 <span className="font-label-md text-label-md text-on-surface-variant">
                   giờ
@@ -268,7 +222,7 @@ export default function EmployeeReportDetail() {
                 <span className="material-symbols-outlined text-[14px] text-secondary">
                   verified_user
                 </span>
-                Đã duyệt: 14.5h
+                Đã duyệt: {report?.ot_hours ?? 0}h
               </span>
             </div>
 
@@ -278,7 +232,7 @@ export default function EmployeeReportDetail() {
               </span>
               <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="font-headline-md text-headline-md text-on-surface font-bold">
-                  99.4%
+                  {report?.avg_confidence ?? 0}%
                 </span>
                 <span className="font-label-sm text-label-sm text-[#009668] font-bold">
                   Hạng A+
