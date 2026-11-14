@@ -1,66 +1,29 @@
 import { useEffect, useState } from "react";
-import { getUsers, manualAttendance } from "../api";
+import { getUsers, manualAttendance, getAdjustments } from "../api";
 
-const INITIAL_ADJUSTMENTS = [
-  {
-    id: 1,
-    code: "NV045",
-    name: "Phạm Quỳnh Như",
-    dept: "Kế toán",
-    date: "24/10/2024",
-    inOld: "08:35:00",
-    inNew: "08:00:00",
-    outOld: "--:--",
-    outNew: "17:30:00",
-    reason: "Camera cổng A bảo trì, nhân viên có mặt đúng giờ",
-    attachment: "1 file minh chứng (.PDF)",
-    source: "Thủ công (Lê Thu Hà - HR)",
-    timestamp: "08:42:15 • 24/10",
-    isManual: true,
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD9a-N_-UANzOX0lKV2iWkf3Qqb-I4BMgp3igTJeJT3ICZNuaHZdyKU-CrgxhgCKUq4Zr1oMALETR7pQxNJ5Y3rApnYdBx0JC0VmLOd0LCL0BWoCIAe1ZU_wsHRJ24NJn6dVi3uLCnwaoXrTd4hWeORrjDet3aO_na38l1GanovHDxpjz6Ycd6np1YQc9Q6mS8t0ROvHIU8QlRWw6mX6LCHQ5PvE7ONu91r0EoZF78rd7SaxrXBtmOkMw",
-  },
-  {
-    id: 2,
-    code: "NV014",
-    name: "Trần Thị B",
-    dept: "Nhân sự",
-    date: "23/10/2024",
-    inOld: null,
-    inNew: "07:55:00",
-    outOld: "16:45:00",
-    outNew: "17:30:00",
-    reason: "Gặp đối tác ngoài công ty lúc cuối giờ",
-    attachment: "Biên bản công tác (.JPG)",
-    source: "Thủ công (Lê Thu Hà - HR)",
-    timestamp: "17:45:10 • 23/10",
-    isManual: true,
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAGeVsi8z1H72JliXB0rSIuQ7-Ibu0YI-JFM0_VJaOfUEu1L_VlUFlOhS-pZRqhMHXrCFm3wBBvW4ZcDU_wogH215no1uM8Vy4Yc_5z8s3ys1B9d6bpyWZD_DK_ZQ6v0QlSmZrFKslhhb_VVyxKMwoivlDewJ-FlzHhNVNJnb2pHsbeLIT_ywL7Zgo9HGNfruO4hGPCjxaNregDOjNUBhjSqSCiDMN2hG1B2LGGLKOIuHGC97QLY0NRdw",
-  },
-  {
-    id: 3,
-    code: "NV001",
-    name: "Nguyễn Văn A",
-    dept: "Kỹ thuật",
-    date: "24/10/2024",
-    inOld: null,
-    inNew: "07:52:10",
-    outOld: null,
-    outNew: "17:35:00",
-    reason: "Ghi nhận tự động AI Camera",
-    attachment: "Kiosk Cổng 1 (99.8%)",
-    source: "Camera AI",
-    timestamp: "Tự động đồng bộ",
-    isManual: false,
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB4dh7iWvaGXuxCOeVkohYjAeJOz5ELA0NxcwLHeAtcCHW8SScg4dYqxkmw3W9zy-ufm38q0vtm4_kRdV2uITKX5AQKfPq4ILZsAWGb69rFPR0D0jV_D1sGTkjFRWWOtRmRgc7RdV2zv46XDt-qWB-DBRTo0PFb1iCTFy6rj_o8vQIeOnjRR6wA6SgDKEjn7TeHWldDp5LBDq6mUjNCBOtowk-X28fGsl41-FYqN5yx-ZiwbzMqDO-FAw",
-  },
-];
+function mapAdj(r) {
+  return {
+    id: r.id,
+    code: r.code,
+    name: r.name,
+    dept: r.dept,
+    date: r.date,
+    inOld: r.in_old,
+    inNew: r.in_new,
+    outOld: r.out_old,
+    outNew: r.out_new,
+    reason: r.reason,
+    attachment: r.attachment,
+    source: r.source,
+    timestamp: r.timestamp,
+    isManual: r.is_manual,
+    avatar: null,
+  };
+}
 
 export default function EditAttendance() {
   const [users, setUsers] = useState([]);
-  const [rows, setRows] = useState(INITIAL_ADJUSTMENTS);
+  const [rows, setRows] = useState([]);
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [modalRow, setModalRow] = useState(null);
@@ -76,6 +39,11 @@ export default function EditAttendance() {
     "Quên check-in do gặp khách hàng tại sảnh / Camera bảo trì"
   );
 
+  const loadRows = () =>
+    getAdjustments({ limit: 50 })
+      .then((r) => setRows((r.data || []).map(mapAdj)))
+      .catch(() => {});
+
   useEffect(() => {
     getUsers()
       .then((r) => {
@@ -85,6 +53,7 @@ export default function EditAttendance() {
         }
       })
       .catch(() => {});
+    loadRows();
   }, []);
 
   const showToast = (msg) => {
@@ -95,36 +64,27 @@ export default function EditAttendance() {
   const handleCreateManual = async (e) => {
     e.preventDefault();
     const u = users.find((x) => String(x.id) === String(selectedUserId));
+    if (!u) {
+      showToast("Vui lòng chọn nhân viên");
+      return;
+    }
     try {
-      if (u) {
-        await manualAttendance({
-          user_id: u.id,
-          date: workDate,
-          status: "present",
-          note: reason,
-        });
-      }
-    } catch {}
-
-    const newItem = {
-      id: Date.now(),
-      code: u?.code || "NV045",
-      name: u?.name || "Phạm Quỳnh Như",
-      dept: u?.group || "Kế toán",
-      date: workDate.split("-").reverse().join("/"),
-      inOld: "--:--",
-      inNew: timeIn,
-      outOld: "--:--",
-      outNew: timeOut,
-      reason,
-      attachment: "bien_ban_xac_nhan.pdf",
-      source: "Thủ công (Lê Thu Hà - HR)",
-      timestamp: "Vừa xong",
-      isManual: true,
-      avatar: null,
-    };
-    setRows((p) => [newItem, ...p]);
-    showToast(`Đã xác nhận lưu công thủ công cho ${newItem.name}`);
+      await manualAttendance({
+        user_id: u.id,
+        date: workDate,
+        status: "present",
+        note: reason,
+        check_in: timeIn,
+        check_out: timeOut,
+        edited_by: localStorage.getItem("sf_admin_name") || "HR Admin",
+        attachment_note: "bien_ban_xac_nhan.pdf",
+        method: "manual",
+      });
+      await loadRows();
+      showToast(`Đã xác nhận lưu công thủ công cho ${u.name}`);
+    } catch (err) {
+      showToast(err?.response?.data?.detail || "Lưu công thất bại");
+    }
   };
 
   const filtered = rows.filter((r) => {

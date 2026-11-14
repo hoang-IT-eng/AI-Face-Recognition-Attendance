@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SecureFace AI - Attendance System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanning-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #57dffe, transparent);
+            box-shadow: 0 0 15px #57dffe;
+            animation: scan 3s ease-in-out infinite;
+        }
+        @keyframes scan {
+            0%, 100% { top: 10%; opacity: 0; }
+            50% { top: 90%; opacity: 1; }
+        }
+        .face-bracket {
+            position: absolute;
+            border: 2px solid #57dffe;
+            width: 160px;
+            height: 160px;
+            transition: all 0.3s ease;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(224, 227, 229, 0.5);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e6e8ea",
+                        "on-surface-variant": "#45464d",
+                        "primary-container": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#002113",
+                        "background": "#f7f9fb",
+                        "on-secondary-container": "#006172",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container": "#eceef0",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-fixed": "#002113",
+                        "surface": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "primary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "secondary-container": "#57dffe",
+                        "secondary-fixed": "#acedff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary": "#000000",
+                        "on-background": "#191c1e",
+                        "primary-fixed": "#dae2fd",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "on-primary-container": "#7c839b",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#009668",
+                        "outline": "#76777d",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001f26",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary": "#00687a",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "2rem",
+                        "stack-gap": "1rem",
+                        "section-margin": "3rem",
+                        "grid-gutter": "1.5rem",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "label-md": ["Geist", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- SideNavBar -->
+<aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 px-4 z-50">
+<div class="flex items-center gap-3 mb-10 px-2">
+<img alt="SecureFace AI" class="w-10 h-10" src="data:image/png;base64,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"/>
+<div>
+<h1 class="text-headline-md font-bold text-primary leading-tight">SecureFace AI</h1>
+<p class="text-on-surface-variant text-xs font-label-md">Admin Control Center</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-medium">Employees</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-medium">Live Stream</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-medium">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant pt-6">
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg mb-4 flex items-center justify-center gap-2 font-bold active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">person_add</span>
+                Enroll New User
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error-container/20 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="ml-[280px] min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="h-16 w-full sticky top-0 z-40 bg-surface border-b border-surface-variant flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-md font-semibold text-primary">System Monitor</h2>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-1 text-on-secondary-container bg-secondary-container/30 px-3 py-1 rounded-full text-xs font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+                    ACTIVE
+                </div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<input class="bg-surface-container-low border-none rounded-full px-10 py-2 text-sm focus:ring-2 focus:ring-secondary w-64 transition-all" placeholder="Search logs..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2">wifi</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2">sensors</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional security administrator headshot, clean corporate attire, high-end studio lighting with a neutral gray background, modern professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbAtHM98zU3m9GlbVImqFSJ1x0L1TxlqUPH6Bhy_OnUt3KKq1aqrVMbMryaPiHwwCGfxF8ghaMakci-b-ademyl7T8FuBXhYL2RfAWbYhN8PRBT3BWGYM8yCqqWb5p4N96GqBeJYHo5LE27rWt9HhiyNLJYUOXKT3U_y0cYpCCRB4evehoGC1xAHfwdPMVoAXp0aD-gaxUwNnY-7UStqBAt6caFDI4Yx1GY7kayuS-YPkMEE9c-ddxMVrr25vmONee7wlbOz2-ATf4"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="p-8 flex gap-8 flex-1">
+<!-- Center Camera Viewport -->
+<div class="flex-1 flex flex-col gap-6">
+<!-- Tab Navigation -->
+<div class="flex gap-1 bg-surface-container-low p-1 rounded-xl self-start">
+<button class="px-6 py-2 bg-surface-container-lowest shadow-sm rounded-lg text-primary font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">videocam</span> Stream
+                    </button>
+<button class="px-6 py-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span> Capture
+                    </button>
+<button class="px-6 py-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[20px]">visibility</span> Liveness
+                    </button>
+</div>
+<!-- Feed Container -->
+<div class="relative flex-1 bg-primary-container rounded-3xl overflow-hidden shadow-xl border border-primary-fixed-dim/20 min-h-[500px]">
+<!-- Camera Background -->
+<div class="absolute inset-0 grayscale-[0.3] contrast-125 opacity-80" data-alt="A POV security camera perspective looking into a modern high-end office lobby. Clean marble floors, minimalist furniture, and large windows with soft daylight. Digital grain and low-light sensor simulation." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbkZ4Oz3ozSOFTJpZI5UoH9TKTuqNTA2H7E2BqC4jHLdyPmQzFqYIMoU4wuydcYFQnO-fu4-2Z226KbIP7pnZAxtPR9V69gFjBii4gvDCDZ7kVG0gnwyhCKfeFJrcU7zdaAI9IedxANZ7vWTP13-unjQUhYQeeYEr8jwZGc49MyJ7zi6ea8TmjcM728A5qe9bS7uTUy3WoqjXVkBx2kkK7ZqEvn6Ta_xxNp_qS4VlpadrYE5fl8tJCsLwqQ3DlvqME_FHoIiTlN4os')"></div>
+<!-- Scanning Overlay Effects -->
+<div class="absolute inset-0 pointer-events-none">
+<!-- Scanning Line -->
+<div class="scanning-line"></div>
+<!-- Face Detection Box -->
+<div class="face-bracket left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2">
+<div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-secondary-container"></div>
+<div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-secondary-container"></div>
+<div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-secondary-container"></div>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-secondary-container"></div>
+<!-- Metadata Label -->
+<div class="absolute -top-10 left-0 bg-secondary-container text-on-secondary-fixed px-3 py-1 rounded-md text-[10px] font-bold tracking-widest flex items-center gap-2">
+<span class="animate-pulse">●</span> SCANNING ID: 4920-X
+                            </div>
+</div>
+<!-- HUD Elements -->
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="glass-panel px-6 py-4 rounded-2xl flex flex-col gap-1">
+<p class="text-primary text-[10px] font-bold uppercase tracking-widest opacity-60">Status Message</p>
+<p class="text-primary font-semibold text-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-container">face</span>
+                                    Blink twice to confirm identity
+                                </p>
+</div>
+<div class="flex gap-3">
+<button class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all group">
+<span class="material-symbols-outlined text-white group-hover:scale-110">flip_camera_ios</span>
+</button>
+<button class="px-8 h-14 rounded-full bg-error text-white font-bold flex items-center gap-3 shadow-lg hover:brightness-110 active:scale-95 transition-all" id="power-btn">
+<span class="material-symbols-outlined">stop_circle</span>
+                                    STOP FEED
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar / Results Overlay -->
+<div class="w-80 flex flex-col gap-6">
+<!-- Last Identified Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-3xl shadow-sm">
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Last Identified</h3>
+<div class="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 border-2 border-secondary-container/30">
+<img class="w-full h-full object-cover" data-alt="Close up biometric portrait of a male employee, professional corporate lighting, focus tracking indicators on the corners, sharp details, modern AI scanning aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfEP4zGsR45ImWtXdypZxNVePE6JhqTLeFkgYIRORfsi0XFSJc36Yi-HSq-yFN05pxHHWhg77Rbjb3uaMAbxYqrNhoKMh2QKV-kVulwE9rkQP9TtPnCy3CTd2MzEd5Wf1L9TNMLn-7TutVtFKKdtlXT9ueCZW1x0UV_3HveJQykLR3Bwb4PCOphWEYZul6nVebYKh0CiZQzphkSsAidTEZJAOTZ-D_KuZMHADmHBdAKvY7W5xAnPgbX-rcmxzDyS-yRen-yGYP0-SL"/>
+<div class="absolute top-3 right-3 bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded text-[10px] font-bold">98.4% MATCH</div>
+</div>
+<div class="space-y-3">
+<div>
+<h4 class="text-xl font-bold text-primary">Marcus Holloway</h4>
+<p class="text-on-surface-variant text-sm">Senior Security Architect</p>
+</div>
+<div class="flex items-center gap-2 py-2 border-y border-outline-variant/30">
+<span class="material-symbols-outlined text-secondary text-sm">schedule</span>
+<span class="text-sm font-label-md">Logged at 09:14:22 AM</span>
+</div>
+<div class="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg text-xs font-bold">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            ATTENDANCE MARKED
+                        </div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="flex-1 bg-surface-container-low/50 rounded-3xl p-6 border border-outline-variant">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant">Live Activity</h3>
+<span class="material-symbols-outlined text-outline text-[18px]">history</span>
+</div>
+<div class="space-y-4">
+<!-- Activity Item 1 -->
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="biometric face crop of a female professional, neutral lighting, corporate avatar style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGYeMP7mjORicplc5s-IPz1BBlo4zQzqLHfiTFJf6CzqgLQMiac-Xsuf50eMSd4Eng87fv5Tzs_-9ALoVzaQxF8IZGLSXS2KFp1cLht40mmO5_n88k3wxDhouglbWH8atPCBKbl-fB35AawInoyNq4eObMec02ijh4fCJboee1obCY09PWJ1wLwPuhnmcBJGrFbRVY9gg2JwUcPdDtkNG9h28x3MQ20d5hnDorQpMwx6gksgtaSwusJh6u5hVd72ts_H4zZAHqkzIh"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Sarah Jenkins</p>
+<p class="text-[11px] text-on-surface-variant">Entry Approved • 09:12</p>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex items-center gap-4 group cursor-pointer opacity-80">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="biometric face crop of a male professional, neutral lighting, corporate avatar style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV2rKzGkCq9UTE12O2Hluy529SQHF7h-wC0mBqBIwmIUjgU-mC_gyufNd9J5Kqw2wDnnzR8i4GYAWEJMN9J2f4xggWKRtDqdJAQhNxYYmzHCjr4A_1RureOKWFwBMuZr_tnFZuEOyF0DQgtPFPJslzvkoEJtRsHItrf7i7BhorPblhTQRfWC4YvcJ12Dnx5HtH-NFEWg8wAtm4hvikTTMosinDSlGUEy-WG4KaYhF2N8OwgMETkQIv0UxWwJ3HL_xL1vQgL0QSiKSC"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">David Chen</p>
+<p class="text-[11px] text-on-surface-variant">Entry Approved • 09:08</p>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex items-center gap-4 group cursor-pointer opacity-60">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="biometric face crop of a female office worker, neutral lighting, corporate avatar style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSLfTgX9W1JgqwgtnX7IQ_nJ6qnJYx9Djpt-cIzD1AXyOOHybuH67MPCQgJEezW5riCLEMskcJkk-v634mpnvTx1I2inOR9zsIXmjxll7NImRDlwEyowueJit7VIkPn_PfMrLeacgJW1jtwO7nobngoDPtghhozqOG2f1GwRBN-_rWYvfT7ZQfHyeJmZJ98AMDrvzIn34RLVCiBDlzhYKHpjrL-vEdoNpPuYc-NAltazYeGHD8CB-dPL066nSs6TLCoMyMH3bMl993"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Elena Rodriguez</p>
+<p class="text-[11px] text-on-surface-variant">Entry Approved • 09:05</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 text-xs font-bold text-secondary hover:bg-secondary-container/20 rounded-lg transition-colors border border-dashed border-secondary/30">
+                        View Complete Logs
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Micro-interactions
+        const powerBtn = document.getElementById('power-btn');
+        let isActive = true;
+
+        powerBtn.addEventListener('click', () => {
+            isActive = !isActive;
+            if (isActive) {
+                powerBtn.innerHTML = '<span class="material-symbols-outlined">stop_circle</span> STOP FEED';
+                powerBtn.className = 'px-8 h-14 rounded-full bg-error text-white font-bold flex items-center gap-3 shadow-lg hover:brightness-110 active:scale-95 transition-all';
+            } else {
+                powerBtn.innerHTML = '<span class="material-symbols-outlined">play_circle</span> START FEED';
+                powerBtn.className = 'px-8 h-14 rounded-full bg-emerald-600 text-white font-bold flex items-center gap-3 shadow-lg hover:brightness-110 active:scale-95 transition-all';
+            }
+        });
+
+        // Face bracket subtle movement
+        document.addEventListener('mousemove', (e) => {
+            const bracket = document.querySelector('.face-bracket');
+            if(isActive) {
+                const moveX = (e.clientX - window.innerWidth / 2) / 50;
+                const moveY = (e.clientY - window.innerHeight / 2) / 50;
+                bracket.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+            }
+        });
+    </script>
+</body></html>

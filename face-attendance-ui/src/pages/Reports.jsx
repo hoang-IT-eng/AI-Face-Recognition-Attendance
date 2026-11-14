@@ -1,94 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUsers, getAttendance, exportExcel } from "../api";
-
-const DEMO_SALARY_ROWS = [
-  {
-    code: "NV001",
-    name: "Nguyễn Văn A",
-    role: "Lập trình viên Senior",
-    dept: "Kỹ thuật",
-    standardDays: 22,
-    presentDays: 22,
-    lateCount: 0,
-    earlyCount: 0,
-    otHours: "14.5 h",
-    absentDays: "0 ngày",
-    compliance: "100%",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCpSeoWDgz6GY2w8VLsOuJnl_8cCozYy-82b-PxYOWfMLS2-32qaI4PsSNJgdMvuF4jBCleWI05Bnt1xzTxGF10U-zdxq4rhsPQhTmtANT4KYhK5yhaEhFTIm9i6lTtpQxFLojzIKoc4kSOS7U20CgKIv7siipZFRcW6jXWiBJwlw2Z26pau2YhhE58_ght1tMFyVHtgig_RhPPhimVnfjtYc3f1MZADZaNn8pJ03UH_9x21nx9v3f4jg",
-  },
-  {
-    code: "NV014",
-    name: "Trần Thị B",
-    role: "Chuyên viên Tuyển dụng",
-    dept: "Nhân sự",
-    standardDays: 22,
-    presentDays: 22,
-    lateCount: 1,
-    earlyCount: 0,
-    otHours: "4.0 h",
-    absentDays: "0 ngày",
-    compliance: "98.5%",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBS7sn68fmCDs0Mi4_zWpqZDBCSAsqhS1VgKn-Zkqo1-jF0DxoImpmkTnmBBeH_Kd9MXZ1cWeEYvzXmdR-W98HS8eLPUKwML-XWnoMeyPUeaS_K6cRHpsl9eKguJ2ohbqY7BlIDL0Mh2UFZg6keTNV7KUpackzPCcaT_pYb-D4eUIljpcPK2r8L4xkUZX5tpYWyXUWiFyppcMjWmUAc9h-CVn5N-NQAvQOE9tpro-gZIlr-XI8MOn-sew",
-  },
-  {
-    code: "NV032",
-    name: "Lê Hoàng Nam",
-    role: "Trưởng nhóm Kinh doanh",
-    dept: "Kinh doanh",
-    standardDays: 22,
-    presentDays: 21,
-    lateCount: 3,
-    earlyCount: 1,
-    otHours: "8.0 h",
-    absentDays: "1 ngày (phép)",
-    compliance: "92.0%",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB60pZjPP5FZVI96PinXIh_5AS4KmemjxdBj48hRnHBqoL69lD9oih3P7lfYUAnCRGH-4Xk3uci_NVciYiDit4QtUX8p_5CI5fchO43I5NiTOZyRzihoBNGfzEPy_DmwfVLciB6QasDrIZR1Wu2yGoRud2I7YeSWuy6hQJT6BICcWIKSzc37Qo7MNLABH6ov-oknTCkbQ1_ILySg3kecvpb_N7gwtvY69NDwhsoe4DEN-8rCzEsEjMJfA",
-  },
-  {
-    code: "NV045",
-    name: "Phạm Quỳnh Như",
-    role: "Kế toán Tổng hợp",
-    dept: "Kế toán",
-    standardDays: 22,
-    presentDays: 22,
-    lateCount: 2,
-    earlyCount: 0,
-    otHours: "2.5 h",
-    absentDays: "0 ngày",
-    compliance: "96.0%",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBg7PCevqJUi9FZr5oFgJwGW2d4rFZ1FbZXU9XnpzPRbQU_bqTtBh65T0LF4OuVVp-dz2twyue1F7r0wBAYV9vUoa1hvIaVCgv2QXj36PN6Ex4gvb6WUdZkR4cI8EXnxNfZatN7WqcbhRa4yCZyihdMvxT43c4zMYLnr06JDsSnmk5I-E7piruCFv1AgLdYt_9t0YPl-nKkZk2Wpu4DWBSBSVk9o0uEevCktjCBsjpMqSgvG72R2zkM_g",
-  },
-  {
-    code: "NV078",
-    name: "Đặng Tiến Dũng",
-    role: "Kỹ sư Trưởng AI Vision",
-    dept: "Kỹ thuật",
-    standardDays: 22,
-    presentDays: 22,
-    lateCount: 0,
-    earlyCount: 0,
-    otHours: "20.0 h",
-    absentDays: "0 ngày",
-    compliance: "100%",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuARUMydAWv3kLo1hcYbgybP3ZCCSCn5RwD8nuY1Q_hc0jQprN_Z32cfqJ_RYwGi0OMfQ_VBFbA9k5LmKK5cBxcUXVvGYFKhUpQdha3ggcKlHfhaVKqTJrfpI7BM3tUASm06U2avTGfCX8jkuwZ0GJ-767FF5xfBbAbRQDj4FvavtErMEEylYEmOJyGKOxOZp-9mZPzbpLGioZrAWrcIM7V-jWXpd4Kwp-FB0oKIdOOLfQPRODXYgJfXiw",
-  },
-];
+import { getUsers, getAttendance, exportExcel, getPayrollReport } from "../api";
 
 export default function Reports() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("salary"); // daily | salary
   const [search, setSearch] = useState("");
   const [deptFilter, setDeptFilter] = useState("all");
-  const [dateFrom, setDateFrom] = useState("2026-10-01");
+  const [dateFrom, setDateFrom] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString()
+      .slice(0, 10)
+  );
   const [dateTo, setDateTo] = useState(new Date().toISOString().slice(0, 10));
   const [dailyRecords, setDailyRecords] = useState([]);
   const [users, setUsers] = useState([]);
+  const [payroll, setPayroll] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -96,9 +23,13 @@ export default function Reports() {
       getAttendance({ date_from: dateFrom, date_to: dateTo }).catch(() => ({
         data: [],
       })),
-    ]).then(([uRes, aRes]) => {
+      getPayrollReport({ date_from: dateFrom, date_to: dateTo }).catch(() => ({
+        data: null,
+      })),
+    ]).then(([uRes, aRes, pRes]) => {
       setUsers(uRes.data || []);
       setDailyRecords(aRes.data || []);
+      setPayroll(pRes.data);
     });
   }, [dateFrom, dateTo]);
 
@@ -111,13 +42,27 @@ export default function Reports() {
       a.download = `baocao_${dateFrom}_${dateTo}.xlsx`;
       a.click();
     } catch {
-      alert("Đã xuất tệp Excel kỳ lương.");
+      alert("Xuất Excel thất bại — kiểm tra API backend.");
     }
   };
 
   const rows =
-    users.length > 0
-      ? users.map((u) => {
+    payroll?.rows?.length > 0
+      ? payroll.rows.map((u) => ({
+          code: u.code,
+          name: u.name,
+          role: u.role || "Chuyên viên",
+          dept: u.dept || "",
+          standardDays: u.standard_days,
+          presentDays: u.present_days,
+          lateCount: u.late_count,
+          earlyCount: u.early_count,
+          otHours: `${u.ot_hours} h`,
+          absentDays: `${u.absent_days} ngày`,
+          compliance: `${u.compliance}%`,
+          avatar: null,
+        }))
+      : users.map((u) => {
           const recs = dailyRecords.filter((r) => r.user_id === u.id);
           const present = recs.filter(
             (r) => r.status === "present" || r.status === "late"
@@ -126,19 +71,18 @@ export default function Reports() {
           return {
             code: u.code,
             name: u.name,
-            role: "Chuyên viên",
-            dept: u.group || "Kỹ thuật",
+            role: u.role || "Chuyên viên",
+            dept: u.group || "",
             standardDays: 22,
-            presentDays: present || 22,
+            presentDays: present,
             lateCount: late,
             earlyCount: 0,
-            otHours: "8.0 h",
+            otHours: "0 h",
             absentDays: "0 ngày",
             compliance: late === 0 ? "100%" : "96.5%",
             avatar: null,
           };
-        })
-      : DEMO_SALARY_ROWS;
+        });
 
   const filtered = rows.filter((r) => {
     const matchSearch =
@@ -189,7 +133,7 @@ export default function Reports() {
           </div>
           <div className="mt-4 flex items-baseline justify-between">
             <span className="font-headline-xl text-headline-xl text-on-surface">
-              {users.length || 150}
+              {payroll?.active_users ?? users.length}
             </span>
             <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-secondary font-label-sm text-label-sm">
               100% định danh
@@ -232,7 +176,7 @@ export default function Reports() {
           <div className="mt-4 flex items-baseline justify-between">
             <div className="flex items-baseline gap-1">
               <span className="font-headline-xl text-headline-xl text-on-surface">
-                412.5
+                {payroll?.total_ot_hours ?? 0}
               </span>
               <span className="font-label-md text-label-md text-on-surface-variant">
                 giờ
@@ -257,12 +201,12 @@ export default function Reports() {
           </div>
           <div className="mt-4 flex items-baseline justify-between">
             <span className="font-headline-xl text-headline-xl text-on-surface">
-              96.8%
+              {payroll?.avg_compliance ?? 0}%
             </span>
             <div className="w-16 h-2 rounded-full bg-surface-container overflow-hidden">
               <div
                 className="h-full bg-secondary"
-                style={{ width: "96.8%" }}
+                style={{ width: `${payroll?.avg_compliance ?? 0}%` }}
               />
             </div>
           </div>
@@ -540,7 +484,7 @@ export default function Reports() {
             </span>
             <div>
               Tổng giờ tăng ca:{" "}
-              <strong className="font-semibold text-secondary">412.5h</strong>
+              <strong className="font-semibold text-secondary">{payroll?.total_ot_hours ?? 0}h</strong>
             </div>
           </div>
 

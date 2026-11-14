@@ -1,43 +1,21 @@
 import { useEffect, useState } from "react";
-import { getUsers, clearFaces } from "../api";
-
-const CONSENT_LOGS = [
-  {
-    code: "NV001",
-    initials: "VA",
-    name: "Nguyễn Văn A",
-    version: "Consent Form v2.1",
-    timestamp: "20/01/2024 09:12:30",
-    source: "Kiosk Sảnh A (192.168.1.42)",
-    status: "signed",
-  },
-  {
-    code: "NV014",
-    initials: "TB",
-    name: "Trần Thị B",
-    version: "Consent Form v2.1",
-    timestamp: "15/02/2024 14:05:12",
-    source: "Web Admin HR (10.0.12.89)",
-    status: "signed",
-  },
-  {
-    code: "NV045",
-    initials: "QN",
-    name: "Phạm Quỳnh Như",
-    version: "Consent Form v2.1",
-    timestamp: "22/02/2024 10:00:00",
-    source: "Web Admin HR (10.0.12.92)",
-    status: "declined",
-  },
-];
+import {
+  getUsers,
+  clearFaces,
+  getPrivacySettings,
+  updatePrivacySettings,
+  getConsents,
+} from "../api";
 
 export default function PrivacySettings() {
   const [rawImageStore, setRawImageStore] = useState(false);
   const [retention, setRetention] = useState("employed-retention");
   const [users, setUsers] = useState([]);
-  const [selectedPurgeUser, setSelectedPurgeUser] = useState(
-    "NV032 - Lê Hoàng Nam"
-  );
+  const [consentLogs, setConsentLogs] = useState([]);
+  const [consentRate, setConsentRate] = useState(0);
+  const [consentSigned, setConsentSigned] = useState(0);
+  const [consentTotal, setConsentTotal] = useState(0);
+  const [selectedPurgeUser, setSelectedPurgeUser] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(true);
   const [toast, setToast] = useState("");
 
@@ -50,11 +28,38 @@ export default function PrivacySettings() {
         }
       })
       .catch(() => {});
+    getPrivacySettings()
+      .then((r) => {
+        setRawImageStore(!!r.data.raw_image_store);
+        setRetention(r.data.retention || "employed-retention");
+        setConsentRate(r.data.consent_rate || 0);
+        setConsentSigned(r.data.consent_signed || 0);
+        setConsentTotal(r.data.consent_total || 0);
+      })
+      .catch(() => {});
+    getConsents()
+      .then((r) => setConsentLogs(r.data || []))
+      .catch(() => {});
   }, []);
 
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 3500);
+  };
+
+  const handleSave = async () => {
+    try {
+      const r = await updatePrivacySettings({
+        raw_image_store: rawImageStore,
+        retention,
+      });
+      setConsentRate(r.data.consent_rate || 0);
+      setConsentSigned(r.data.consent_signed || 0);
+      setConsentTotal(r.data.consent_total || 0);
+      showToast("Đã lưu cấu hình chính sách quyền riêng tư");
+    } catch {
+      showToast("Không lưu được cấu hình — kiểm tra API backend");
+    }
   };
 
   const handlePurge = async () => {
@@ -97,9 +102,7 @@ export default function PrivacySettings() {
 
         <div className="flex items-center gap-3 self-start md:self-auto">
           <button
-            onClick={() =>
-              showToast("Đã lưu cấu hình chính sách quyền riêng tư")
-            }
+            onClick={handleSave}
             className="h-11 px-5 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center gap-2 shadow-xs hover:bg-primary-container transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">save</span>
@@ -143,10 +146,10 @@ export default function PrivacySettings() {
           </div>
           <div className="flex flex-col">
             <span className="font-headline-md text-headline-md text-on-surface">
-              97.8%
+              {consentRate}%
             </span>
             <span className="font-label-sm text-label-sm text-on-surface-variant pt-1">
-              142/150 nhân sự đã ký số
+              {consentSigned}/{consentTotal || users.length} nhân sự đã ký số
             </span>
           </div>
         </div>
@@ -333,7 +336,7 @@ export default function PrivacySettings() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-container-high">
-                {CONSENT_LOGS.map((row) => (
+                {(consentLogs.length ? consentLogs : []).map((row) => (
                   <tr
                     key={row.code}
                     className="hover:bg-surface-container-low transition-colors"

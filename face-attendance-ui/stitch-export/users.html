@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Employee Directory | SecureFace AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e6e8ea",
+                        "on-surface-variant": "#45464d",
+                        "primary-container": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#002113",
+                        "background": "#f7f9fb",
+                        "on-secondary-container": "#006172",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container": "#eceef0",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-fixed": "#002113",
+                        "surface": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "primary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "secondary-container": "#57dffe",
+                        "secondary-fixed": "#acedff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary": "#000000",
+                        "on-background": "#191c1e",
+                        "primary-fixed": "#dae2fd",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "on-primary-container": "#7c839b",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#009668",
+                        "outline": "#76777d",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001f26",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary": "#00687a",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "2rem",
+                        "stack-gap": "1rem",
+                        "section-margin": "3rem",
+                        "grid-gutter": "1.5rem",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-md": ["Geist", "sans-serif"],
+                        "code-sm": ["Geist", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-hud {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tracking-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #57dffe;
+            border-style: solid;
+        }
+        .corner-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .corner-tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+        .corner-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+        .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- SideNavBar -->
+<aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col h-full py-6 px-4 shadow-sm z-50">
+<div class="flex items-center gap-3 px-2 mb-10">
+<img alt="SecureFace AI Logo" class="w-10 h-10 object-contain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAKtUlEQVR4AexbCXhU1RX+7yMQEjIZlpCwVyGQpSKLUj8ENaUguyzBVhYBiyLV2goGEL6qQFIWWawpUBAhApatVFkE0wopH5WCQCGWJQtJCAQwC1CSQFaS13temcm7k23mzZsXIDPfO/POOfes/7z9zpPgwMcUEPSCr3/IZrN/yClzQOhlc0BIAV/LDzjd4fVf4j39m3ozBQQPdwAS1Aqg2dyhmdk/eKnZPzRfQoPdjLEJYKwHT9IeYF548D/evIUOvKeejPcmQdpj9g+5Zaaeee98rMalBgBDG5n8g2fA0ycVTIoAg0+NkR6mQcbMSs+8d9+AkOlAaKPq2qsaQL8gkzkAX0tMWs6Ba1ad80OvZ2jGwFb4+mMHOCZV9VsJQJNfcBdfSTrBjftxci8cAcYwwrdBg+Mmv6AgLgqLAKDJFNyCSewrxlglQ8GrHgoMCGaStMdk6uKnbl8NoAfzYns5eJ3VBm6+AgGOTRfm5bGLazw4KYsVQHPL4Ahu0FvRur+qRYAx9CGsLAYKgMpmydhci9K9rgUBxub4+AS2JCsFQHh5RIExEyncZAcCjPky70aRZCmheaAv3yxfIcFN9iPAmDyZsJNMHg378TNMtReK9oesX5YMzJOw47swG1S/WoeO7bJBEt8Uu+sYsV6FIuwkBrTS0nXIllOwhzou+wKmn/TXksIpH8pJue2pkWy0JCPsJFkjgPYm9GzzCPzCp9lrrpsd5aTcugWsIhBhx7dA5lnFmFtlBwKMn0j4ScQOSydMiq+l4/pf1zgRQZsr5SzJzNDm7ICXbgAmjOuJqigtYjTyjx9woCR9TCln6owRVdZEdeqTBdANQL0KetDiuAF08hdzA+gG0EkEnHR3b4F1BWBRRpo1tZq3KjUwJp8mmDg+HNs2rcLJI/twJfWEQie+/UrRTRg7Ck28aRZSQ3AbF3XNat7GrFZR8xZI11nFVy+i+Eqa09d5Lf1aYOGC2Ug+cxjRyxdg0PNhCOz0CHyaeCvUOfBRRbfyoyhcOHsYUfNmokUL5yYL9apfM4B0nZU2Mxxps8Y4dZ03cMBziD8eizemToSXV+Naf3Fvby/8etpknD4Wi35hfWq1r85Ar/o1A1hdYY7oCYjtm1dr2i19TT74YtsneP3V8Y6k1N22zgB8cfQwZVe07ej4yXhMnzUfQ0dNQsfQPgoRP2P2Apw89R9bcyyJmosxo4ZW0hulqBMAg4M6Ye3KRUKPpaWleH/BMgwcPgExm3bgyNGTuHnzlkLEb9i4HQOGjsO8qBUgW7Xzmj8uVI6Zap1RfJ0AOHfWW5CkitRlZWUYMGw8olfHQJb5Q6JquqexP6xcj+c5yORjMfPw8MCciDctoqHrii4MSktn3OFDxAesCz9cifjvz9ldwen4s1iy/E+C/eiRg9G0qVnQGSEYDmD4qMF8BpVZeyPgVkSvs8r2Mks/WoMz5xKt5owxhHMQrQqDGMMBHDl8oNDaJxu21LjbCsYqgXbn9THbVBrANrYw6CLBcAC7PhYstJJ8oeKORhiwQ0hOEX1tY9sRwmkTwwH0bCROQSckpmhuIjnlouDr7eUlyEYIhgNYXFIi9NWE364JCgcEiYnll/BLIQfcdTEVK9AlZM1BsrOvCwbO7HbdHg8RYmVl5QiyEYLrAKym+nMJF4QRpwDsGirEUp+VhQEXCk4DSJPSarKtVT1G/KHDRwWTv/V+Q5igFwa5QD5q4ipladzYkz/6GoPeccVWWtIkTBlTf6l9iVeP6cE7DaCjRdgC6Ki/xZ7uZjq0b2MR62ztNIA0Ragm207UY8SnpKbj4D++tZod7eeJI2EN4bV0kjIFaR24x5CPmkj9ZM/H+SOtScSC/InmlR2z219x1OnLaQC11PHO7EgUF1ecjem+OHb3Zvxlyxrs2bkBRw/tRuL3h3Ar85xCxJOOxnZuXYv9uzaBfCy5CwuLlCc4FtnIdZ0AmH75Cn7zzvtCn40aNcSAfs/g2b5PISQ4EK0ClH/QKjbEk47G+v+0L8hWGbj39eb03+HaD1n3JGNXdQIgtfhDZjZycm4Q6xRl8kuXurh8sRRtOIC06y2OnKPsqi1btrDUoXlNW+e+LzcqD2cZY5rjaHU0FECzrwm7dnyKaa9N0FpvtX40PfDl9nVoavat1sYVA4YBSI3FxW5XjnG2jXwasxVduj6nPMZfsnw1DsT9E3S2vn2nAEQX+D0v6RYvW63YBHcLw2ebd9iGQdizvXFg/1ZDQTQMwM9jotGp44+Eps+eT0L3pwYhYk4UsnOuK4/xFy1dhTHjpuHJPkPRrlMvhXr1HaboFi9bpdjQce/tmfPxxNNDcD5RvLOh6VDKJSRyoWAIgOtWf4i+T/cS2ti77xv0HzIW6ZcyBL0jQmraJfxs8EvYFxsnuFGu6OXzBZ2rBMlVgS1xad73xdHirFnsN4fw8pS3UVRUbDHTvKZrwPGT38K+rw8KMSaOH+PUvLEQrAZBALAGO01DjDH8ft4swZd228mvzRB0eghTfjWz0u4c+UGEHqFrjOFSAMf9YqQw3UgzaS//8re6bHm2XdHW/MrUGcL0wI9DuuDn4cNsTXWVXQrg1CnivwZovvdiuvZjXm2dJyWnYeOfdwpmr0/R/5JJnUAzgJb3MOhdDOLVQYkP8PdDt64hxCqUf/sOIhdHK7wrvyIXfYyCgkJriid6dkXz5k2tsoWhmql2IuItekfXmgG0vIdB72IQb5t4mM3c7+69f0dubp6tme7yjRv/xd794p/ahw8W56EpKdVMtRMRTzotpBnAxu07WvOpeYuyZ/fHLKyy/u7EKWVtxNex42KuHj3EWqgGdc1qnsYcIc0A1pakbZtWgkliUqogu1JIShZztW0t1qJnbpcB2KZ1gFAn3WkIChcKWTYTV23aiLXomdplALZr21qo8+o1457X2c78tbX5MYXCnBRcBuDljGvW0mj3vXv3rlV2NUNnfMppyZOZJU6lWvR6rF0G4KKlK5F8IQ10PCJej2IdiUE5jcivG4A0Zaim5HGLMSmjLcYeK0FcdrkjvetiSzlf+q4Uk6+0A9Wiro14XZLwILoByGNVuXi263hfvy9cZdEOKCUZcrED9m5TFQKEncRnETJVOt3Zh/l9YcKOb4HQBKB6srsm/n59X9i2Zi1bjgxkSrLM4rU4u33AH52xeH4SkWPh/mhCgMllu6T8u6VxdDDUFKEeO/HdtyQvJ+mghJspeXw3/qweY6GpdVlGDHcs5bswUI7CD/hWWMQV7sUOBAgruaDkPTJVALyTfZHu9NeSwk21I8BkfHz7doryf2IFQHLJKyt/D7Jc+W0+GnSTFQFZlo/lZhfOsygkC4PrSfklZWVDIOOKVedmBAT4cS9FLpT5NF+69XBXASA3LbyRfPUuK+cgyq6fvOD5HqRFhnydoWRQfn6i8J88AUBq6E5W4hm5iD3KN9V/kXwfkvElyfIBFLKg3OwUca6AV1IJQK5DXt75m3nZCc+Ul8uv8s2WTjCkrnfEr/X4g7jyqbnZCQMJk6oAqBLAe4bl+TkJ6/PKyzrzk8sSfmy8fU//8K9kOZd6zisrC8zPSqRXSat9oFkTgP8Hip9c+C/wbm72eVM5yl/gu/bnPDjNG17mBgWcHvBFLuQNZPCeTlNv5SgbkZud0JTTu3Ri5WM1Lv8DAAD//2aj/vAAAAAGSURBVAMAZqY14+7okxcAAAAASUVORK5CYII="/>
+<div class="flex flex-col">
+<span class="text-headline-md font-headline-md text-primary">SecureFace AI</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Admin Center</span>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+<span class="font-body-md">Employees</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+<span class="font-body-md">Live Stream</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<button class="mt-4 mb-8 w-full py-3 bg-primary text-on-primary font-bold rounded-lg shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2" onclick="openEnrollModal()">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+            Enroll New User
+        </button>
+<div class="pt-6 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[280px] min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="h-16 w-full sticky top-0 z-40 bg-surface border-b border-surface-variant flex justify-between items-center px-8">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-primary">System Monitor</span>
+<span class="mx-4 h-6 w-[1px] bg-outline-variant"></span>
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-lg text-body-md focus:ring-2 focus:ring-secondary" placeholder="Global search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined" data-icon="wifi">wifi</span></button>
+<button class="hover:text-secondary transition-colors"><span class="material-symbols-outlined" data-icon="sensors">sensors</span></button>
+</div>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<div class="text-right">
+<p class="font-bold text-sm text-primary">Admin User</p>
+<p class="text-xs text-on-surface-variant">Super Administrator</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-secondary-container" data-alt="A professional headshot of a corporate security administrator in a high-tech office environment. The image is clean and bright, with subtle blue and grey tones reflecting a modern command center aesthetic. The individual looks confident and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-ukrrqf_7Hmm6IJCAkcZOyju_kiuaK42P4PfaNEwxGsRTv-_k3J7p7RY5QedMDMyAuVMXlRpJrD33RbOlXmgUukiDqRALsoWSAcJ-SM2b0-dCXggl2WaNF1hn86Iqr3pgWZM1YB4X7COPPdKfHIXCu0_Rlcb4ygUpjsLDZuntSFbQyLLgO65foc2UXULmQ2VrMlw7SPLgETX-0tpt-w4rlY3EL0PkRUhcI2WZugdZRCEU7pzu_v9uRag038Mu4uD5IuTPoVCY5Q6n"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-8 space-y-8 max-w-7xl">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary">Employee Directory</h1>
+<p class="text-on-surface-variant font-body-md mt-1">Manage biometric enrollment and personnel records.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-80 pl-11 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-body-md focus:border-secondary focus:ring-4 focus:ring-secondary-container/20 transition-all" placeholder="Search by name, ID or department" type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:shadow-lg transition-all" onclick="openEnrollModal()">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                        Add Employee
+                    </button>
+</div>
+</div>
+<!-- Bento Stats Grid (Subtle Highlight) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm hover:border-secondary transition-colors">
+<p class="text-label-md text-on-surface-variant font-medium">TOTAL EMPLOYEES</p>
+<div class="flex items-baseline justify-between mt-2">
+<h3 class="text-headline-lg font-headline-lg">1,248</h3>
+<span class="text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded-full">+12 this month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-label-md text-on-surface-variant font-medium">FACE ENROLLED</p>
+<div class="flex items-baseline justify-between mt-2">
+<h3 class="text-headline-lg font-headline-lg">1,102</h3>
+<span class="text-on-surface-variant text-xs font-bold bg-surface-container px-2 py-1 rounded-full">88% Completion</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-label-md text-on-surface-variant font-medium">PENDING ENROLLMENT</p>
+<div class="flex items-baseline justify-between mt-2">
+<h3 class="text-headline-lg font-headline-lg text-error">146</h3>
+<span class="text-error text-xs font-bold bg-error-container/20 px-2 py-1 rounded-full">Requires Action</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm bg-primary-container">
+<p class="text-label-md text-on-primary-container font-medium">SYSTEM STATUS</p>
+<div class="flex items-center gap-2 mt-4 text-secondary-fixed">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+</span>
+<span class="font-bold">Active &amp; Secure</span>
+</div>
+</div>
+</div>
+<!-- Table Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-md text-on-surface-variant font-semibold">EMPLOYEE</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant font-semibold">EMPLOYEE ID</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant font-semibold">DEPARTMENT</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant font-semibold">REGISTRATION</th>
+<th class="px-6 py-4 font-label-md text-on-surface-variant font-semibold text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<!-- Table Row -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close up facial portrait for biometric recognition software. High-resolution lighting, clear features, against a neutral slate gray corporate background. The aesthetic is sharp, digital, and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuADnr9UzzrZydk_myBWGCzCeSDMyKApQNTeNFePKhis3lwknqg8dlmQXbLgnhMZajlgjQuThOZ-ALse-EjPb1HU0FkZUg0-KN9L5z0k-BT22cIOjh3d-nV-ZACShMpNVHz8-dWALBKM_rpG9xINawAB8ymQEpeiF1lCs_sifCVgVXLU-srho8Y5n4oREq2EowwGhFhWY5exlahDw0DrOk4TvQS-Ib5dBSY-l6wj-yP2ty1R-zYqUG9nHqDOLQIjpN3OqE3ylrohr66e"/>
+</div>
+<div>
+<p class="font-bold text-primary">Alex Rivera</p>
+<p class="text-xs text-on-surface-variant">alex.r@secureface.ai</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">#EMP-2024-001</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-3 py-1 rounded-full text-xs font-medium">Software Engineering</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-emerald-600">
+<div class="bg-emerald-500/10 p-1 rounded">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-wide">Face Enrolled</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all" title="Edit Profile"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all" title="Delete Account"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Table Row (Unenrolled) -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-dashed border-outline text-outline">
+<span class="material-symbols-outlined" data-icon="no_photography">no_photography</span>
+</div>
+<div>
+<p class="font-bold text-primary">Sarah Jenkins</p>
+<p class="text-xs text-on-surface-variant">s.jenkins@secureface.ai</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">#EMP-2024-042</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-3 py-1 rounded-full text-xs font-medium">Finance &amp; Ops</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-error">
+<div class="bg-error/10 p-1 rounded">
+<span class="material-symbols-outlined text-sm" data-icon="error" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-wide">Not Enrolled</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="bg-secondary text-on-secondary px-4 py-1.5 rounded-lg text-xs font-bold hover:shadow-md transition-all flex items-center gap-1.5" onclick="openEnrollModal()">
+<span class="material-symbols-outlined text-sm" data-icon="face">face</span>
+                                            Enroll Face
+                                        </button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- More Rows -->
+<tr class="hover:bg-secondary/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional studio portrait of an executive woman, high contrast lighting, clear facial contours for AI training. Neutral dark corporate environment, modern minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI0TcRTRUmj5SRnZmmFZneHb4oYwgK37UzFVJxp1NXWrMe7aUWu16V6M0dP_aq7sxo5gssKguhWnrTW2gi-TPP8T3FgND-s7OaerHuiR5fIro9r0jODyf-Mo8KF_ogb3LPVt8gwUsMM92mwG95jpX0Z6_aGAw2pw0MhMR4c_rBAlF1B-ke7wfROV1VH7S_p1qRFUIpYSLWKXL4il6BCeSSn35HiFcrNPFVZwxEW0waKHfJUJE5_xc8egvwLDWhCbGV4HG588I87AJh"/>
+</div>
+<div>
+<p class="font-bold text-primary">Elena Rodriguez</p>
+<p class="text-xs text-on-surface-variant">e.rod@secureface.ai</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant">#EMP-2024-089</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-3 py-1 rounded-full text-xs font-medium">Global Sales</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-secondary">
+<div class="bg-secondary/10 p-1 rounded">
+<span class="material-symbols-outlined text-sm animate-pulse" data-icon="sync">sync</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-wide">Processing...</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-lg transition-all"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="bg-surface-container-low px-6 py-4 flex items-center justify-between">
+<p class="text-xs text-on-surface-variant font-medium">Showing <span class="text-primary">1 to 10</span> of 1,248 employees</p>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all"><span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-xs">3</button>
+<span class="px-1 text-on-surface-variant">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-xs">125</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all"><span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Face Enrollment Modal (Hidden by Default) -->
+<div class="fixed inset-0 z-[100] hidden overflow-y-auto" id="enrollModal">
+<div class="fixed inset-0 bg-primary-container/80 backdrop-blur-sm transition-opacity" onclick="closeEnrollModal()"></div>
+<div class="flex min-h-full items-center justify-center p-4">
+<div class="relative bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-outline-variant">
+<div class="flex flex-col md:flex-row">
+<!-- Left: Preview Area -->
+<div class="md:w-3/5 bg-black relative aspect-[4/3] md:aspect-auto">
+<div class="absolute inset-0 flex items-center justify-center">
+<!-- HUD Effect -->
+<div class="relative w-64 h-64">
+<div class="tracking-corner corner-tl"></div>
+<div class="tracking-corner corner-tr"></div>
+<div class="tracking-corner corner-bl"></div>
+<div class="tracking-corner corner-br"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-secondary/10 rounded-2xl animate-pulse">
+<span class="material-symbols-outlined text-secondary text-5xl mb-4" data-icon="face">face</span>
+<p class="text-secondary font-bold text-sm">POSITION FACE WITHIN FRAME</p>
+</div>
+</div>
+</div>
+<!-- Scan Animation -->
+<div class="absolute inset-0 pointer-events-none">
+<div class="h-[2px] w-full bg-secondary shadow-[0_0_15px_rgba(87,223,254,0.8)] absolute top-0 animate-[scan_3s_linear_infinite]"></div>
+</div>
+<div class="absolute bottom-6 left-6 right-6">
+<div class="glass-hud p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-secondary animate-ping"></div>
+<span class="text-white text-xs font-bold tracking-widest uppercase">HD Webcam Active</span>
+</div>
+<span class="text-secondary text-xs font-mono">REC: 00:12:44</span>
+</div>
+</div>
+</div>
+<!-- Right: Instructions & Controls -->
+<div class="md:w-2/5 p-8 flex flex-col bg-surface-container-low">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Face Enrollment</h2>
+<p class="text-on-surface-variant text-sm mt-1">Biometric identity registration</p>
+</div>
+<button class="text-on-surface-variant hover:text-primary" onclick="closeEnrollModal()">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="space-y-6 flex-1">
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl">
+<p class="font-bold text-sm mb-3">Registration Progress</p>
+<div class="flex gap-2">
+<div class="h-2 flex-1 bg-secondary rounded-full"></div>
+<div class="h-2 flex-1 bg-secondary rounded-full"></div>
+<div class="h-2 flex-1 bg-surface-container-highest rounded-full"></div>
+<div class="h-2 flex-1 bg-surface-container-highest rounded-full"></div>
+<div class="h-2 flex-1 bg-surface-container-highest rounded-full"></div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2">Captured 2 of 5 angles</p>
+</div>
+<div class="space-y-4">
+<p class="font-label-md text-on-surface-variant font-bold uppercase tracking-widest">Required Angles</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-sm font-medium text-emerald-600">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+                                        Looking Straight
+                                    </li>
+<li class="flex items-center gap-3 text-sm font-medium text-emerald-600">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+                                        Slight Left Tilt
+                                    </li>
+<li class="flex items-center gap-3 text-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+                                        Slight Right Tilt
+                                    </li>
+<li class="flex items-center gap-3 text-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+                                        Chin Upward
+                                    </li>
+<li class="flex items-center gap-3 text-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+                                        Chin Downward
+                                    </li>
+</ul>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant space-y-3">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+                                Capture Angle
+                            </button>
+<button class="w-full bg-surface-container-highest text-on-surface-variant py-3 rounded-xl font-bold hover:bg-outline-variant transition-all" onclick="closeEnrollModal()">
+                                Cancel Enrollment
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        function openEnrollModal() {
+            document.getElementById('enrollModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEnrollModal() {
+            document.getElementById('enrollModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Scan animation keyframes
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes scan {
+                0% { top: 10%; opacity: 0; }
+                20% { opacity: 1; }
+                80% { opacity: 1; }
+                100% { top: 90%; opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Simple interactivity for the search bar
+        document.querySelector('input[type="text"]').addEventListener('focus', function() {
+            this.parentElement.classList.add('ring-secondary/50');
+        });
+        document.querySelector('input[type="text"]').addEventListener('blur', function() {
+            this.parentElement.classList.remove('ring-secondary/50');
+        });
+    </script>
+</body></html>

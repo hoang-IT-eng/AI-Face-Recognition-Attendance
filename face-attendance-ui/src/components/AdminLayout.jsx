@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { getAlertStats } from "../api";
 
 const LOGO_URL =
   "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
@@ -7,7 +8,7 @@ const LOGO_URL =
 const AVATAR_HR =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuB9qt0XxrJwvaoaxIrN5-_dsJiv9_68psvID5t-E8IuhUqSIm9zoY-dDDXgmRSA4rKc4xyhvcKzwy5aWG5jzt8UgZgkdOCXStobDuQhSlKwrEUMyWlin0D6nslRPnARp4LN4C8h_mkCAEAE_44iw5zZah7oB3DBZp9JO6wHQq2Gc4Ajc_wUl1zP_i1-PcX0tN99lfVei4f3dlrVd6mLOWaamZ5wwuKOAn8kGRD5CkhpejKZ4WJADsen5A";
 
-const NAV_ITEMS = [
+const NAV_BASE = [
   { to: "/", icon: "dashboard", label: "Dashboard", end: true },
   { to: "/employees", icon: "badge", label: "Nhân viên" },
   { to: "/monitoring", icon: "videocam", label: "Giám sát" },
@@ -15,7 +16,7 @@ const NAV_ITEMS = [
   { to: "/edit-attendance", icon: "edit_calendar", label: "Sửa công" },
   { to: "/backup-attendance", icon: "pin", label: "Điểm danh thay thế" },
   { to: "/reports", icon: "description", label: "Báo cáo" },
-  { to: "/alerts", icon: "notifications_active", label: "Cảnh báo", badge: 3 },
+  { to: "/alerts", icon: "notifications_active", label: "Cảnh báo" },
   { to: "/privacy-settings", icon: "shield_person", label: "Cài đặt quyền riêng tư" },
   { to: "/kiosk", icon: "camera_indoor", label: "Kiosk Camera" },
 ];
@@ -24,6 +25,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const [clock, setClock] = useState("");
   const [dateStr, setDateStr] = useState("");
+  const [alertBadge, setAlertBadge] = useState(0);
 
   useEffect(() => {
     const update = () => {
@@ -49,6 +51,22 @@ export default function AdminLayout() {
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const load = () =>
+      getAlertStats()
+        .then((r) => setAlertBadge(r.data?.unresolved_high || 0))
+        .catch(() => {});
+    load();
+    const id = setInterval(load, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const NAV_ITEMS = NAV_BASE.map((item) =>
+    item.to === "/alerts" && alertBadge > 0
+      ? { ...item, badge: alertBadge }
+      : item
+  );
 
   return (
     <div className="min-h-screen bg-background text-on-surface antialiased">

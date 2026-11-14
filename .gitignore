@@ -47,6 +47,8 @@ Thumbs.db
 # Temp files
 *.tmp
 result.jpg
+eror.txt
+loi*.txt
 
 # MediaPipe model
 face-attendance/face_landmarker.task

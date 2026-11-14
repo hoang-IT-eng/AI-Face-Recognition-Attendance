@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api";
 
 const LOGO_URL =
   "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
@@ -11,23 +12,36 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [attemptsLeft, setAttemptsLeft] = useState(3);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
       setError("Vui lòng nhập đầy đủ email quản trị viên và mật khẩu.");
       return;
     }
-    if (password === "wrong") {
-      const next = Math.max(1, attemptsLeft - 1);
-      setAttemptsLeft(next);
-      setError(
-        `Mật khẩu không chính xác. Bạn còn ${next} lần thử trước khi tài khoản bị tạm khóa 15 phút.`
-      );
-      return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await login(email.trim(), password);
+      localStorage.setItem("sf_admin_auth", "1");
+      localStorage.setItem("sf_admin_token", res.data.access_token);
+      localStorage.setItem("sf_admin_name", res.data.name || "Admin");
+      navigate("/");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.detail ||
+        "Không thể đăng nhập. Kiểm tra API backend.";
+      if (typeof msg === "string" && msg.includes("Còn")) {
+        const m = msg.match(/Còn (\d+)/);
+        if (m) setAttemptsLeft(Number(m[1]));
+      } else {
+        setAttemptsLeft((n) => Math.max(0, n - 1));
+      }
+      setError(typeof msg === "string" ? msg : "Đăng nhập thất bại");
+    } finally {
+      setLoading(false);
     }
-    localStorage.setItem("sf_admin_auth", "1");
-    navigate("/");
   };
 
   return (
@@ -183,9 +197,10 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full h-12 mt-2 bg-primary text-on-primary hover:bg-on-primary-fixed rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.99] transition-all cursor-pointer"
+              disabled={loading}
+              className="w-full h-12 mt-2 bg-primary text-on-primary hover:bg-on-primary-fixed rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.99] transition-all cursor-pointer disabled:opacity-60"
             >
-              <span>Đăng nhập bảng điều khiển</span>
+              <span>{loading ? "Đang xác thực..." : "Đăng nhập bảng điều khiển"}</span>
               <span className="material-symbols-outlined text-[18px]">
                 arrow_forward
               </span>

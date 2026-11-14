@@ -2,15 +2,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Schedule
+from models import Schedule, User
 from schemas import ScheduleCreate, ScheduleOut
 
 router = APIRouter(prefix="/schedules", tags=["Schedules"])
 
 
+def _to_out(s: Schedule, db: Session) -> ScheduleOut:
+    out = ScheduleOut.model_validate(s)
+    if s.group:
+        out.staff_count = db.query(User).filter(User.group == s.group).count()
+    else:
+        out.staff_count = db.query(User).count()
+    return out
+
+
 @router.get("/", response_model=list[ScheduleOut])
 def list_schedules(db: Session = Depends(get_db)):
-    return db.query(Schedule).all()
+    return [_to_out(s, db) for s in db.query(Schedule).all()]
 
 
 @router.post("/", response_model=ScheduleOut)
@@ -19,7 +28,7 @@ def create_schedule(data: ScheduleCreate, db: Session = Depends(get_db)):
     db.add(schedule)
     db.commit()
     db.refresh(schedule)
-    return schedule
+    return _to_out(schedule, db)
 
 
 @router.put("/{schedule_id}", response_model=ScheduleOut)
@@ -31,7 +40,7 @@ def update_schedule(schedule_id: int, data: ScheduleCreate, db: Session = Depend
         setattr(schedule, k, v)
     db.commit()
     db.refresh(schedule)
-    return schedule
+    return _to_out(schedule, db)
 
 
 @router.delete("/{schedule_id}")
