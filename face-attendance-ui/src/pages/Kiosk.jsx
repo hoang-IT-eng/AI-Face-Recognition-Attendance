@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
-import { WS_LIVENESS_URL, getUsers, manualAttendance } from "../api";
+import { WS_LIVENESS_URL, getUsers, backupAttendance } from "../api";
 
 export default function Kiosk() {
   const navigate = useNavigate();
@@ -29,7 +29,9 @@ export default function Kiosk() {
   // Modal PIN / QR state (Screen 05 Popup)
   const [pinModalOpen, setPinModalOpen] = useState(false);
   const [pinTab, setPinTab] = useState("pin"); // pin | qr
-  const [pinValue, setPinValue] = useState("123");
+  const [pinValue, setPinValue] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [pinSubmitting, setPinSubmitting] = useState(false);
   const [countdown, setCountdown] = useState(15);
   const [users, setUsers] = useState([]);
   const [selectedStaffIdx, setSelectedStaffIdx] = useState(0);
@@ -141,6 +143,7 @@ export default function Kiosk() {
 
   const handlePinPress = (digit) => {
     setCountdown(15);
+    setPinError("");
     if (pinValue.length < 4) {
       setPinValue((p) => p + digit);
     }
@@ -148,26 +151,39 @@ export default function Kiosk() {
 
   const handleConfirmPin = async () => {
     if (pinValue.length < 4) return;
-    const nowTime = new Date().toLocaleTimeString("vi-VN", { hour12: false });
+    if (!activeStaff?.code) {
+      setPinError("Chưa chọn mã nhân viên hợp lệ.");
+      return;
+    }
+    setPinSubmitting(true);
+    setPinError("");
     try {
-      if (activeStaff.id && users.length > 0) {
-        await manualAttendance({
-          user_id: activeStaff.id,
-          date: new Date().toISOString().slice(0, 10),
-          status: "present",
-          note: "Xác thực dự phòng bằng mã PIN tại Kiosk Cổng A",
-        });
-      }
-    } catch {}
-    setMatchedPerson({
-      name: activeStaff.name,
-      code: activeStaff.code,
-      dept: activeStaff.group || "Kế toán",
-      time: nowTime,
-      status: "ĐÃ VÀO (PIN)",
-    });
-    setScenario("success");
-    setPinModalOpen(false);
+      const res = await backupAttendance({
+        code: activeStaff.code,
+        pin: pinValue,
+        method: "pin",
+      });
+      const d = res.data;
+      setMatchedPerson({
+        name: d.name || activeStaff.name,
+        code: d.code || activeStaff.code,
+        dept: d.dept || activeStaff.group || "",
+        time:
+          d.time ||
+          new Date().toLocaleTimeString("vi-VN", { hour12: false }),
+        status: "ĐÃ VÀO (PIN)",
+      });
+      setScenario("success");
+      setPinModalOpen(false);
+      setPinValue("");
+    } catch (err) {
+      setPinError(
+        err?.response?.data?.detail ||
+          "Xác thực PIN thất bại. Kiểm tra mã NV và PIN."
+      );
+    } finally {
+      setPinSubmitting(false);
+    }
   };
 
   const blinkRatio = Math.min(
@@ -658,7 +674,12 @@ export default function Kiosk() {
       <footer className="relative z-20 flex items-center justify-between px-8 py-4 w-full bg-surface-container-lowest/90 backdrop-blur-md border-t border-outline-variant/40 shadow-lg">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setPinModalOpen(true)}
+            onClick={() => {
+              setPinValue("");
+              setPinError("");
+              setPinTab("pin");
+              setPinModalOpen(true);
+            }}
             className="flex items-center gap-3 px-6 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-high transition-all shadow-xs active:scale-95 group cursor-pointer"
           >
             <span className="material-symbols-outlined text-on-surface text-2xl group-hover:text-secondary transition-colors">
@@ -772,18 +793,16 @@ export default function Kiosk() {
                   </span>
                 </button>
                 <button
-                  onClick={() => setPinTab("qr")}
-                  className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
-                    pinTab === "qr"
-                      ? "bg-surface-container-lowest shadow-xs text-on-surface font-bold"
-                      : "text-on-surface-variant hover:text-on-surface font-semibold"
-                  }`}
+                  type="button"
+                  disabled
+                  title="Chưa hỗ trợ"
+                  className="flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 opacity-50 cursor-not-allowed text-on-surface-variant font-semibold"
                 >
                   <span className="material-symbols-outlined text-title-md">
                     qr_code_scanner
                   </span>
                   <span className="font-label-lg text-label-lg">
-                    Quét mã QR động
+                    Quét mã QR (chưa hỗ trợ)
                   </span>
                 </button>
               </div>
@@ -885,9 +904,15 @@ export default function Kiosk() {
                       </button>
                     </div>
 
+                    {pinError && (
+                      <p className="text-error font-label-sm text-label-sm text-center">
+                        {pinError}
+                      </p>
+                    )}
                     <button
                       onClick={handleConfirmPin}
-                      className={`w-full h-12 mt-1 text-on-primary rounded-2xl flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
+                      disabled={pinValue.length !== 4 || pinSubmitting}
+                      className={`w-full h-12 mt-1 text-on-primary rounded-2xl flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                         pinValue.length === 4
                           ? "bg-secondary hover:bg-secondary/90"
                           : "bg-primary hover:bg-primary-container"
@@ -897,26 +922,26 @@ export default function Kiosk() {
                         check_circle
                       </span>
                       <span className="font-title-md text-title-md font-bold">
-                        XÁC NHẬN ĐIỂM DANH
+                        {pinSubmitting
+                          ? "ĐANG XÁC THỰC..."
+                          : "XÁC NHẬN ĐIỂM DANH"}
                       </span>
                     </button>
                   </div>
                 ) : (
                   <div className="col-span-12 md:col-span-7 flex flex-col items-center justify-center bg-surface-container-low rounded-2xl p-6 gap-4">
-                    <div className="w-48 h-48 rounded-2xl border-2 border-secondary bg-surface-container-lowest flex flex-col items-center justify-center gap-2 shadow-md relative overflow-hidden">
-                      <span className="material-symbols-outlined text-secondary text-[64px]">
+                    <div className="w-48 h-48 rounded-2xl border-2 border-outline-variant bg-surface-container-lowest flex flex-col items-center justify-center gap-2 shadow-md relative overflow-hidden opacity-70">
+                      <span className="material-symbols-outlined text-on-surface-variant text-[64px]">
                         qr_code_scanner
                       </span>
-                      <span className="font-label-sm text-label-sm text-on-surface font-semibold">
-                        Đưa mã QR TOTP vào khung
+                      <span className="font-label-sm text-label-sm text-on-surface font-semibold text-center px-4">
+                        Quét mã QR chưa được hỗ trợ
                       </span>
                     </div>
-                    <button
-                      onClick={handleConfirmPin}
-                      className="px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md cursor-pointer"
-                    >
-                      Mô phỏng quét QR hợp lệ
-                    </button>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant text-center max-w-sm">
+                      Vui lòng dùng tab PIN cá nhân hoặc bật Live camera để điểm
+                      danh.
+                    </p>
                   </div>
                 )}
 

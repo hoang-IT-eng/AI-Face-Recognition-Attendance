@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Icon from "../components/Icon";
+import { API_BASE } from "../api";
 
-const API = "http://localhost:8000";
+const API = API_BASE;
 
 function Toast({ items }) {
   return (

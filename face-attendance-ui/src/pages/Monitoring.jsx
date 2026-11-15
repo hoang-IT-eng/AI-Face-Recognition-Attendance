@@ -2,50 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../api";
 
-const INITIAL_EVENTS = [
-  {
-    id: 1,
-    type: "known",
-    name: "Trần Thị B",
-    code: "NV014 - Kế toán",
-    time: "08:35:10",
-    score: "98.9%",
-  },
-  {
-    id: 2,
-    type: "known",
-    name: "Lê Hoàng Nam",
-    code: "NV032 - Kỹ thuật",
-    time: "08:34:22",
-    score: "99.6%",
-  },
-  {
-    id: 3,
-    type: "alert",
-    name: "[CẢNH BÁO ĐỎ] Người lạ",
-    code: "Cổng chính > 30s",
-    time: "08:32:05",
-    desc: "Đối tượng không có trong CSDL nhân viên đang đứng chờ tại phạm vi kiểm soát lối vào.",
-  },
-  {
-    id: 4,
-    type: "known",
-    name: "Vũ Thị Mai",
-    code: "NV009 - Nhân sự",
-    time: "08:29:45",
-    score: "97.4%",
-  },
-];
-
 export default function Monitoring() {
   const navigate = useNavigate();
   const imgRef = useRef(null);
   const sseRef = useRef(null);
 
   const [camId, setCamId] = useState("0");
-  const [autoCheckin, setAutoCheckin] = useState(true);
   const [streaming, setStreaming] = useState(false);
-  const [events, setEvents] = useState(INITIAL_EVENTS);
+  const [events, setEvents] = useState([]);
   const [snapState, setSnapState] = useState("idle");
   const [showToast, setShowToast] = useState(true);
 
@@ -54,6 +18,7 @@ export default function Monitoring() {
       if (imgRef.current) imgRef.current.src = "";
       sseRef.current?.close();
       setStreaming(false);
+      setEvents([]);
     } else {
       if (imgRef.current) {
         imgRef.current.src = `${API_BASE}/camera/stream/${camId}?t=${Date.now()}`;
@@ -166,27 +131,18 @@ export default function Monitoring() {
             </button>
           </div>
 
-          {/* Center: Auto-Logging Switch */}
-          <div className="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-xl">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                checked={autoCheckin}
-                onChange={(e) => setAutoCheckin(e.target.checked)}
-                className="sr-only peer"
-                type="checkbox"
-              />
-              <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-            </label>
+          {/* Note: auto check-in is not wired on this stream */}
+          <div className="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-xl max-w-md">
+            <span className="material-symbols-outlined text-[22px] text-on-surface-variant">
+              info
+            </span>
             <div className="flex flex-col">
-              <span className="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                Tự ghi công
-                <span className="px-1.5 py-0.5 bg-secondary/10 text-secondary text-[10px] rounded font-bold">
-                  {autoCheckin ? "Kích hoạt" : "Tạm dừng"}
-                </span>
+              <span className="font-label-md text-label-md text-on-surface font-semibold">
+                Tự động điểm danh chưa kết nối
               </span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 max-w-md">
-                Tự động điểm danh khi nhận diện đạt &gt;95%, giãn cách 5
-                phút/lần
+              <span className="font-body-sm text-body-sm text-on-surface-variant">
+                Luồng giám sát chỉ nhận diện / cảnh báo — không ghi công. Dùng
+                Kiosk (Live) để điểm danh.
               </span>
             </div>
           </div>
@@ -441,6 +397,18 @@ export default function Monitoring() {
             </p>
 
             <div className="flex flex-col gap-3 max-h-[540px] overflow-y-auto">
+              {events.length === 0 && (
+                <div className="py-10 px-4 text-center text-on-surface-variant flex flex-col items-center gap-2">
+                  <span className="material-symbols-outlined text-[32px] opacity-50">
+                    sensors_off
+                  </span>
+                  <span className="font-body-sm text-body-sm">
+                    {streaming
+                      ? "Đang chờ sự kiện nhận diện từ luồng camera…"
+                      : "Bật camera thật để nhận sự kiện nhận diện (danh sách trống khi chưa stream)."}
+                  </span>
+                </div>
+              )}
               {events.map((ev) =>
                 ev.type === "alert" ? (
                   <div
