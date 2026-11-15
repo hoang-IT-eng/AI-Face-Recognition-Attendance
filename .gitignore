@@ -27,6 +27,8 @@ face_db.pkl
 # Environment variables
 .env
 .env.*
+!.env.development
+!.env.example
 
 # Node
 node_modules/

@@ -98,21 +98,13 @@ export default function RegisterFace() {
   const captureAngle = async (idx) => {
     setActiveAngleIdx(idx);
     if (!useLiveCam || !webcamRef.current) {
-      setAngles((prev) =>
-        prev.map((a, i) =>
-          i === idx
-            ? {
-                ...a,
-                status: "pass",
-                badge: "ĐẠT (99.4%)",
-                img:
-                  a.img ||
-                  "https://lh3.googleusercontent.com/aida-public/AB6AXuBN4HHNp6OqPXyl17Hy_OEojtCOW2g4l5qDMnlAKltjKuiFswkR-pvjweCT8l41dbvRmuNYpwPV-yce4nvDLzEPGKCXszziooehKXJMg6gyfl6qf-p6PQKR5u-mYfJDeIB7aoQsVCilHvrP471wRuuUflGWDMQg0cumQjsAJwo8cqOnrW0xSrWmarfekFNWWBuifVHQqmPql1OQOc62R-rt0GWGYMhbk3vibB6TW-6IO8LpIcyV72T43g",
-              }
-            : a
-        )
+      setStatusBanner(
+        "Cần bật webcam thật hoặc tải ảnh lên để đăng ký khuôn mặt (không dùng ảnh demo)."
       );
-      setStatusBanner(`Đã thu thập ${angles[idx].title} đạt chuẩn AI.`);
+      return;
+    }
+    if (!consent) {
+      setStatusBanner("Vui lòng xác nhận đồng ý thu thập sinh trắc học trước.");
       return;
     }
 
@@ -129,11 +121,11 @@ export default function RegisterFace() {
       const file = new File([blob], `angle_${idx + 1}.jpg`, {
         type: "image/jpeg",
       });
-      await registerFace(uid, file);
+      await registerFace(uid, file, { consent });
       setAngles((prev) =>
         prev.map((a, i) =>
           i === idx
-            ? { ...a, status: "pass", badge: "ĐẠT (99.5%)", img: shot }
+            ? { ...a, status: "pass", badge: "ĐÃ LƯU", img: shot }
             : a
         )
       );
@@ -158,15 +150,20 @@ export default function RegisterFace() {
   const handleUploadFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!consent) {
+      setStatusBanner("Vui lòng xác nhận đồng ý thu thập sinh trắc học trước.");
+      e.target.value = "";
+      return;
+    }
     setSubmitting(true);
     try {
       const uid = await ensureUserExists();
-      await registerFace(uid, file);
+      await registerFace(uid, file, { consent });
       const url = URL.createObjectURL(file);
       setAngles((prev) =>
         prev.map((a, i) =>
           i === activeAngleIdx
-            ? { ...a, status: "pass", badge: "ĐẠT (99.6%)", img: url }
+            ? { ...a, status: "pass", badge: "ĐÃ LƯU", img: url }
             : a
         )
       );

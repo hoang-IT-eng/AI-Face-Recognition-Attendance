@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { getAlertStats } from "../api";
+import { getAlertStats, getMe } from "../api";
 
 const LOGO_URL =
   "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
-
-const AVATAR_HR =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuB9qt0XxrJwvaoaxIrN5-_dsJiv9_68psvID5t-E8IuhUqSIm9zoY-dDDXgmRSA4rKc4xyhvcKzwy5aWG5jzt8UgZgkdOCXStobDuQhSlKwrEUMyWlin0D6nslRPnARp4LN4C8h_mkCAEAE_44iw5zZah7oB3DBZp9JO6wHQq2Gc4Ajc_wUl1zP_i1-PcX0tN99lfVei4f3dlrVd6mLOWaamZ5wwuKOAn8kGRD5CkhpejKZ4WJADsen5A";
 
 const NAV_BASE = [
   { to: "/dashboard", icon: "dashboard", label: "Dashboard", end: true },
@@ -26,6 +23,9 @@ export default function AdminLayout() {
   const [clock, setClock] = useState("");
   const [dateStr, setDateStr] = useState("");
   const [alertBadge, setAlertBadge] = useState(0);
+  const [adminName, setAdminName] = useState(
+    () => localStorage.getItem("sf_admin_name") || "Admin"
+  );
 
   useEffect(() => {
     const update = () => {
@@ -62,11 +62,41 @@ export default function AdminLayout() {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    const cached = localStorage.getItem("sf_admin_name");
+    if (cached) setAdminName(cached);
+    getMe()
+      .then((r) => {
+        const name = r.data?.name || r.data?.email;
+        if (name) {
+          setAdminName(name);
+          localStorage.setItem("sf_admin_name", name);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("sf_admin_token");
+    localStorage.removeItem("sf_admin_auth");
+    localStorage.removeItem("sf_admin_name");
+    navigate("/login");
+  };
+
   const NAV_ITEMS = NAV_BASE.map((item) =>
     item.to === "/alerts" && alertBadge > 0
       ? { ...item, badge: alertBadge }
       : item
   );
+
+  const initials =
+    adminName
+      ?.split(/\s+/)
+      .filter(Boolean)
+      .slice(-2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "AD";
 
   return (
     <div className="min-h-screen bg-background text-on-surface antialiased">
@@ -133,7 +163,7 @@ export default function AdminLayout() {
             <span>Đăng ký khuôn mặt</span>
           </button>
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className="w-full h-9 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-xl flex items-center justify-center gap-1.5 font-label-md text-label-md transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-[16px]">logout</span>
@@ -158,12 +188,11 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed text-secondary border border-secondary/20 font-label-md text-label-md">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant/40 font-label-md text-label-md">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-              <span>Hệ thống hoạt động</span>
+              <span>Online</span>
             </div>
 
             <div className="hidden xl:flex items-center gap-1.5 text-on-surface-variant font-code-telemetry text-code-telemetry">
@@ -184,24 +213,27 @@ export default function AdminLayout() {
                 <span className="material-symbols-outlined text-[22px]">
                   notifications
                 </span>
-                <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
+                {alertBadge > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
+                )}
               </button>
             </div>
 
             <div className="h-6 w-[1px] bg-outline-variant"></div>
 
             <div className="flex items-center gap-3 pl-1">
-              <img
-                alt="Lê Thu Hà"
-                className="w-8 h-8 rounded-full object-cover ring-1 ring-outline-variant"
-                src={AVATAR_HR}
-              />
+              <div
+                className="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-label-md text-label-md font-bold ring-1 ring-outline-variant"
+                title={adminName}
+              >
+                {initials}
+              </div>
               <div className="flex flex-col text-left">
                 <span className="font-label-lg text-label-lg text-on-surface leading-tight">
-                  Lê Thu Hà
+                  {adminName}
                 </span>
                 <span className="font-label-sm text-label-sm text-on-surface-variant">
-                  Quản trị viên / HR
+                  Quản trị viên
                 </span>
               </div>
             </div>

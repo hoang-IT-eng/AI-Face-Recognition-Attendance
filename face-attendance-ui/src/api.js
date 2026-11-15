@@ -1,7 +1,29 @@
 import axios from "axios";
 
-export const API_BASE = "http://localhost:8000";
-export const WS_LIVENESS_URL = "ws://localhost:8000/camera/ws/liveness";
+export const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+
+function deriveWsLivenessUrl() {
+  if (import.meta.env.VITE_WS_LIVENESS_URL) {
+    return import.meta.env.VITE_WS_LIVENESS_URL;
+  }
+  const apiBase = import.meta.env.VITE_API_BASE;
+  if (apiBase) {
+    try {
+      const u = new URL(apiBase);
+      const wsProto = u.protocol === "https:" ? "wss:" : "ws:";
+      return `${wsProto}//${u.host}/camera/ws/liveness`;
+    } catch {
+      /* fall through */
+    }
+  }
+  if (typeof window !== "undefined" && window.location?.host) {
+    const wsProto = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${wsProto}//${window.location.host}/camera/ws/liveness`;
+  }
+  return "ws://localhost:8000/camera/ws/liveness";
+}
+
+export const WS_LIVENESS_URL = deriveWsLivenessUrl();
 
 const api = axios.create({ baseURL: API_BASE });
 

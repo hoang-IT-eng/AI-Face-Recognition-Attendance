@@ -147,7 +147,7 @@ npm run dev
 
 - Giao diện: http://localhost:5173  
 
-Frontend mặc định gọi API tại `http://localhost:8000` (file `src/api.js`). Nếu backend chạy máy/port khác, sửa `baseURL` trong `api.js` hoặc dùng biến môi trường (xem mục 6).
+Frontend (dev) gọi API qua `VITE_API_BASE=http://localhost:8000` trong `.env.development`. Production Docker/HF dùng same-origin (`VITE_API_BASE` rỗng). Xem mục 6.
 
 ### Bước 4 — Sử dụng lần đầu
 
@@ -178,16 +178,64 @@ Thư mục `silent_fas/` đã được `.gitignore` — mỗi người clone ri�
 
 ## 6. Cấu hình (tùy chọn)
 
-Tạo file `face-attendance-ui/.env` (không commit):
+`face-attendance-ui/src/api.js` đọc:
+
+| Biến | Ý nghĩa |
+|------|---------|
+| `VITE_API_BASE` | Base URL REST (rỗng = same-origin, dùng khi UI được FastAPI phục vụ) |
+| `VITE_WS_LIVENESS_URL` | WebSocket liveness (tùy chọn; nếu thiếu sẽ suy ra từ `VITE_API_BASE` hoặc host hiện tại) |
+
+File `face-attendance-ui/.env.development` (đã có trong repo) đặt API local:
 
 ```env
-VITE_API_URL=http://localhost:8000
+VITE_API_BASE=http://localhost:8000
 ```
 
-Hiện tại `src/api.js` dùng URL cố định; có thể đổi thành:
+Backend có thể dùng `DATABASE_URL` (mặc định `sqlite:///./attendance.db`). Trên Docker/HF: `sqlite:////tmp/attendance.db`.
 
-```js
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000" });
+---
+
+## 6b. Deploy Hugging Face Spaces (Docker)
+
+Repo đã có `Dockerfile` (multi-stage: build React → Python 3.11 + FastAPI trên cổng **7860**), `face-attendance/requirements.hf.txt` (CPU: `onnxruntime`, `opencv-python-headless`), `.dockerignore`, và `README_SPACE.md` (YAML frontmatter cho Space).
+
+### Cách A — Tạo Space từ giao diện HF
+
+1. Vào [Hugging Face Spaces](https://huggingface.co/spaces) → **Create new Space**
+2. Chọn **Docker**, đặt tên (ví dụ `face-attendance` hoặc `AI-Face-Recognition-Attendance`), visibility Public
+3. Push nội dung repo vào Space (Git remote của Space), **đổi** `README_SPACE.md` thành `README.md` trên Space (cần YAML `sdk: docker` + `app_port: 7860`)
+4. Đợi build; mở URL dạng `https://huggingface.co/spaces/<username>/<space-name>`
+
+### Cách B — CLI / token (`HF_TOKEN`)
+
+```bash
+# Cần huggingface_hub và token có quyền write
+pip install huggingface_hub
+huggingface-cli login  # hoặc export HF_TOKEN=hf_...
+
+# Ví dụ đẩy bằng git (sau khi tạo Space Docker trống):
+git remote add hf https://huggingface.co/spaces/<username>/<space-name>
+# Đảm bảo README trên nhánh push lên HF là README_SPACE.md đổi tên thành README.md
+git push hf HEAD:main
+```
+
+Hoặc dùng script Python `huggingface_hub.HfApi().create_repo(..., repo_type="space", space_sdk="docker")` rồi `upload_folder`.
+
+### Giới hạn free Space / tài khoản
+
+- **Docker Space trên CPU free** có thể yêu cầu **Hugging Face PRO** (API trả `402 Payment Required` nếu tài khoản free). Static Spaces vẫn free; Gradio/Docker trên `cpu-basic` cần PRO hoặc nâng hardware.
+- **Không có webcam server** → Monitoring MJPEG / Stream trên máy Spaces thường không chạy; dùng Kiosk Live (webcam trình duyệt) hoặc upload ảnh đăng ký mặt
+- **Ổ đĩa tạm** → SQLite `/tmp` mất khi Space sleep/restart
+- **Cold start chậm** → lần đầu tải model DeepFace rất lâu
+
+Biến môi trường trong container: `DEEPFACE_HOME=/tmp/.deepface`, `DATABASE_URL=sqlite:////tmp/attendance.db`.
+
+### Kiểm tra Docker local (khuyến nghị trước khi đẩy Space)
+
+```bash
+docker build -t face-attendance .
+docker run --rm -p 7860:7860 face-attendance
+# Mở http://localhost:7860
 ```
 
 ---

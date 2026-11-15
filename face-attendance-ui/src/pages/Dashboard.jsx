@@ -1,122 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTodayAttendance, getAttendance, getUsers, exportExcel } from "../api";
+import {
+  getTodayAttendance,
+  getAttendance,
+  getUsers,
+  exportExcel,
+  getStatsSummary,
+} from "../api";
 
-const DEMO_LOGS = [
-  {
-    id: "d1",
-    user_code: "NV001",
-    user_name: "Nguyễn Văn A",
-    group: "Kỹ thuật",
-    check_in_str: "07:52:10",
-    check_out_str: "--:--",
-    confidence: "99.4%",
-    status: "present",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuA-EPts_Vr1qjhXIHypjtH6ASZ225BLwbxi9VV8IE19xXJ7tkNqJGZVwBryrDyGrJA-dFu1_aEbEsiBgjEU1qQJwU7qlNv_YeGh37qEXBADCWDfLnY6XAZfVcTbd-nyakQsY3E87ct5fgojsE9qrJtg5hoDxgvpkZygFmHl_l-uWda-fDsADnte_r1QMjH97wYHLHvMPFmO52SJGovEdatX5oupqI4maEJiuH8ybpkBYIfbQdqFaFeFgw",
-  },
-  {
-    id: "d2",
-    user_code: "NV014",
-    user_name: "Trần Thị B",
-    group: "Nhân sự",
-    check_in_str: "07:55:40",
-    check_out_str: "--:--",
-    confidence: "98.8%",
-    status: "present",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuApiiec7izLTCa3-mjnymT1wNdGJSCU8d-VBCcqbX3rtTnItemG_jSW_KCopU5c2Rwq2RVPB_n_GTDBLPIBYkt8awKdR2DyDW-No92qCzWZly0G5CVLCWC0nuyHws_VO8FC93U4w7d7kbdU5QAP16P7sfGwibJXDiRI7VAGTP2L0U8DV32UGUMQ9_eZIoZ7LI6GOfkcLGGbAXRcTsNhcA4Uu9wkdTvIkWA9eDuyHg59PkWz0F98ldJJ_w",
-  },
-  {
-    id: "d3",
-    user_code: "NV032",
-    user_name: "Lê Hoàng Nam",
-    group: "Kinh doanh",
-    check_in_str: "08:02:15",
-    check_out_str: "--:--",
-    confidence: "99.1%",
-    status: "present",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBRfvmJSrNhnwsXmH5SaC8lG9acWAYYwg0QgcvhVEeyHwYLyebus007xyC1tfUoth3aRYR8lVpePQ-X8PkceuffQauWPaiH1kY4HI1SMy6IwcHbmrEyRQDs7NoOuT26efR1snD0JzJuaF7BgneK7o_wzuSGCGHNqMY44_CBDlA40qlIPXSzFp9hcLqdY2iY2YCA5lIyLG_coIOnG2pdoQo7Tt1DBNgQASjbeQ_i8IylAQb8Lkc6NNpzvw",
-  },
-  {
-    id: "d4",
-    user_code: "NV045",
-    user_name: "Phạm Quỳnh Như",
-    group: "Kế toán",
-    check_in_str: "08:18:22",
-    check_out_str: "--:--",
-    confidence: "97.9%",
-    status: "late",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCn29muMhUNaNNxrRxlCicZHjxwxcBOYnJZByvnetl0bSO1Zn2iHggEtcdaS0u9F_i9APQ4AlAxInV1blEgRBm8v_rFy0BzCRQX4nNhyU_u1wFPzKVkk5wBEQcPh11mKEcxIdeSZoAMcGsXEZjODs6wa6MMpOfRpJmbJwcxHPgWSHNlGiKOkG5emaTCmrMAnwDOBqSKWJkDQjZg9j5cS_BGY_8ov-HyksbIEWWbV20qHu88_JFpVC2WdA",
-  },
-  {
-    id: "d5",
-    user_code: "NV028",
-    user_name: "Đỗ Minh Tuấn",
-    group: "Kỹ thuật",
-    check_in_str: "08:22:05",
-    check_out_str: "--:--",
-    confidence: "98.5%",
-    status: "late",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuA9_9SwE-_d4jfpwCLQekvd7ojri52I3fbb49nn7Siajg5EKi3tCuxoNgXVDXDGa9hjBpTdwN_MZ_PK8AmXQbXL9aHEiXBgo3-3wY9goYTW35Un4aoxRfJ3pHV7BrYHrSW5lhAo7KVKOuFqvZ9EmPWG-O_WMaFe1ENoYdxTzj6nsIDFlvLbxjsNgL6ZIsuAvUVqBjh4Orrheg9grNUOg-IIciztS9qp1qNi26hFjPYHXfH1zQvIjJlf2g",
-  },
-  {
-    id: "d6",
-    user_code: "NV060",
-    user_name: "Vũ Thị Mai",
-    group: "Kỹ thuật",
-    check_in_str: "07:48:30",
-    check_out_str: "11:30:12",
-    confidence: "99.2%",
-    status: "early_leave",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB9i4QqMOypq_ax7Rr0Tl35p4DgFVBSqtDptDtXp6wGu77tj2-KhxZtJkiH6hsTYJeZi2l8pyerqnVQs9foO-5Kr7hEPmMQT-NkKB08QP7vpAjUqYDFv6ZwGflIyg-KnjgnKcilc0Gl7YJUj41ca4ZzGmaMwqPcuNLIqMjpQ3YyrvgdN3gYY6nd3RmgP9KVPkPOFCCA9u5SYFMIruX8JmrR4IitAuLnC3ruGlOCC1zVzngz-abMTzJseA",
-  },
-  {
-    id: "d7",
-    user_code: "NV089",
-    user_name: "Hoàng Quốc Việt",
-    group: "Kinh doanh",
-    check_in_str: "07:58:02",
-    check_out_str: "--:--",
-    confidence: "99.0%",
-    status: "present",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD6P98XvyuxEB_Qdkw_qqnizvKxTigPEgu5H0DcJd713SmsigG_xGsoUUdio7i_19u9mLOkHMdggCkLc1_Hjt2Rg2UsdlsYojrZk6mMTfqu0kZgLNugp4ZIQQt9-i4k_UgwCAjy8kNx_9bGU5VhIK6J0INficFmADUvPLrNNXXvjEka2OC775aW7dH5Gpd54ZB4i0ntXbhC2E0-5m2Sv-e7oLsuxCBEwXINM9Cs6iefi86_yOZUMdrO5w",
-  },
-  {
-    id: "d8",
-    user_code: "NV102",
-    user_name: "Ngô Thảo Linh",
-    group: "Nhân sự",
-    check_in_str: "--:--",
-    check_out_str: "--:--",
-    confidence: "0.0%",
-    status: "absent",
-    avatar: null,
-  },
-];
-
-const DEFAULT_TREND = [
-  { label: "Thứ 5", present: 141, issue: 9 },
-  { label: "Thứ 6", present: 145, issue: 5 },
-  { label: "Thứ 7", present: 95, issue: 12 },
-  { label: "Thứ 2", present: 138, issue: 12 },
-  { label: "Thứ 3", present: 144, issue: 6 },
-  { label: "Thứ 4", present: 140, issue: 10 },
-  { label: "Hôm nay", present: 142, issue: 8, isToday: true },
-];
+/** Format confidence stored as 0–1 or 0–100 into a display percentage. */
+function formatConfidence(value) {
+  if (value == null || Number.isNaN(Number(value))) return "—";
+  const n = Number(value);
+  const pct = n <= 1 ? n * 100 : n;
+  return `${pct.toFixed(1)}%`;
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [todayRecords, setTodayRecords] = useState([]);
   const [users, setUsers] = useState([]);
-  const [clock, setClock] = useState("08:45:20");
-  const [trend, setTrend] = useState(DEFAULT_TREND);
+  const [clock, setClock] = useState("--:--:--");
+  const [trend, setTrend] = useState([]);
   const [exporting, setExporting] = useState(false);
+  const [statsSummary, setStatsSummary] = useState(null);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -135,12 +42,15 @@ export default function Dashboard() {
 
   const loadData = async () => {
     try {
-      const [todayRes, usersRes] = await Promise.all([
+      const today = new Date().toISOString().slice(0, 10);
+      const [todayRes, usersRes, statsRes] = await Promise.all([
         getTodayAttendance(),
         getUsers(),
+        getStatsSummary({ date_from: today, date_to: today }).catch(() => null),
       ]);
       setTodayRecords(todayRes.data || []);
       setUsers(usersRes.data || []);
+      if (statsRes?.data) setStatsSummary(statsRes.data);
 
       const now = new Date();
       const dayNames = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
@@ -151,20 +61,20 @@ export default function Dashboard() {
           const ds = d.toISOString().slice(0, 10);
           return getAttendance({ date_from: ds, date_to: ds }).then((r) => ({
             label: idx === 6 ? "Hôm nay" : dayNames[d.getDay()],
-            present: r.data.filter(
+            present: (r.data || []).filter(
               (x) => x.status === "present" || x.status === "late"
             ).length,
-            issue: r.data.filter(
+            issue: (r.data || []).filter(
               (x) => x.status === "absent" || x.status === "late"
             ).length,
             isToday: idx === 6,
           }));
         })
       );
-      if (week.some((w) => w.present > 0 || w.issue > 0)) {
-        setTrend(week);
-      }
-    } catch {}
+      setTrend(week);
+    } catch {
+      /* keep previous state on transient errors */
+    }
   };
 
   useEffect(() => {
@@ -173,20 +83,52 @@ export default function Dashboard() {
     return () => clearInterval(id);
   }, []);
 
-  const hasLiveRecords = todayRecords.length > 0;
-  const totalStaff = users.length > 0 ? users.length : 150;
-  const presentCount = hasLiveRecords
-    ? todayRecords.filter((r) => r.status === "present" || r.status === "late")
-        .length
-    : 142;
-  const lateCount = hasLiveRecords
-    ? todayRecords.filter((r) => r.status === "late").length
-    : 6;
-  const absentCount = hasLiveRecords
-    ? Math.max(0, totalStaff - presentCount)
-    : 2;
+  const totalStaff = users.length;
+  const presentFromRecords = todayRecords.filter(
+    (r) => r.status === "present" || r.status === "late"
+  ).length;
+  const lateFromRecords = todayRecords.filter((r) => r.status === "late").length;
+  const presentOnlyFromRecords = todayRecords.filter(
+    (r) => r.status === "present"
+  ).length;
+
+  const presentCount =
+    statsSummary != null
+      ? (statsSummary.present || 0) + (statsSummary.late || 0)
+      : presentFromRecords;
+  const lateCount =
+    statsSummary != null ? statsSummary.late || 0 : lateFromRecords;
+  const onTimeCount =
+    statsSummary != null ? statsSummary.present || 0 : presentOnlyFromRecords;
+  const absentCount =
+    statsSummary?.absent != null
+      ? statsSummary.absent
+      : Math.max(0, totalStaff - presentCount);
+
+  const denom = totalStaff > 0 ? totalStaff : Math.max(presentCount + absentCount, 1);
   const presentRatio =
-    totalStaff > 0 ? ((presentCount / totalStaff) * 100).toFixed(1) : "94.6";
+    totalStaff > 0 || presentCount > 0
+      ? ((presentCount / denom) * 100).toFixed(1)
+      : "0.0";
+  const lateRatio = ((lateCount / denom) * 100).toFixed(1);
+  const absentRatio = ((absentCount / denom) * 100).toFixed(1);
+  const onTimeRatio = ((onTimeCount / denom) * 100).toFixed(1);
+
+  const deptCount = new Set(
+    users.map((u) => u.group).filter(Boolean)
+  ).size;
+
+  const weekPresent = trend.reduce((s, d) => s + d.present, 0);
+  const weekIssue = trend.reduce((s, d) => s + d.issue, 0);
+  const weekTotal = weekPresent + weekIssue;
+  const weekAvgRatio =
+    weekTotal > 0 ? ((weekPresent / weekTotal) * 100).toFixed(1) : null;
+
+  // Donut stroke lengths (circumference ≈ 2π·62 ≈ 389.6)
+  const CIRC = 389.6;
+  const onTimeLen = (onTimeCount / denom) * CIRC;
+  const lateLen = (lateCount / denom) * CIRC;
+  const absentLen = Math.max(0, CIRC - onTimeLen - lateLen);
 
   const fmtTime = (dt) =>
     dt
@@ -198,22 +140,21 @@ export default function Dashboard() {
         })
       : "--:--";
 
-  const displayLogs = hasLiveRecords
-    ? todayRecords.slice(0, 8).map((r) => {
-        const u = users.find((x) => x.id === r.user_id);
-        return {
-          id: r.id,
-          user_code: r.user_code || u?.code || `NV00${r.user_id}`,
-          user_name: r.user_name || u?.name || "Nhân viên",
-          group: u?.group || "Kỹ thuật",
-          check_in_str: fmtTime(r.check_in),
-          check_out_str: fmtTime(r.check_out),
-          confidence: r.status === "absent" ? "0.0%" : "99.2%",
-          status: r.status || "present",
-          avatar: null,
-        };
-      })
-    : DEMO_LOGS;
+  const displayLogs = todayRecords.slice(0, 8).map((r) => {
+    const u = users.find((x) => x.id === r.user_id);
+    return {
+      id: r.id,
+      user_code: r.user_code || u?.code || `NV00${r.user_id}`,
+      user_name: r.user_name || u?.name || "Nhân viên",
+      group: u?.group || r.user_group || "—",
+      check_in_str: fmtTime(r.check_in),
+      check_out_str: fmtTime(r.check_out),
+      confidence:
+        r.status === "absent" ? "0.0%" : formatConfidence(r.confidence),
+      status: r.status || "present",
+      avatar: null,
+    };
+  });
 
   const handleExportExcel = async () => {
     setExporting(true);
@@ -225,14 +166,23 @@ export default function Dashboard() {
       a.href = url;
       a.download = `diemdanh_${today}.xlsx`;
       a.click();
-    } catch {
-      alert("Đã xuất báo cáo chấm công hôm nay.");
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.detail ||
+        err?.message ||
+        "Xuất Excel thất bại. Vui lòng thử lại.";
+      alert(typeof msg === "string" ? msg : "Xuất Excel thất bại.");
     } finally {
       setExporting(false);
     }
   };
 
-  const maxBar = Math.max(150, ...trend.map((d) => d.present + d.issue));
+  const maxBar = Math.max(
+    1,
+    ...trend.map((d) => d.present + d.issue),
+    totalStaff || 0
+  );
 
   return (
     <div className="flex flex-col w-full">
@@ -246,7 +196,7 @@ export default function Dashboard() {
           <div className="inline-flex items-center gap-2 text-on-surface-variant font-code-telemetry text-label-md">
             <span className="inline-block w-2 h-2 rounded-full bg-secondary-fixed-dim animate-pulse"></span>
             <span className="px-2 py-0.5 rounded bg-secondary-fixed text-secondary font-label-sm">
-              Đồng bộ NTP trực tiếp
+              Đồng hồ máy chủ
             </span>
             <span className="text-on-surface-variant/40">|</span>
             <span className="text-on-surface font-semibold tracking-tight text-title-md font-mono">
@@ -321,12 +271,9 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
             <span className="material-symbols-outlined text-[16px] text-[#009668]">
-              trending_up
+              update
             </span>
-            <span>
-              <strong className="text-on-surface">+8 người</strong> so với cùng
-              giờ hôm qua
-            </span>
+            <span>Theo dữ liệu điểm danh hôm nay</span>
           </div>
         </div>
 
@@ -380,7 +327,7 @@ export default function Dashboard() {
             <span className="material-symbols-outlined text-[16px] text-error">
               info
             </span>
-            <span>1 phép năm, 1 chưa báo</span>
+            <span>Chưa có check-in trong ngày</span>
           </div>
         </div>
 
@@ -407,7 +354,11 @@ export default function Dashboard() {
             <span className="material-symbols-outlined text-[16px] text-secondary">
               domain
             </span>
-            <span>Thuộc 4 phòng ban</span>
+            <span>
+              {deptCount > 0
+                ? `${deptCount} phòng ban / nhóm`
+                : "Chưa có nhân viên"}
+            </span>
           </div>
         </div>
       </div>
@@ -437,6 +388,17 @@ export default function Dashboard() {
           </div>
 
           <div className="w-full h-56 pt-2">
+            {trend.length === 0 ||
+            trend.every((d) => d.present === 0 && d.issue === 0) ? (
+              <div className="h-full flex flex-col items-center justify-center text-on-surface-variant gap-2">
+                <span className="material-symbols-outlined text-[36px] opacity-50">
+                  bar_chart
+                </span>
+                <span className="font-body-md text-body-md">
+                  Chưa có dữ liệu điểm danh 7 ngày gần đây
+                </span>
+              </div>
+            ) : (
             <svg
               className="w-full h-full overflow-visible"
               preserveAspectRatio="none"
@@ -577,15 +539,18 @@ export default function Dashboard() {
                 );
               })}
             </svg>
+            )}
           </div>
 
           <div className="mt-4 pt-3 bg-surface-container-low px-4 py-2.5 rounded-lg flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
             <span>
-              Tỷ lệ đi làm trung bình 7 ngày:{" "}
-              <strong className="text-on-surface">93.8%</strong>
+              Tỷ lệ có mặt trung bình 7 ngày:{" "}
+              <strong className="text-on-surface">
+                {weekAvgRatio != null ? `${weekAvgRatio}%` : "—"}
+              </strong>
             </span>
-            <span className="text-secondary font-medium">
-              Hệ số tuân thủ nội quy: A+
+            <span className="text-on-surface-variant font-medium">
+              Theo bản ghi điểm danh thực tế
             </span>
           </div>
         </div>
@@ -616,7 +581,7 @@ export default function Dashboard() {
                 fill="none"
                 r="62"
                 stroke="#00687a"
-                strokeDasharray="369 390"
+                strokeDasharray={`${onTimeLen} ${CIRC}`}
                 strokeLinecap="round"
                 strokeWidth="16"
               />
@@ -626,8 +591,8 @@ export default function Dashboard() {
                 fill="none"
                 r="62"
                 stroke="#d97706"
-                strokeDasharray="16 390"
-                strokeDashoffset="-369"
+                strokeDasharray={`${lateLen} ${CIRC}`}
+                strokeDashoffset={-onTimeLen}
                 strokeWidth="16"
               />
               <circle
@@ -636,14 +601,14 @@ export default function Dashboard() {
                 fill="none"
                 r="62"
                 stroke="#ba1a1a"
-                strokeDasharray="5 390"
-                strokeDashoffset="-385"
+                strokeDasharray={`${absentLen} ${CIRC}`}
+                strokeDashoffset={-(onTimeLen + lateLen)}
                 strokeWidth="16"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
               <span className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight leading-none">
-                {presentRatio}%
+                {onTimeRatio}%
               </span>
               <span className="font-label-sm text-label-sm text-on-surface-variant mt-1">
                 Đúng giờ
@@ -658,7 +623,7 @@ export default function Dashboard() {
                 <span className="text-on-surface">Có mặt đúng giờ</span>
               </div>
               <span className="font-semibold text-on-surface">
-                {presentCount} người ({presentRatio}%)
+                {onTimeCount} người ({onTimeRatio}%)
               </span>
             </div>
             <div className="flex items-center justify-between text-body-sm font-body-sm">
@@ -667,7 +632,7 @@ export default function Dashboard() {
                 <span className="text-on-surface">Đi muộn</span>
               </div>
               <span className="font-semibold text-amber-700">
-                {lateCount} người (4.0%)
+                {lateCount} người ({lateRatio}%)
               </span>
             </div>
             <div className="flex items-center justify-between text-body-sm font-body-sm">
@@ -676,7 +641,7 @@ export default function Dashboard() {
                 <span className="text-on-surface">Vắng mặt</span>
               </div>
               <span className="font-semibold text-error">
-                {absentCount} người (1.3%)
+                {absentCount} người ({absentRatio}%)
               </span>
             </div>
           </div>
@@ -700,12 +665,26 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <span className="font-code-telemetry text-label-sm text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-lg">
-              Live Ping: 18ms
+              {displayLogs.length} bản ghi hôm nay
             </span>
           </div>
         </div>
 
         <div className="overflow-x-auto w-full">
+          {displayLogs.length === 0 ? (
+            <div className="py-16 flex flex-col items-center justify-center gap-2 text-on-surface-variant">
+              <span className="material-symbols-outlined text-[40px] opacity-50">
+                event_busy
+              </span>
+              <span className="font-body-md text-body-md">
+                Chưa có lượt điểm danh hôm nay
+              </span>
+              <span className="font-body-sm text-body-sm">
+                Dữ liệu sẽ hiển thị khi có check-in từ Kiosk hoặc điểm danh thay
+                thế
+              </span>
+            </div>
+          ) : (
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant font-label-md text-label-md">
@@ -817,6 +796,7 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
 
         <div className="p-4 bg-surface-container-low/50 flex flex-col sm:flex-row items-center justify-between gap-2 text-body-sm font-body-sm text-on-surface-variant">
@@ -824,7 +804,7 @@ export default function Dashboard() {
             <span className="material-symbols-outlined text-[16px] text-secondary">
               sync
             </span>
-            <span>Luồng ghi nhận diện tức thì qua WebRTC &amp; Edge TPU</span>
+            <span>Làm mới tự động mỗi 15 giây từ API điểm danh</span>
           </div>
           <div className="flex items-center gap-4">
             <span>Hiển thị {displayLogs.length} bản ghi gần nhất</span>
