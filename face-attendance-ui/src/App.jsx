@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./components/AdminLayout";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
@@ -18,13 +19,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Fullscreen standalone routes (Screens 01 & 05 + 05 Popup) */}
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/kiosk" element={<Kiosk />} />
 
-        {/* Enterprise Admin Console routes (Screens 02, 03, 04, 06, 07, 08, 09, 10, 10.1, 11, 12) */}
         <Route element={<AdminLayout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/employees" element={<Users />} />
           <Route path="/users" element={<Navigate to="/employees" replace />} />
           <Route path="/register-face" element={<RegisterFace />} />

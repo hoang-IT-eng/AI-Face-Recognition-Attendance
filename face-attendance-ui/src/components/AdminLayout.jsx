@@ -9,7 +9,7 @@ const AVATAR_HR =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuB9qt0XxrJwvaoaxIrN5-_dsJiv9_68psvID5t-E8IuhUqSIm9zoY-dDDXgmRSA4rKc4xyhvcKzwy5aWG5jzt8UgZgkdOCXStobDuQhSlKwrEUMyWlin0D6nslRPnARp4LN4C8h_mkCAEAE_44iw5zZah7oB3DBZp9JO6wHQq2Gc4Ajc_wUl1zP_i1-PcX0tN99lfVei4f3dlrVd6mLOWaamZ5wwuKOAn8kGRD5CkhpejKZ4WJADsen5A";
 
 const NAV_BASE = [
-  { to: "/", icon: "dashboard", label: "Dashboard", end: true },
+  { to: "/dashboard", icon: "dashboard", label: "Dashboard", end: true },
   { to: "/employees", icon: "badge", label: "Nhân viên" },
   { to: "/monitoring", icon: "videocam", label: "Giám sát" },
   { to: "/schedules", icon: "schedule", label: "Ca làm việc" },
@@ -74,7 +74,7 @@ export default function AdminLayout() {
       <aside className="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-lowest border-r border-outline-variant z-50 flex flex-col justify-between py-5 px-4 select-none">
         <div className="flex flex-col gap-6 overflow-y-auto">
           <div
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
             className="flex items-center gap-3 px-2 cursor-pointer group"
           >
             <div className="h-9 w-9 rounded-xl bg-surface-container-low flex items-center justify-center p-1.5 border border-outline-variant/50">

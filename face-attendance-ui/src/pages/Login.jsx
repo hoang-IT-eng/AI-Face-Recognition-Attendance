@@ -27,7 +27,7 @@ export default function Login() {
       localStorage.setItem("sf_admin_auth", "1");
       localStorage.setItem("sf_admin_token", res.data.access_token);
       localStorage.setItem("sf_admin_name", res.data.name || "Admin");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       const msg =
         err?.response?.data?.detail ||
