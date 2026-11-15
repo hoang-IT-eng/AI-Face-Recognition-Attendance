@@ -277,7 +277,7 @@ export default function Camera() {
           {isKiosk && (
             <button
               type="button"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/dashboard")}
               className="p-2 rounded border border-line bg-surface hover:bg-canvas text-ink cursor-pointer"
               title="Về bàn trực"
             >

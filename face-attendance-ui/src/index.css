@@ -49,6 +49,16 @@
   --color-on-secondary-fixed: #001f26;
   --color-primary-fixed: #e2e2e2;
 
+  /* Landing-only tokens (overridden inside .landing-root) */
+  --color-surface-subtle: #f6f7fb;
+  --color-surface-card: #ffffff;
+  --color-border-subtle: #e7e8ee;
+  --color-border-crisp: #dde0eb;
+  --color-emerald-badge-bg: #ecfdf5;
+  --color-emerald-accent: #059669;
+  --color-slate-deep: #0b0e14;
+  --color-midnight-dark: #0a0b10;
+
   --spacing-margin-mobile: 1rem;
   --spacing-margin: 2rem;
   --spacing-space-xs: 0.25rem;
@@ -61,6 +71,8 @@
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-headline: "Plus Jakarta Sans", Inter, sans-serif;
+  --font-body: Inter, system-ui, sans-serif;
 }
 
 @layer base {
@@ -164,4 +176,60 @@
 
 .animate-laser {
   animation: laser-sweep 2.8s ease-in-out infinite;
+}
+
+/* FaceAttend landing (Stitch) — scoped so admin console tokens stay intact */
+.landing-root {
+  --color-surface: #fbfbfe;
+  --color-surface-subtle: #f6f7fb;
+  --color-surface-container-low: #f1f2f7;
+  --color-surface-card: #ffffff;
+  --color-border-subtle: #e7e8ee;
+  --color-border-crisp: #dde0eb;
+  --color-primary: #403ab8;
+  --color-primary-container: #5955d1;
+  --color-primary-fixed: #e2dfff;
+  --color-on-primary-fixed: #0e006a;
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #52596c;
+  --color-secondary: #5f5a7d;
+  --color-tertiary: #005a3c;
+  --color-tertiary-container: #007550;
+  --color-emerald-badge-bg: #ecfdf5;
+  --color-emerald-accent: #059669;
+  --color-slate-deep: #0b0e14;
+  --color-midnight-dark: #0a0b10;
+  --font-headline: "Plus Jakarta Sans", Inter, sans-serif;
+  --font-body: Inter, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", Inter, sans-serif;
+  font-family: var(--font-body);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+}
+
+.landing-root .font-headline {
+  font-family: var(--font-headline);
+}
+
+.landing-root .font-body {
+  font-family: var(--font-body);
+}
+
+.landing-root .italic-accent {
+  font-style: italic;
+  font-family: "Plus Jakarta Sans", serif;
+  font-weight: 400;
+}
+
+.landing-root .shadow-soft-elevation {
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 30px rgba(15, 23, 42, 0.06),
+    0 20px 48px rgba(64, 58, 184, 0.04);
+}
+
+.landing-root .shadow-floating {
+  box-shadow:
+    0 12px 32px -4px rgba(15, 23, 42, 0.08),
+    0 4px 12px -2px rgba(15, 23, 42, 0.04);
 }

@@ -194,7 +194,7 @@ export default function Kiosk() {
       <header className="relative z-20 flex items-center justify-between px-8 py-4 w-full">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
             className="px-3 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-code-telemetry text-code-telemetry shadow-xs flex items-center gap-1.5 hover:bg-primary-container cursor-pointer"
           >
             <span className="material-symbols-outlined text-[16px]">
