@@ -199,8 +199,7 @@ export default function Kiosk() {
       <div
         className="absolute inset-0 z-0 bg-cover bg-center blur-md scale-105 opacity-35 pointer-events-none"
         style={{
-          backgroundImage:
-            "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZCd7GXMwSauD8b08vdPQ-RKFCoQdta-jhqis7HSqb5-KmFNvC_pgOGkNRu_Urm9spmeLALsZP7PA0-uzp9tKOuDee-lrg3djecGJiCLRW_48BhqP5QwlGJLFOSn7vX31tZDgUl6-Afa1lK6QUS8ypcjc2QxYunlMljCDo6OGrAhHyDWirXjbtMIArdBJol9kh0W8ZQnzN4ecLkXgPG1yesMR9U2dIQMvuvYt7BmgZ7UutwQASkB6RyA')",
+          backgroundImage: "url('/img/biometric-kiosk.jpg')",
         }}
       />
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-background via-background/80 to-background/90 pointer-events-none" />
@@ -209,6 +208,12 @@ export default function Kiosk() {
       {/* Top System Ribbon */}
       <header className="relative z-20 flex items-center justify-between px-8 py-4 w-full">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-on-surface font-code-telemetry text-code-telemetry shadow-xs flex items-center gap-1.5 hover:border-secondary cursor-pointer"
+          >
+            <span>← 3D SHOWCASE</span>
+          </button>
           <button
             onClick={() => navigate("/dashboard")}
             className="px-3 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-code-telemetry text-code-telemetry shadow-xs flex items-center gap-1.5 hover:bg-primary-container cursor-pointer"
@@ -394,7 +399,9 @@ export default function Kiosk() {
                 className="absolute inset-0 bg-cover bg-center contrast-105"
                 style={{
                   backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCjv_O08-aUOREjG4kjf4N5EI12PtBIwkOu1pzoECFpxQq4Oao7WqOwpe_R26JW3v8dtyDgIIfVfwCn3AGexfEIautNViOcniuxdMoLQHOlX60PYXVUTomV42Alvik6Z0ToxYqGeJoQTi9anY5ypMK-SVOHQR1vi46_vMGt9X3NPM9C091MRMGdGJQGf9Z8UfB7iKb9I1JT1RPfCsX9CbczrWr_5a-nQh0v83PLdZP42LN34qOt1IIDkQ')",
+                    scenario === "spoof"
+                      ? "url('/img/spoof-replay.jpg')"
+                      : "url('/img/subject-live.jpg')",
                 }}
               />
             )}
@@ -415,7 +422,7 @@ export default function Kiosk() {
               <div className="absolute inset-x-2 top-0 h-1 bg-gradient-to-r from-transparent via-[#57dffe] to-transparent shadow-[0_0_18px_#57dffe] animate-laser" />
 
               <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-code-telemetry text-secondary-fixed">
-                PTS: 128/128 • CONF: 99.8%
+                PTS: 468/468 • CONF: 99.4%
               </div>
             </div>
 
@@ -526,8 +533,7 @@ export default function Kiosk() {
                 <div
                   className="w-14 h-14 rounded-full bg-cover bg-center shrink-0 shadow-xs"
                   style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB8AwIqSNeD22La3g8LzUtl_WXhKnhMDou_yiSb5YiJ0BvExNUcck-SxEL6qcYB28nmmKC9ZNOkf6bf8rm0BnjWdkeCXdZnjkgtSyKlcIIzP3wsLbH_UDJydswopcMjvgb5__wC4Nd289kqtFBsC7sX6hcHnv3sn8E7e9og-_KerkY1kckalRAZ94m7Dcgo0H3X6MvWTAYV_vWZAiwv37Ft0wnWXl41vz3jiPEv5Za64oAQsv8Bjh2eyA')",
+                    backgroundImage: "url('/img/subject-live.jpg')",
                   }}
                 />
                 <div className="flex flex-col min-w-0">

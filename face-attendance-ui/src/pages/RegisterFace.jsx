@@ -10,7 +10,7 @@ const INITIAL_ANGLES = [
     sub: "0° Trực diện",
     status: "pass",
     badge: "ĐẠT (99.2%)",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBN4HHNp6OqPXyl17Hy_OEojtCOW2g4l5qDMnlAKltjKuiFswkR-pvjweCT8l41dbvRmuNYpwPV-yce4nvDLzEPGKCXszziooehKXJMg6gyfl6qf-p6PQKR5u-mYfJDeIB7aoQsVCilHvrP471wRuuUflGWDMQg0cumQjsAJwo8cqOnrW0xSrWmarfekFNWWBuifVHQqmPql1OQOc62R-rt0GWGYMhbk3vibB6TW-6IO8LpIcyV72T43g",
+    img: "/img/subject-live.jpg",
   },
   {
     key: "left",
@@ -18,7 +18,7 @@ const INITIAL_ANGLES = [
     sub: "-15° Trái",
     status: "blur",
     badge: "MỜ / LỖI",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBqgHlxaj60ioJ4T17-Ri-f5PQNxlsvcgZwgtjvL1gBPQsqoi95pwifS2us454wsjs4DyXxlUjblnTtEPnFlM_GLIYa0WoHCAB6ULwnwQiGbF_sq-Hpwaei2K82At3jDct97kWlJziNNIKgHTuWMa6gE1BkJZJYqzqLLS4NZBuEw-ceeH0k5sUojj7ZXJrVvbUDjJwE9AETEFu9uurdexYgUZnwC_eq3GVRFf_rQlIrI6H2a2d1-WIIkw",
+    img: "/img/biometric-kiosk.jpg",
   },
   {
     key: "right",
@@ -534,7 +534,7 @@ export default function RegisterFace() {
                 <img
                   className="absolute inset-0 w-full h-full object-cover brightness-[0.98] contrast-[1.02]"
                   alt="Biometric preview"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2MZNeXxINj3uo_-vJRAM2-rAYt6ITkl3S5C6anTJ_V3X1UKD_Dg6uUpE15T9T3Fmuc_Zmp52S_STqQKU-tbahDvGVthi_KSXaGrpPkKvpkEWJOzqWpK0KV3646VTfvfGJTe_fPA2OrhnW8IR84pJn0lEu7mLI2NBbo0lgRP82wknH5yawx9kRp0SAdhfCS3AwGJanSean20k5Mo8zFOrBoeSXLAEQEjM3IDeyXmh-DZXmrHWqbCQIgg"
+                  src="/img/subject-live.jpg"
                 />
               )}
 

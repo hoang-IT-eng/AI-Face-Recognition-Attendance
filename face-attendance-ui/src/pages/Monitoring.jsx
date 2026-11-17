@@ -196,7 +196,7 @@ export default function Monitoring() {
                 <img
                   className="w-full h-full object-cover brightness-[0.92] contrast-[1.05]"
                   alt="CCTV Lobby"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPmfkKYP0h_6D-1g8xv5cFAiHokbDM0hsFNNj2KXuLtk9h8EzAvxzaXOzCa-0Zc27ChKDRWsNRfeAUMGUMTqqA3RlW92inbHHcAMmzn7E7onrNL87Bdyh7_-PQV6ln2k4TExrNzNLNXsluQ2ES0571NfVQ56-CpEMxE4-fBvLRvdCR1uQWhhj2T5ayLuwATkvt-6D2hlKXrQRJMYQgXGU9rrlw8JI6HNBCoAw8CP_69zH23T9pdeQHCQ"
+                  src="/img/biometric-kiosk.jpg"
                 />
 
                 {/* Bounding Box 1: Recognized Employee */}

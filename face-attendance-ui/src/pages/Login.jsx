@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
-
-const LOGO_URL =
-  "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
+import BrandMark from "../components/BrandMark";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,7 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState("SecureFace@2026");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [attemptsLeft, setAttemptsLeft] = useState(3);
+  const [, setAttemptsLeft] = useState(3);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -51,10 +49,13 @@ export default function Login() {
 
       {/* Top Security Bar */}
       <div className="w-full flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-code-telemetry text-code-telemetry tracking-wide shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-          <span className="font-semibold">SECUREFACE CONSOLE • AUTH NODE</span>
-        </div>
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-code-telemetry text-code-telemetry tracking-wide shadow-xs cursor-pointer"
+        >
+          <span>← ATTN 3D SHOWCASE</span>
+        </button>
 
         <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md border border-outline-variant/40">
           <span className="material-symbols-outlined text-[16px] text-secondary">
@@ -71,15 +72,11 @@ export default function Login() {
 
           {/* Header */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center p-2 mb-4 shadow-xs relative group">
-              <img
-                alt="SecureFace AI Logo"
-                className="w-full h-full object-contain"
-                src={LOGO_URL}
-              />
+            <div className="mb-4">
+              <BrandMark size={52} />
             </div>
             <h1 className="font-headline-md text-headline-md text-primary tracking-tight font-bold">
-              SecureFace AI
+              ATTEND Console
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant mt-1.5 font-medium">
               Hệ thống Quản trị Điểm danh Khuôn mặt Doanh nghiệp

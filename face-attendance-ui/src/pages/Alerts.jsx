@@ -453,8 +453,7 @@ export default function Alerts() {
               <div
                 className="w-full h-full bg-cover bg-center opacity-85"
                 style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCr0rBjWEDA7kHjMAiVRSjC86zAn8mc4QqalXaSJ19w-b00cN3PcEGWooov79o2h21FsC2aWakGz1wvsPqmxG_i-cnkmT_ZEZuI32dr7OdR6WhtzRiVXiapTU6xkTyrRnvc-xTmV2NBo_pf4YVBPwLGTMOKacRxue1_7HwY2nP7bmqSL4QTIfI--e9HjXWx9QQ-9fPOgdPK0baGCTO1FrwQOkobKQeQ3LhrkS4s0Zvad9B0muJqFVZC-g')",
+                  backgroundImage: "url('/img/biometric-kiosk.jpg')",
                 }}
               />
               <div className="absolute inset-0 p-6 flex flex-col justify-between pointer-events-none">
@@ -536,8 +535,7 @@ export default function Alerts() {
                     <div
                       className="w-full h-full bg-cover bg-center"
                       style={{
-                        backgroundImage:
-                          "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDso9BTvBG1C4uXOu1w6z7lvHdvfF7vxxoQnOyGcYWqpz8F5TJV5duxTJ5V6-E9Cil97Lr852zvpBmWSJO9wpMHPrB1Wo2InQ52zTd5cw6yOwALrW2U3IZZ-7ojzaS8rfpEwG-ARozF1y3xQoMlhxdag6ak8SHQ1AKxJeq_Upnf78J8X095gFBQaAoHREFex2Iki2TWsqz6hJZ9fJU-iZVFw5OjapfLObvoPW3Ry78MrPkLkGv7V_5vnA')",
+                        backgroundImage: "url('/img/spoof-replay.jpg')",
                       }}
                     />
                   </div>

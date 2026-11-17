@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getAlertStats, getMe } from "../api";
-
-const LOGO_URL =
-  "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
+import BrandMark from "./BrandMark";
 
 const NAV_BASE = [
   { to: "/dashboard", icon: "dashboard", label: "Dashboard", end: true },
@@ -104,22 +102,17 @@ export default function AdminLayout() {
       <aside className="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-lowest border-r border-outline-variant z-50 flex flex-col justify-between py-5 px-4 select-none">
         <div className="flex flex-col gap-6 overflow-y-auto">
           <div
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-3 px-2 cursor-pointer group"
+            title="Về trang 3D Biometric Showcase"
           >
-            <div className="h-9 w-9 rounded-xl bg-surface-container-low flex items-center justify-center p-1.5 border border-outline-variant/50">
-              <img
-                alt="SecureFace AI Logo"
-                className="h-full w-full object-contain"
-                src={LOGO_URL}
-              />
-            </div>
+            <BrandMark size={36} />
             <div className="flex flex-col leading-tight">
               <span className="font-title-lg text-title-lg text-on-surface tracking-tight font-bold group-hover:text-secondary transition-colors">
-                SecureFace AI
+                ATTEND
               </span>
               <span className="font-label-md text-label-md text-on-surface-variant">
-                Điểm danh khuôn mặt
+                Liveness Biometric OS
               </span>
             </div>
           </div>
@@ -176,11 +169,13 @@ export default function AdminLayout() {
       <div className="pl-[280px]">
         <header className="fixed top-0 left-[280px] right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-md border-b border-outline-variant z-40 px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              alt="SecureFace AI"
-              className="h-7 w-auto object-contain"
-              src={LOGO_URL}
-            />
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex items-center gap-2 text-on-surface-variant hover:text-secondary font-label-md text-label-md cursor-pointer"
+            >
+              <BrandMark size={26} />
+              <span>← 3D Showcase</span>
+            </button>
             <div className="h-4 w-[1px] bg-outline-variant"></div>
             <span className="font-label-lg text-label-lg text-on-surface-variant">
               Hệ thống Quản trị Doanh nghiệp

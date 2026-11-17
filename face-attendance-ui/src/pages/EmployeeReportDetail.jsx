@@ -127,8 +127,8 @@ export default function EmployeeReportDetail() {
             <div className="relative">
               <img
                 className="w-20 h-20 rounded-2xl object-cover ring-2 ring-secondary/20 shadow-xs"
-                alt="Nguyễn Văn A"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4IkX4Q8Xp3I2UeBgnWF2TRjOtllVQl-JoQNE09Iyr7zyqkvxY-2bI7hgpek0e4x3Gup58BjVOJp4IDGt7MDW6Tk-RRl0hx195z0EocjFzZudOix7EHIDTVYg88c6hIwV56CI0dRMW74K_XRPJ1PSY_Nz07MQ_0hDYRkl8XpJ7pxkktIePO2XrK2dgjLAuSrc1vt71fcu3ACAlAMiFEIqDaBuJl6TnqhZd7dgcWeR6kYUjWCG7uaWRuw"
+                alt={empName}
+                src="/img/subject-live.jpg"
               />
               <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-xs">
                 <span className="material-symbols-outlined material-symbols-filled text-[16px] text-[#009668]">
@@ -624,7 +624,7 @@ export default function EmployeeReportDetail() {
                 <img
                   className="w-full h-full object-cover opacity-90"
                   alt="Snapshot"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvMjFfAdJfPJtf6jV6OQ9ss7CVO7VQ96WDxTxBLypuxjq0ToLDun1KC3PBqMT91R5AYlwK5VrvGT0ooemDanCQGF_ZRHjD87ZIQjTAp79F-LA1oL9fAEqoFS9uyp7OdC67VZp6klrS1kRxnDmvTveVoDgbuMqSUqPbsDrxxekGgXIeVUPzBtXdR0rGbIEyJipxUcco6fPQUrx6FEVemnTkf_evswzPdZPUj5WplEFis5I10HDmvwCTkQ"
+                  src="/img/subject-live.jpg"
                 />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-36 h-48 border-2 border-secondary rounded-lg relative shadow-[0_0_16px_rgba(87,223,254,0.45)]">
