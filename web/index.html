@@ -3,21 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FaceAttend — Điểm danh bằng nhận diện khuôn mặt AI</title>
+    <title data-i18n="meta.title">FaceAttend — Điểm danh bằng nhận diện khuôn mặt AI</title>
     <meta
       name="description"
+      data-i18n-attr="content:meta.desc"
       content="FaceAttend là hệ thống điểm danh sinh trắc học: nhận diện khuôn mặt tại kiosk, chống giả mạo bằng liveness detection, quản lý ca làm việc và báo cáo chấm công tự động."
     />
     <meta name="author" content="Trần Huy Hoàng" />
+    <meta property="og:title" content="FaceAttend — AI Face Recognition Attendance" />
+    <meta property="og:description" content="Biometric attendance: kiosk face recognition, liveness anti-spoofing, shift management and automatic timesheets." />
+    <meta property="og:image" content="img/face-scan.webp" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b84ff' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2'/%3E%3Ccircle cx='12' cy='10' r='3.2'/%3E%3Cpath d='M6.5 19.5c.8-2.3 2.9-3.5 5.5-3.5s4.7 1.2 5.5 3.5'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+    <!-- ===== Language switcher (fixed, top-right) ===== -->
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-pill" id="langPill" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+        <svg class="lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.5 2.6 3.9 5.7 3.9 9S14.5 18.4 12 21c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3Z" />
+        </svg>
+        <span id="langCurrent">VI</span>
+        <svg class="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language" hidden>
+        <button class="lang-option" type="button" role="option" data-lang="vi" aria-selected="true">
+          <span>Tiếng Việt</span>
+          <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+        <button class="lang-option" type="button" role="option" data-lang="en" aria-selected="false">
+          <span>English</span>
+          <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+        </button>
+      </div>
+    </div>
+
     <header class="site-header" id="siteHeader">
       <div class="container header-inner">
         <a class="brand" href="#top" aria-label="FaceAttend">
@@ -30,187 +61,265 @@
           </span>
           <span class="brand-name">FaceAttend</span>
         </a>
-        <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false">
+        <button class="nav-toggle" id="navToggle" data-i18n-attr="aria-label:nav.menu" aria-label="Mở menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
         <nav class="site-nav" id="siteNav">
-          <a href="#cach-hoat-dong">Cách hoạt động</a>
-          <a href="#tinh-nang">Tính năng</a>
-          <a href="#cong-nghe">Công nghệ</a>
-          <a class="nav-cta" href="https://attend-live.azurewebsites.net/" target="_blank" rel="noopener">Xem demo trực tiếp</a>
+          <a href="#cach-hoat-dong" data-i18n="nav.how">Cách hoạt động</a>
+          <a href="#tinh-nang" data-i18n="nav.features">Tính năng</a>
+          <a href="#cong-nghe" data-i18n="nav.tech">Công nghệ</a>
+          <a class="nav-cta" href="https://attend-live.azurewebsites.net/?tour=1" target="_blank" rel="noopener" data-i18n="nav.demo">Xem demo trực tiếp</a>
         </nav>
       </div>
     </header>
 
     <main id="top">
-      <!-- HERO -->
+      <!-- ===== HERO ===== -->
       <section class="hero">
+        <canvas id="meshCanvas" class="mesh-canvas" aria-hidden="true"></canvas>
+        <div class="hero-grid-overlay" aria-hidden="true"></div>
+        <p class="hero-side hero-side-l" aria-hidden="true">SYS.BIOMETRIC // ATTENDANCE.CORE</p>
+        <p class="hero-side hero-side-r" aria-hidden="true">LAT 10.762622 — LON 106.660172</p>
         <div class="container hero-grid">
-          <div class="hero-copy reveal">
-            <span class="eyebrow">Hệ thống điểm danh sinh trắc học</span>
-            <h1>Điểm danh bằng khuôn mặt.<br />Nhanh, chính xác, <em>không tiếp xúc.</em></h1>
-            <p class="hero-sub">
+          <div class="hero-copy">
+            <span class="eyebrow" data-hero><span class="eyebrow-dot"></span><span data-i18n="hero.eyebrow">Hệ thống điểm danh sinh trắc học</span></span>
+            <h1 data-hero data-i18n="hero.title">Điểm danh bằng <span class="grad">khuôn mặt</span>.<br />Nhanh. Chính xác.<br />Không tiếp xúc.</h1>
+            <p class="hero-sub" data-hero data-i18n="hero.sub">
               FaceAttend nhận diện nhân viên ngay tại kiosk bằng AI — không thẻ, không vân tay,
               không xếp hàng chờ. Mọi lượt vào ra được ghi lại tức thì, đối chiếu với ca làm việc
               và tổng hợp thành báo cáo chấm công tự động.
             </p>
-            <div class="hero-actions">
+            <div class="hero-actions" data-hero>
               <a class="btn btn-primary" href="https://attend-live.azurewebsites.net/?tour=1" target="_blank" rel="noopener">
-                Trải nghiệm demo live
+                <span data-i18n="hero.cta1">Trải nghiệm demo live</span>
                 <span aria-hidden="true">→</span>
               </a>
-              <a class="btn btn-ghost" href="#cach-hoat-dong">Xem cách hoạt động</a>
+              <a class="btn btn-ghost" href="#cach-hoat-dong" data-i18n="hero.cta2">Xem cách hoạt động</a>
             </div>
-            <ul class="hero-points">
-              <li>Chống giả mạo bằng phát hiện người thật (liveness)</li>
-              <li>Quản lý ca, đi muộn, vắng mặt theo thời gian thực</li>
-              <li>Báo cáo &amp; cảnh báo tự động cho HR và quản trị viên</li>
-            </ul>
+            <dl class="hero-telemetry" data-hero>
+              <div>
+                <dt>PIPELINE</dt>
+                <dd>DeepFace + MediaPipe</dd>
+              </div>
+              <div>
+                <dt data-i18n="hero.t2k">Chế độ</dt>
+                <dd data-i18n="hero.t2v">Không tiếp xúc</dd>
+              </div>
+              <div>
+                <dt data-i18n="hero.t3k">Ghi nhận</dt>
+                <dd data-i18n="hero.t3v">Thời gian thực</dd>
+              </div>
+            </dl>
           </div>
 
-          <div class="hero-visual reveal" aria-hidden="true">
+          <div class="hero-visual" data-hero>
             <div class="kiosk-card">
               <div class="kiosk-head">
                 <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                <span class="kiosk-title">KIOSK CỔNG A — TRỰC TIẾP</span>
+                <span class="kiosk-title" data-i18n="kiosk.title">KIOSK CỔNG A — TRỰC TIẾP</span>
+                <span class="kiosk-rec" aria-hidden="true"><i></i>REC</span>
               </div>
               <div class="scan-frame">
+                <img class="scan-img" src="img/face-scan.webp" alt="" width="880" height="880" />
                 <div class="scan-corner tl"></div>
                 <div class="scan-corner tr"></div>
                 <div class="scan-corner bl"></div>
                 <div class="scan-corner br"></div>
-                <svg class="scan-face" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-                  <circle cx="12" cy="9.5" r="3.6" />
-                  <path d="M5.5 20c1-3.4 3.6-5 6.5-5s5.5 1.6 6.5 5" />
-                </svg>
                 <div class="scan-line"></div>
-                <span class="scan-badge">ĐÃ NHẬN DIỆN • 99.2%</span>
+                <span class="scan-badge"><span data-i18n="kiosk.badge">ĐÃ NHẬN DIỆN</span> • 99.2%</span>
+                <span class="scan-coord tl" aria-hidden="true">X:512 Y:088</span>
+                <span class="scan-coord br" aria-hidden="true">MESH · 468 PTS</span>
               </div>
+              <p class="hud-line" aria-hidden="true"><span class="hud-caret">&gt;</span> <span id="hudText">SCANNING FACE MESH…</span><span class="hud-cursor"></span></p>
               <div class="kiosk-row">
                 <div>
                   <p class="kiosk-name">Nguyễn Văn A — NV001</p>
-                  <p class="kiosk-meta">Kỹ thuật • Ca 08:00</p>
+                  <p class="kiosk-meta" data-i18n="kiosk.meta">Kỹ thuật • Ca 08:00</p>
                 </div>
-                <span class="kiosk-status">Có mặt 07:52</span>
+                <span class="kiosk-status" data-i18n="kiosk.status">Có mặt 07:52</span>
               </div>
             </div>
             <div class="stat-chip chip-a">
-              <strong>142/150</strong>
-              <span>Có mặt hôm nay</span>
+              <strong id="chipCount">142/150</strong>
+              <span data-i18n="chip.a">Có mặt hôm nay</span>
             </div>
             <div class="stat-chip chip-b">
-              <strong>Thời gian thực</strong>
-              <span>Nhật ký điểm danh trực tiếp</span>
+              <strong data-i18n="chip.bt">Thời gian thực</strong>
+              <span data-i18n="chip.bs">Nhật ký điểm danh trực tiếp</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- HOW IT WORKS -->
+      <!-- ===== MARQUEE ===== -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>DEEPFACE</span><i>◆</i><span>MEDIAPIPE</span><i>◆</i><span>LIVENESS DETECTION</span><i>◆</i><span>ANTI-SPOOFING</span><i>◆</i><span>FACE EMBEDDING</span><i>◆</i><span>FASTAPI</span><i>◆</i><span>WEBSOCKET</span><i>◆</i><span>KIOSK MODE</span><i>◆</i>
+          <span>DEEPFACE</span><i>◆</i><span>MEDIAPIPE</span><i>◆</i><span>LIVENESS DETECTION</span><i>◆</i><span>ANTI-SPOOFING</span><i>◆</i><span>FACE EMBEDDING</span><i>◆</i><span>FASTAPI</span><i>◆</i><span>WEBSOCKET</span><i>◆</i><span>KIOSK MODE</span><i>◆</i>
+        </div>
+      </div>
+
+      <!-- ===== HOW IT WORKS ===== -->
       <section class="section" id="cach-hoat-dong">
         <div class="container">
-          <div class="section-head reveal">
-            <span class="eyebrow">Cách hoạt động</span>
-            <h2>Từ khuôn mặt đến bảng công trong ba bước</h2>
+          <div class="section-head">
+            <span class="eyebrow" data-reveal><span class="sec-code">S.01</span><span class="eyebrow-dot"></span><span data-i18n="how.eyebrow">Cách hoạt động</span></span>
+            <h2 data-reveal data-i18n="how.title">Từ khuôn mặt đến bảng công — trong ba bước</h2>
           </div>
           <div class="steps">
-            <article class="step-card reveal">
+            <div class="steps-progress" id="stepsProgress" aria-hidden="true"></div>
+            <article class="step-row" data-reveal>
               <span class="step-num">01</span>
-              <h3>Đăng ký khuôn mặt</h3>
-              <p>
-                Nhân viên đăng ký một lần tại quầy quản trị hoặc kiosk. Hệ thống trích xuất
-                đặc trưng khuôn mặt và lưu trữ an toàn làm hồ sơ sinh trắc học.
-              </p>
+              <div class="step-body">
+                <h3 data-i18n="step1.t">Đăng ký khuôn mặt</h3>
+                <p data-i18n="step1.p">
+                  Nhân viên đăng ký một lần tại quầy quản trị hoặc kiosk. Hệ thống trích xuất
+                  đặc trưng khuôn mặt và lưu trữ an toàn làm hồ sơ sinh trắc học.
+                </p>
+              </div>
+              <span class="step-tag">ENROLL</span>
             </article>
-            <article class="step-card reveal">
+            <article class="step-row" data-reveal>
               <span class="step-num">02</span>
-              <h3>Nhận diện tại kiosk</h3>
-              <p>
-                Khi đến cổng, camera nhận diện khuôn mặt trong tích tắc, đồng thời kiểm tra
-                liveness bằng chuyển động chớp mắt để ngăn điểm danh hộ bằng ảnh hoặc video.
-              </p>
+              <div class="step-body">
+                <h3 data-i18n="step2.t">Nhận diện tại kiosk</h3>
+                <p data-i18n="step2.p">
+                  Khi đến cổng, camera nhận diện khuôn mặt trong tích tắc, đồng thời kiểm tra
+                  liveness bằng chuyển động chớp mắt để ngăn điểm danh hộ bằng ảnh hoặc video.
+                </p>
+              </div>
+              <span class="step-tag">VERIFY</span>
             </article>
-            <article class="step-card reveal">
+            <article class="step-row" data-reveal>
               <span class="step-num">03</span>
-              <h3>Báo cáo &amp; cảnh báo</h3>
-              <p>
-                Lượt điểm danh được đối chiếu với ca làm việc: đúng giờ, đi muộn hay vắng mặt.
-                HR xem dashboard trực tiếp, nhận cảnh báo bất thường và xuất báo cáo khi cần.
-              </p>
+              <div class="step-body">
+                <h3 data-i18n="step3.t">Báo cáo &amp; cảnh báo</h3>
+                <p data-i18n="step3.p">
+                  Lượt điểm danh được đối chiếu với ca làm việc: đúng giờ, đi muộn hay vắng mặt.
+                  HR xem dashboard trực tiếp, nhận cảnh báo bất thường và xuất báo cáo khi cần.
+                </p>
+              </div>
+              <span class="step-tag">REPORT</span>
             </article>
           </div>
         </div>
       </section>
 
-      <!-- FEATURES -->
+      <!-- ===== FEATURES ===== -->
       <section class="section section-alt" id="tinh-nang">
         <div class="container">
-          <div class="section-head reveal">
-            <span class="eyebrow">Tính năng</span>
-            <h2>Đủ sâu cho vận hành, đủ gọn cho người dùng</h2>
+          <div class="section-head">
+            <span class="eyebrow" data-reveal><span class="sec-code">S.02</span><span class="eyebrow-dot"></span><span data-i18n="feat.eyebrow">Tính năng</span></span>
+            <h2 data-reveal data-i18n="feat.title">Đủ sâu cho vận hành. Đủ gọn cho người dùng.</h2>
           </div>
           <div class="features">
-            <article class="feature-card reveal">
-              <h3>Nhận diện khuôn mặt AI</h3>
-              <p>DeepFace trích xuất và đối sánh vector khuôn mặt với độ chính xác cao, kể cả khi thay đổi góc mặt hay ánh sáng tại cổng.</p>
+            <article class="feature-card" data-reveal>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="9.5" r="3.6" /><path d="M5.5 20c1-3.4 3.6-5 6.5-5s5.5 1.6 6.5 5" /><path d="M3 4h3M3 20h3M18 4h3M18 20h3" /></svg>
+              </span>
+              <h3 data-i18n="f1.t">Nhận diện khuôn mặt AI</h3>
+              <p data-i18n="f1.p">DeepFace trích xuất và đối sánh vector khuôn mặt với độ chính xác cao, kể cả khi thay đổi góc mặt hay ánh sáng tại cổng.</p>
             </article>
-            <article class="feature-card reveal">
-              <h3>Chống giả mạo hai lớp</h3>
-              <p>Anti-spoofing kết hợp phát hiện chớp mắt bằng MediaPipe giúp chặn điểm danh bằng ảnh in, màn hình điện thoại hay video phát lại.</p>
+            <article class="feature-card" data-reveal>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 5.8v5.4c0 4.3 2.9 7.4 7 9.3 4.1-1.9 7-5 7-9.3V5.8L12 3Z" /><path d="m9 11.6 2.2 2.2L15.4 9.6" /></svg>
+              </span>
+              <h3 data-i18n="f2.t">Chống giả mạo hai lớp</h3>
+              <p data-i18n="f2.p">Anti-spoofing kết hợp phát hiện chớp mắt bằng MediaPipe giúp chặn điểm danh bằng ảnh in, màn hình điện thoại hay video phát lại.</p>
             </article>
-            <article class="feature-card reveal">
-              <h3>Kiosk không tiếp xúc</h3>
-              <p>Màn hình kiosk toàn màn hình tại cổng ra vào: nhân viên chỉ cần bước qua camera, không chạm, không thẻ, không xếp hàng.</p>
+            <article class="feature-card" data-reveal>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M10.5 17.5h3" /><circle cx="12" cy="10" r="2.6" /></svg>
+              </span>
+              <h3 data-i18n="f3.t">Kiosk không tiếp xúc</h3>
+              <p data-i18n="f3.p">Màn hình kiosk toàn màn hình tại cổng ra vào: nhân viên chỉ cần bước qua camera, không chạm, không thẻ, không xếp hàng.</p>
             </article>
-            <article class="feature-card reveal">
-              <h3>Quản lý ca làm việc</h3>
-              <p>Định nghĩa ca, giờ vào/ra và ngưỡng đi muộn. Hệ thống tự phân loại từng lượt điểm danh theo đúng ca của từng nhân viên.</p>
+            <article class="feature-card" data-reveal>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3.5 2" /></svg>
+              </span>
+              <h3 data-i18n="f4.t">Quản lý ca làm việc</h3>
+              <p data-i18n="f4.p">Định nghĩa ca, giờ vào/ra và ngưỡng đi muộn. Hệ thống tự phân loại từng lượt điểm danh theo đúng ca của từng nhân viên.</p>
             </article>
-            <article class="feature-card reveal">
-              <h3>Báo cáo chấm công</h3>
-              <p>Dashboard tổng quan theo ngày, tuần, tháng; báo cáo chi tiết từng nhân viên, lịch sử điểm danh và chỉnh sửa công có kiểm soát.</p>
+            <article class="feature-card" data-reveal>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M21 20H3" /></svg>
+              </span>
+              <h3 data-i18n="f5.t">Báo cáo chấm công</h3>
+              <p data-i18n="f5.p">Dashboard tổng quan theo ngày, tuần, tháng; báo cáo chi tiết từng nhân viên, lịch sử điểm danh và chỉnh sửa công có kiểm soát.</p>
             </article>
-            <article class="feature-card reveal">
-              <h3>Cảnh báo &amp; quyền riêng tư</h3>
-              <p>Cảnh báo khi có lượt lạ hoặc bất thường, điểm danh thay thế khi camera gặp sự cố, và cài đặt quyền riêng tư cho dữ liệu sinh trắc học.</p>
+            <article class="feature-card" data-reveal>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13.5 6 9.5" /><path d="M10 19a2.2 2.2 0 0 0 4 0" /></svg>
+              </span>
+              <h3 data-i18n="f6.t">Cảnh báo &amp; quyền riêng tư</h3>
+              <p data-i18n="f6.p">Cảnh báo khi có lượt lạ hoặc bất thường, điểm danh thay thế khi camera gặp sự cố, và cài đặt quyền riêng tư cho dữ liệu sinh trắc học.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <!-- DEMO -->
-      <section class="demo-band">
-        <div class="container demo-inner reveal">
-          <div>
-            <span class="eyebrow eyebrow-light">Demo trực tuyến</span>
-            <h2>Xem hệ thống đang chạy thật</h2>
-            <p>
-              Bản demo SecureFace AI đang hoạt động trên nền tảng đám mây — dashboard tổng quan
-              chấm công, nhật ký điểm danh thời gian thực và phân bố trạng thái ca làm việc.
-            </p>
-          </div>
-          <a class="btn btn-light" href="https://attend-live.azurewebsites.net/?tour=1" target="_blank" rel="noopener">
-            Mở demo tại attend-live.azurewebsites.net
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </section>
-
-      <!-- TECH -->
+      <!-- ===== PIPELINE / TECH ===== -->
       <section class="section" id="cong-nghe">
         <div class="container">
-          <div class="section-head reveal">
-            <span class="eyebrow">Công nghệ</span>
-            <h2>Nền tảng kỹ thuật</h2>
+          <div class="section-head">
+            <span class="eyebrow" data-reveal><span class="sec-code">S.03</span><span class="eyebrow-dot"></span><span data-i18n="pipe.eyebrow">Kiến trúc</span></span>
+            <h2 data-reveal data-i18n="pipe.title">Đường ống xử lý sinh trắc học</h2>
           </div>
-          <ul class="tech-list reveal">
-            <li><strong>FastAPI</strong><span>Backend Python hiệu năng cao</span></li>
-            <li><strong>DeepFace</strong><span>Nhận diện &amp; đối sánh khuôn mặt</span></li>
-            <li><strong>MediaPipe</strong><span>Phát hiện chớp mắt, liveness</span></li>
-            <li><strong>React + Vite</strong><span>Giao diện quản trị &amp; kiosk</span></li>
-            <li><strong>Tailwind CSS</strong><span>Hệ thống thiết kế nhất quán</span></li>
-            <li><strong>WebSocket</strong><span>Luồng camera &amp; giám sát trực tiếp</span></li>
+
+          <ol class="pipeline">
+            <li class="pipe-node">
+              <span class="pipe-idx">A</span>
+              <strong data-i18n="pipe.n1t">Camera kiosk</strong>
+              <span data-i18n="pipe.n1p">Thu khung hình tại cổng</span>
+            </li>
+            <li class="pipe-node">
+              <span class="pipe-idx">B</span>
+              <strong>MediaPipe</strong>
+              <span data-i18n="pipe.n2p">Mốc khuôn mặt &amp; chớp mắt</span>
+            </li>
+            <li class="pipe-node">
+              <span class="pipe-idx">C</span>
+              <strong>DeepFace</strong>
+              <span data-i18n="pipe.n3p">Vector đặc trưng &amp; đối sánh</span>
+            </li>
+            <li class="pipe-node">
+              <span class="pipe-idx">D</span>
+              <strong>FastAPI</strong>
+              <span data-i18n="pipe.n4p">API &amp; WebSocket trực tiếp</span>
+            </li>
+            <li class="pipe-node">
+              <span class="pipe-idx">E</span>
+              <strong data-i18n="pipe.n5t">Bảng điều khiển</strong>
+              <span data-i18n="pipe.n5p">Dashboard &amp; báo cáo</span>
+            </li>
+          </ol>
+
+          <ul class="tech-list" data-reveal>
+            <li><strong>FastAPI</strong><span data-i18n="tech.1">Backend Python hiệu năng cao</span></li>
+            <li><strong>DeepFace</strong><span data-i18n="tech.2">Nhận diện &amp; đối sánh khuôn mặt</span></li>
+            <li><strong>MediaPipe</strong><span data-i18n="tech.3">Phát hiện chớp mắt, liveness</span></li>
+            <li><strong>React + Vite</strong><span data-i18n="tech.4">Giao diện quản trị &amp; kiosk</span></li>
+            <li><strong>Tailwind CSS</strong><span data-i18n="tech.5">Hệ thống thiết kế nhất quán</span></li>
+            <li><strong>WebSocket</strong><span data-i18n="tech.6">Luồng camera &amp; giám sát trực tiếp</span></li>
           </ul>
+        </div>
+      </section>
+
+      <!-- ===== DEMO ===== -->
+      <section class="demo-band">
+        <div class="demo-glow" aria-hidden="true"></div>
+        <div class="container demo-inner">
+          <span class="eyebrow eyebrow-light" data-reveal><span class="sec-code">S.04</span><span class="eyebrow-dot"></span><span data-i18n="demo.eyebrow">Demo trực tuyến</span></span>
+          <h2 data-reveal data-i18n="demo.title">Xem hệ thống đang chạy thật</h2>
+          <p data-reveal data-i18n="demo.sub">
+            Bản demo SecureFace AI đang hoạt động trên nền tảng đám mây — dashboard tổng quan
+            chấm công, nhật ký điểm danh thời gian thực và phân bố trạng thái ca làm việc.
+          </p>
+          <a class="btn btn-light" data-reveal href="https://attend-live.azurewebsites.net/?tour=1" target="_blank" rel="noopener">
+            <span data-i18n="demo.cta">Mở demo tại attend-live.azurewebsites.net</span>
+            <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </section>
     </main>
@@ -219,21 +328,23 @@
       <div class="container footer-inner">
         <div class="footer-brand">
           <span class="brand-name">FaceAttend</span>
-          <p>Hệ thống điểm danh bằng nhận diện khuôn mặt AI.</p>
+          <p data-i18n="footer.tag">Hệ thống điểm danh bằng nhận diện khuôn mặt AI.</p>
         </div>
         <nav class="footer-links">
-          <a href="#cach-hoat-dong">Cách hoạt động</a>
-          <a href="#tinh-nang">Tính năng</a>
-          <a href="https://attend-live.azurewebsites.net/" target="_blank" rel="noopener">Demo trực tiếp</a>
+          <a href="#cach-hoat-dong" data-i18n="nav.how">Cách hoạt động</a>
+          <a href="#tinh-nang" data-i18n="nav.features">Tính năng</a>
+          <a href="https://attend-live.azurewebsites.net/?tour=1" target="_blank" rel="noopener" data-i18n="footer.demo">Demo trực tiếp</a>
           <a href="https://github.com/hoang-IT-eng/AI-Face-Recognition-Attendance" target="_blank" rel="noopener">GitHub</a>
         </nav>
         <p class="footer-credit">
-          Thiết kế &amp; phát triển bởi <strong>Trần Huy Hoàng</strong><br />
-          © <span id="year">2026</span> FaceAttend. Mọi quyền được bảo lưu.
+          <span data-i18n="footer.credit">Thiết kế &amp; phát triển bởi <strong>Trần Huy Hoàng</strong></span><br />
+          <span data-i18n="footer.rights">© {YEAR} FaceAttend. Mọi quyền được bảo lưu.</span>
         </p>
       </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
