@@ -197,6 +197,7 @@ export default function Login() {
 
             <button
               type="submit"
+              data-tour="login-submit"
               disabled={loading}
               className="w-full h-12 mt-2 bg-primary text-on-primary hover:bg-on-primary-fixed rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.99] transition-all cursor-pointer disabled:opacity-60"
             >

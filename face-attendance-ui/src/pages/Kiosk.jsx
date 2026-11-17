@@ -229,6 +229,7 @@ export default function Kiosk() {
         {/* Device Telemetry Pill */}
         <div className="flex items-center gap-4 bg-surface-container-lowest px-4 py-1.5 rounded-xl border border-outline-variant/40 shadow-xs">
           <button
+            data-tour="kiosk-camera"
             onClick={() => setLiveCamera((v) => !v)}
             className={`px-2.5 py-1 rounded-lg font-label-sm text-label-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors ${
               liveCamera
@@ -381,7 +382,10 @@ export default function Kiosk() {
 
         {/* Center Optical HUD Viewport (6 cols) */}
         <div className="col-span-12 lg:col-span-6 flex flex-col items-center justify-center relative">
-          <div className="relative w-full max-w-[820px] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-[#0b0f19] flex items-center justify-center">
+          <div
+            data-tour="kiosk-viewport"
+            className="relative w-full max-w-[820px] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-[#0b0f19] flex items-center justify-center"
+          >
             {liveCamera ? (
               <Webcam
                 ref={webcamRef}
@@ -504,7 +508,10 @@ export default function Kiosk() {
 
           {/* Scenario 1: Success */}
           {scenario === "success" && (
-            <div className="bg-surface-container-lowest rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col gap-4">
+            <div
+              data-tour="kiosk-success"
+              className="bg-surface-container-lowest rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col gap-4"
+            >
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#009668]" />
               <div className="flex items-start gap-3">
                 <div className="w-12 h-12 rounded-full bg-[#009668]/10 flex items-center justify-center shrink-0">

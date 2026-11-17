@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./components/AdminLayout";
+import GuidedTour from "./components/GuidedTour";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -18,6 +19,7 @@ import PrivacySettings from "./pages/PrivacySettings";
 export default function App() {
   return (
     <BrowserRouter>
+      <GuidedTour />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />

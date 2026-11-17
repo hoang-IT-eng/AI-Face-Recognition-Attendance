@@ -15,7 +15,7 @@ const NAV_BASE = [
   { to: "/reports", icon: "description", label: "Báo cáo" },
   { to: "/alerts", icon: "notifications_active", label: "Cảnh báo" },
   { to: "/privacy-settings", icon: "shield_person", label: "Cài đặt quyền riêng tư" },
-  { to: "/kiosk", icon: "camera_indoor", label: "Kiosk Camera" },
+  { to: "/kiosk", icon: "camera_indoor", label: "Kiosk Camera", tour: "nav-kiosk" },
 ];
 
 export default function AdminLayout() {
@@ -130,6 +130,7 @@ export default function AdminLayout() {
                 key={item.to}
                 to={item.to}
                 end={item.end}
+                data-tour={item.tour}
                 className={({ isActive }) =>
                   `flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-colors font-label-lg text-label-lg ${
                     isActive
@@ -157,6 +158,7 @@ export default function AdminLayout() {
         <div className="pt-4 border-t border-surface-container flex flex-col gap-2">
           <button
             onClick={() => navigate("/register-face")}
+            data-tour="nav-register-face"
             className="w-full h-11 bg-primary text-on-primary rounded-xl flex items-center justify-center gap-2 hover:bg-primary-container transition-all font-label-lg text-label-lg active:scale-[0.98] shadow-sm cursor-pointer"
           >
             <span className="material-symbols-outlined text-[20px]">face</span>
@@ -188,6 +190,16 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-6">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("sf-tour-start"))}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-colors font-label-md text-label-md font-semibold shadow-sm cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                play_circle
+              </span>
+              <span>Hướng dẫn demo</span>
+            </button>
+
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant/40 font-label-md text-label-md">
               <span className="relative flex h-2 w-2">
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>

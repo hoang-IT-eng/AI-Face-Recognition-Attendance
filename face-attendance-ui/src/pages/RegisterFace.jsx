@@ -207,6 +207,7 @@ export default function RegisterFace() {
 
         <div className="flex items-center gap-3 self-start md:self-auto">
           <button
+            data-tour="reg-camera"
             onClick={() => setUseLiveCam((v) => !v)}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-code-telemetry text-label-sm shadow-xs cursor-pointer transition-colors ${
               useLiveCam
@@ -259,7 +260,10 @@ export default function RegisterFace() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT COLUMN: Employee Profile Form (5 cols) */}
         <div className="lg:col-span-5 flex flex-col gap-5">
-          <div className="bg-surface-container-lowest rounded-xl p-7 border border-outline-variant/40 shadow-xs flex flex-col gap-5">
+          <div
+            data-tour="reg-form"
+            className="bg-surface-container-lowest rounded-xl p-7 border border-outline-variant/40 shadow-xs flex flex-col gap-5"
+          >
             <div>
               <div className="flex items-center justify-between mb-1">
                 <h2 className="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
@@ -423,7 +427,10 @@ export default function RegisterFace() {
 
               {/* Consent Checkbox */}
               <div className="pt-1">
-                <label className="flex items-start gap-3 select-none cursor-pointer p-2.5 rounded-lg hover:bg-surface-container transition-colors">
+                <label
+                  data-tour="reg-consent"
+                  className="flex items-start gap-3 select-none cursor-pointer p-2.5 rounded-lg hover:bg-surface-container transition-colors"
+                >
                   <input
                     checked={consent}
                     onChange={(e) => setConsent(e.target.checked)}
@@ -450,6 +457,7 @@ export default function RegisterFace() {
                   </button>
                   <button
                     type="button"
+                    data-tour="reg-save"
                     disabled={!consent || validCount === 0 || submitting}
                     onClick={() => {
                       setStatusBanner(
@@ -639,6 +647,7 @@ export default function RegisterFace() {
                 {angles.map((angle, idx) => (
                   <div
                     key={angle.key}
+                    data-tour={`reg-angle-${idx}`}
                     className="bg-surface-container-low rounded-xl p-3 flex flex-col gap-2.5 relative shadow-xs"
                   >
                     <div className="flex items-center justify-between">
