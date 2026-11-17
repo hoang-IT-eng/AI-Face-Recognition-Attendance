@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getAlertStats, getMe } from "../api";
+import { useBackendStatus } from "../backendStatus";
 
 const LOGO_URL =
   "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
@@ -20,6 +21,7 @@ const NAV_BASE = [
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const backendStatus = useBackendStatus();
   const [clock, setClock] = useState("");
   const [dateStr, setDateStr] = useState("");
   const [alertBadge, setAlertBadge] = useState(0);
@@ -190,6 +192,30 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-6">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/40 font-label-md text-label-md"
+              title={
+                backendStatus === "real"
+                  ? "Máy chủ AI (DeepFace) đang hoạt động — mọi thao tác là thật"
+                  : "Máy chủ AI đang khởi động — giao diện chạy chế độ mô phỏng, dữ liệu sẽ tự đồng bộ khi AI sẵn sàng"
+              }
+            >
+              <span
+                className={`relative inline-flex rounded-full h-2 w-2 ${
+                  backendStatus === "real"
+                    ? "bg-emerald-500"
+                    : "bg-amber-500 animate-pulse"
+                }`}
+              ></span>
+              <span className="text-on-surface-variant">
+                {backendStatus === "real"
+                  ? "AI thật · đã kết nối"
+                  : backendStatus === "sim"
+                    ? "Mô phỏng · đang chờ AI"
+                    : "Đang kiểm tra AI…"}
+              </span>
+            </div>
+
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("sf-tour-start"))}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-colors font-label-md text-label-md font-semibold shadow-sm cursor-pointer"

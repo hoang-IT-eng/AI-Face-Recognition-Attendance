@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Webcam from "react-webcam";
 import { getUsers, createUser, registerFace } from "../api";
+import { getBackendStatus } from "../backendStatus";
+import { detectFaceInImage } from "../faceDetect";
+import { saveSimCapture } from "../simSync";
 
 const INITIAL_ANGLES = [
   {
@@ -50,6 +53,16 @@ export default function RegisterFace() {
   const [activeAngleIdx, setActiveAngleIdx] = useState(0);
   const [statusBanner, setStatusBanner] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Báo cho người dùng khi dữ liệu mô phỏng đã đồng bộ xong lên AI thật.
+  useEffect(() => {
+    const onSynced = () =>
+      setStatusBanner(
+        "Đã đồng bộ đăng ký lên AI thật ✓ — các góc chụp lúc mô phỏng đã được lưu vào hệ thống."
+      );
+    window.addEventListener("sf-sim-synced", onSynced);
+    return () => window.removeEventListener("sf-sim-synced", onSynced);
+  }, []);
 
   useEffect(() => {
     getUsers()
@@ -115,6 +128,47 @@ export default function RegisterFace() {
     }
 
     setSubmitting(true);
+    // Chế độ mô phỏng (máy chủ AI đang khởi động): kiểm tra khuôn mặt ngay
+    // trong trình duyệt và lưu tạm — dữ liệu tự đồng bộ lên AI thật sau.
+    if (getBackendStatus() !== "real") {
+      try {
+        const { face } = await detectFaceInImage(shot);
+        if (!face) {
+          setAngles((prev) =>
+            prev.map((a, i) =>
+              i === idx
+                ? { ...a, status: "blur", badge: "KHÔNG THẤY MẶT", img: shot }
+                : a
+            )
+          );
+          setStatusBanner(
+            "Không phát hiện khuôn mặt rõ nét trong khung ngắm."
+          );
+        } else {
+          setAngles((prev) =>
+            prev.map((a, i) =>
+              i === idx
+                ? { ...a, status: "pass", badge: "ĐÃ LƯU", img: shot }
+                : a
+            )
+          );
+          saveSimCapture(
+            { code: empCode, name: empName, group: dept },
+            shot
+          );
+          setStatusBanner(
+            `Đã lưu mô phỏng cho ${angles[idx].title} — sẽ tự đồng bộ lên AI thật khi máy chủ sẵn sàng.`
+          );
+        }
+      } catch {
+        setStatusBanner(
+          "Chưa tải được bộ phát hiện khuôn mặt trong trình duyệt — vui lòng chờ máy chủ AI khởi động xong rồi thử lại."
+        );
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
     try {
       const uid = await ensureUserExists();
       const blob = await (await fetch(shot)).blob();
@@ -156,6 +210,45 @@ export default function RegisterFace() {
       return;
     }
     setSubmitting(true);
+    // Chế độ mô phỏng cho ảnh tải lên: kiểm tra mặt trong trình duyệt.
+    if (getBackendStatus() !== "real") {
+      try {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        const { face } = await detectFaceInImage(dataUrl);
+        if (!face) {
+          setStatusBanner("Ảnh tải lên không phát hiện được khuôn mặt.");
+        } else {
+          const url = URL.createObjectURL(file);
+          setAngles((prev) =>
+            prev.map((a, i) =>
+              i === activeAngleIdx
+                ? { ...a, status: "pass", badge: "ĐÃ LƯU", img: url }
+                : a
+            )
+          );
+          saveSimCapture(
+            { code: empCode, name: empName, group: dept },
+            dataUrl
+          );
+          setStatusBanner(
+            `Đã lưu mô phỏng ảnh cho ${empName} — sẽ tự đồng bộ lên AI thật khi máy chủ sẵn sàng.`
+          );
+        }
+      } catch {
+        setStatusBanner(
+          "Chưa tải được bộ phát hiện khuôn mặt trong trình duyệt — vui lòng chờ máy chủ AI khởi động xong rồi thử lại."
+        );
+      } finally {
+        setSubmitting(false);
+        e.target.value = "";
+      }
+      return;
+    }
     try {
       const uid = await ensureUserExists();
       await registerFace(uid, file, { consent });

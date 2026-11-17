@@ -2,12 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 import { WS_LIVENESS_URL, getUsers, backupAttendance } from "../api";
+import { useBackendStatus } from "../backendStatus";
+import { analyzeFrame } from "../faceDetect";
+import { loadSimCaptures } from "../simSync";
 
 export default function Kiosk() {
   const navigate = useNavigate();
   const webcamRef = useRef(null);
   const wsRef = useRef(null);
   const timerRef = useRef(null);
+  const backendStatus = useBackendStatus();
 
   const [clock, setClock] = useState("07:52:10");
   const [dateStr, setDateStr] = useState("Thứ Tư, 24/10/2024");
@@ -92,6 +96,61 @@ export default function Kiosk() {
     }
 
     setLivenessState({ blink_count: 0, required: 2, passed: false });
+
+    // Chế độ mô phỏng (máy chủ AI đang khởi động): đếm chớp mắt ngay trong
+    // trình duyệt bằng MediaPipe; đủ 2 lần chớp + có mặt → điểm danh thành
+    // công cho nhân viên vừa đăng ký mô phỏng (hoặc hồ sơ demo mặc định).
+    if (backendStatus !== "real") {
+      let blinks = 0;
+      let eyeClosed = false;
+      let done = false;
+      let cancelled = false;
+      timerRef.current = setInterval(async () => {
+        if (done || cancelled) return;
+        const video = webcamRef.current?.video;
+        if (!video || video.readyState < 2) return;
+        try {
+          const { face, blink } = await analyzeFrame(video);
+          if (!face || done || cancelled) return;
+          if (blink > 0.55) eyeClosed = true;
+          if (eyeClosed && blink < 0.3) {
+            eyeClosed = false;
+            blinks += 1;
+            setLivenessState({
+              blink_count: blinks,
+              required: 2,
+              passed: blinks >= 2,
+            });
+            if (blinks >= 2) {
+              done = true;
+              const sim = loadSimCaptures();
+              const person = sim?.emp || {
+                name: "Nguyễn Văn A",
+                code: "NV001",
+                group: "Kỹ thuật",
+              };
+              setMatchedPerson({
+                name: person.name,
+                code: person.code,
+                dept: person.group || "Kỹ thuật",
+                time: new Date().toLocaleTimeString("vi-VN", {
+                  hour12: false,
+                }),
+                status: "ĐÃ VÀO",
+              });
+              setScenario("success");
+            }
+          }
+        } catch {
+          /* Bộ phát hiện chưa tải được — bỏ qua khung hình này. */
+        }
+      }, 200);
+      return () => {
+        cancelled = true;
+        clearInterval(timerRef.current);
+      };
+    }
+
     const ws = new WebSocket(`${WS_LIVENESS_URL}?mode=checkin`);
     wsRef.current = ws;
 
@@ -131,7 +190,7 @@ export default function Kiosk() {
       clearInterval(timerRef.current);
       ws.close();
     };
-  }, [liveCamera]);
+  }, [liveCamera, backendStatus]);
 
   const activeStaff =
     users[selectedStaffIdx] || {
@@ -224,6 +283,14 @@ export default function Kiosk() {
               Neural Mesh v4.2 • Live Feed Active
             </span>
           </div>
+          {backendStatus !== "real" && (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 shadow-xs">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+              <span className="font-label-sm text-label-sm text-amber-800">
+                Chế độ mô phỏng — đang chờ AI thật
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Device Telemetry Pill */}

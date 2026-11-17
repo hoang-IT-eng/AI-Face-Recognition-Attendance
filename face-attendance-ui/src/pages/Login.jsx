@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
+import { getBackendStatus } from "../backendStatus";
 
 const LOGO_URL =
   "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
@@ -22,6 +23,26 @@ export default function Login() {
     }
     setLoading(true);
     setError("");
+    // Chế độ mô phỏng (máy chủ AI đang khởi động): chỉ nhận tài khoản demo
+    // điền sẵn và đăng nhập cục bộ; AI thật sẵn sàng thì đi qua API như thường.
+    if (getBackendStatus() !== "real") {
+      if (
+        email.trim() === "admin@secureface.vn" &&
+        password === "SecureFace@2026"
+      ) {
+        localStorage.setItem("sf_admin_auth", "1");
+        localStorage.setItem("sf_admin_token", "sim-token");
+        localStorage.setItem("sf_admin_name", "Admin");
+        navigate("/dashboard");
+      } else {
+        setAttemptsLeft((n) => Math.max(0, n - 1));
+        setError(
+          "Đang ở chế độ mô phỏng (máy chủ AI đang khởi động) — hãy dùng tài khoản demo đã điền sẵn."
+        );
+      }
+      setLoading(false);
+      return;
+    }
     try {
       const res = await login(email.trim(), password);
       localStorage.setItem("sf_admin_auth", "1");

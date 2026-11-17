@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./components/AdminLayout";
 import GuidedTour from "./components/GuidedTour";
+import { startBackendProbe } from "./backendStatus";
+import { initSimSync } from "./simSync";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -17,6 +20,12 @@ import Alerts from "./pages/Alerts";
 import PrivacySettings from "./pages/PrivacySettings";
 
 export default function App() {
+  // Đánh thức + theo dõi máy chủ AI; sẵn sàng thì tự đồng bộ dữ liệu mô phỏng.
+  useEffect(() => {
+    startBackendProbe();
+    initSimSync();
+  }, []);
+
   return (
     <BrowserRouter>
       <GuidedTour />
