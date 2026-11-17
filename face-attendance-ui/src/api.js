@@ -35,6 +35,30 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// A static host (or any misconfigured server) may answer API calls with the
+// SPA's index.html (HTTP 200, text/html) instead of JSON. Treating that HTML
+// string as data poisons page state — arrays become strings and the next
+// render crashes to a white screen. Convert such responses into a normal
+// request failure so pages keep their built-in fallbacks. The login call is
+// the one exception: the console resolves it locally in demo mode, so it
+// receives an empty object instead of a rejection.
+api.interceptors.response.use((response) => {
+  const data = response.data;
+  const contentType = response.headers?.["content-type"] || "";
+  const looksHtml =
+    typeof data === "string" &&
+    (contentType.includes("text/html") || data.trimStart().startsWith("<"));
+  if (!looksHtml) return response;
+  if ((response.config?.url || "").includes("/auth/login")) {
+    response.data = {};
+    return response;
+  }
+  const error = new Error("API did not return JSON (received HTML)");
+  error.response = response;
+  error.config = response.config;
+  return Promise.reject(error);
+});
+
 // Auth
 export const login = (email, password) =>
   api.post("/auth/login", { email, password });
