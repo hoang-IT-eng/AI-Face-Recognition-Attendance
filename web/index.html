@@ -12,12 +12,12 @@
     <meta name="author" content="Trần Huy Hoàng" />
     <meta property="og:title" content="FaceAttend — AI Face Recognition Attendance" />
     <meta property="og:description" content="Biometric attendance: kiosk face recognition, liveness anti-spoofing, shift management and automatic timesheets." />
-    <meta property="og:image" content="img/face-scan.webp" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b84ff' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2'/%3E%3Ccircle cx='12' cy='10' r='3.2'/%3E%3Cpath d='M6.5 19.5c.8-2.3 2.9-3.5 5.5-3.5s4.7 1.2 5.5 3.5'/%3E%3C/svg%3E" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1200&auto=format&fit=crop" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366d1' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2'/%3E%3Ccircle cx='12' cy='10' r='3.2'/%3E%3Cpath d='M6.5 19.5c.8-2.3 2.9-3.5 5.5-3.5s4.7 1.2 5.5 3.5'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -76,14 +76,11 @@
     <main id="top">
       <!-- ===== HERO ===== -->
       <section class="hero">
-        <canvas id="meshCanvas" class="mesh-canvas" aria-hidden="true"></canvas>
-        <div class="hero-grid-overlay" aria-hidden="true"></div>
-        <p class="hero-side hero-side-l" aria-hidden="true">SYS.BIOMETRIC // ATTENDANCE.CORE</p>
-        <p class="hero-side hero-side-r" aria-hidden="true">LAT 10.762622 — LON 106.660172</p>
+        <div class="hero-grid-bg" aria-hidden="true"></div>
         <div class="container hero-grid">
           <div class="hero-copy">
-            <span class="eyebrow" data-hero><span class="eyebrow-dot"></span><span data-i18n="hero.eyebrow">Hệ thống điểm danh sinh trắc học</span></span>
-            <h1 data-hero data-i18n="hero.title">Điểm danh bằng <span class="grad">khuôn mặt</span>.<br />Nhanh. Chính xác.<br />Không tiếp xúc.</h1>
+            <span class="eyebrow" data-hero><span data-i18n="hero.eyebrow">Hệ thống điểm danh sinh trắc học</span></span>
+            <h1 data-hero data-i18n="hero.title">Điểm danh bằng khuôn mặt.<br />Nhanh. Chính xác.<br />Không tiếp xúc.</h1>
             <p class="hero-sub" data-hero data-i18n="hero.sub">
               FaceAttend nhận diện nhân viên ngay tại kiosk bằng AI — không thẻ, không vân tay,
               không xếp hàng chờ. Mọi lượt vào ra được ghi lại tức thì, đối chiếu với ca làm việc
@@ -96,9 +93,9 @@
               </a>
               <a class="btn btn-ghost" href="#cach-hoat-dong" data-i18n="hero.cta2">Xem cách hoạt động</a>
             </div>
-            <dl class="hero-telemetry" data-hero>
+            <dl class="hero-specs" data-hero>
               <div>
-                <dt>PIPELINE</dt>
+                <dt data-i18n="hero.t1k">Nhận diện</dt>
                 <dd>DeepFace + MediaPipe</dd>
               </div>
               <div>
@@ -113,40 +110,29 @@
           </div>
 
           <div class="hero-visual" data-hero>
-            <div class="kiosk-card">
+            <figure class="kiosk-card">
               <div class="kiosk-head">
-                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                <span class="kiosk-title" data-i18n="kiosk.title">KIOSK CỔNG A — TRỰC TIẾP</span>
-                <span class="kiosk-rec" aria-hidden="true"><i></i>REC</span>
+                <span class="kiosk-title" data-i18n="kiosk.title">Kiosk điểm danh — Cổng A</span>
+                <span class="kiosk-live"><i></i><span data-i18n="kiosk.live">Đang hoạt động</span></span>
               </div>
-              <div class="scan-frame">
-                <img class="scan-img" src="img/face-scan.webp" alt="" width="880" height="880" />
-                <div class="scan-corner tl"></div>
-                <div class="scan-corner tr"></div>
-                <div class="scan-corner bl"></div>
-                <div class="scan-corner br"></div>
-                <div class="scan-line"></div>
-                <span class="scan-badge"><span data-i18n="kiosk.badge">ĐÃ NHẬN DIỆN</span> • 99.2%</span>
-                <span class="scan-coord tl" aria-hidden="true">X:512 Y:088</span>
-                <span class="scan-coord br" aria-hidden="true">MESH · 468 PTS</span>
+              <div class="photo-frame">
+                <img
+                  class="hero-photo"
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1200&auto=format&fit=crop"
+                  data-i18n-attr="alt:kiosk.imgalt"
+                  alt="Nhân viên trong sảnh văn phòng hiện đại, ánh sáng tự nhiên"
+                  width="1200"
+                  height="900"
+                />
               </div>
-              <p class="hud-line" aria-hidden="true"><span class="hud-caret">&gt;</span> <span id="hudText">SCANNING FACE MESH…</span><span class="hud-cursor"></span></p>
-              <div class="kiosk-row">
+              <figcaption class="kiosk-row">
                 <div>
                   <p class="kiosk-name">Nguyễn Văn A — NV001</p>
                   <p class="kiosk-meta" data-i18n="kiosk.meta">Kỹ thuật • Ca 08:00</p>
                 </div>
-                <span class="kiosk-status" data-i18n="kiosk.status">Có mặt 07:52</span>
-              </div>
-            </div>
-            <div class="stat-chip chip-a">
-              <strong id="chipCount">142/150</strong>
-              <span data-i18n="chip.a">Có mặt hôm nay</span>
-            </div>
-            <div class="stat-chip chip-b">
-              <strong data-i18n="chip.bt">Thời gian thực</strong>
-              <span data-i18n="chip.bs">Nhật ký điểm danh trực tiếp</span>
-            </div>
+                <span class="kiosk-status" data-i18n="kiosk.status">Đã điểm danh 07:52</span>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -154,8 +140,8 @@
       <!-- ===== MARQUEE ===== -->
       <div class="marquee" aria-hidden="true">
         <div class="marquee-track">
-          <span>DEEPFACE</span><i>◆</i><span>MEDIAPIPE</span><i>◆</i><span>LIVENESS DETECTION</span><i>◆</i><span>ANTI-SPOOFING</span><i>◆</i><span>FACE EMBEDDING</span><i>◆</i><span>FASTAPI</span><i>◆</i><span>WEBSOCKET</span><i>◆</i><span>KIOSK MODE</span><i>◆</i>
-          <span>DEEPFACE</span><i>◆</i><span>MEDIAPIPE</span><i>◆</i><span>LIVENESS DETECTION</span><i>◆</i><span>ANTI-SPOOFING</span><i>◆</i><span>FACE EMBEDDING</span><i>◆</i><span>FASTAPI</span><i>◆</i><span>WEBSOCKET</span><i>◆</i><span>KIOSK MODE</span><i>◆</i>
+          <span>DEEPFACE</span><i>•</i><span>MEDIAPIPE</span><i>•</i><span>LIVENESS DETECTION</span><i>•</i><span>ANTI-SPOOFING</span><i>•</i><span>FACE EMBEDDING</span><i>•</i><span>FASTAPI</span><i>•</i><span>WEBSOCKET</span><i>•</i><span>KIOSK MODE</span><i>•</i>
+          <span>DEEPFACE</span><i>•</i><span>MEDIAPIPE</span><i>•</i><span>LIVENESS DETECTION</span><i>•</i><span>ANTI-SPOOFING</span><i>•</i><span>FACE EMBEDDING</span><i>•</i><span>FASTAPI</span><i>•</i><span>WEBSOCKET</span><i>•</i><span>KIOSK MODE</span><i>•</i>
         </div>
       </div>
 
@@ -163,7 +149,7 @@
       <section class="section" id="cach-hoat-dong">
         <div class="container">
           <div class="section-head">
-            <span class="eyebrow" data-reveal><span class="sec-code">S.01</span><span class="eyebrow-dot"></span><span data-i18n="how.eyebrow">Cách hoạt động</span></span>
+            <span class="eyebrow" data-reveal><span data-i18n="how.eyebrow">Cách hoạt động</span></span>
             <h2 data-reveal data-i18n="how.title">Từ khuôn mặt đến bảng công — trong ba bước</h2>
           </div>
           <div class="steps">
@@ -209,7 +195,7 @@
       <section class="section section-alt" id="tinh-nang">
         <div class="container">
           <div class="section-head">
-            <span class="eyebrow" data-reveal><span class="sec-code">S.02</span><span class="eyebrow-dot"></span><span data-i18n="feat.eyebrow">Tính năng</span></span>
+            <span class="eyebrow" data-reveal><span data-i18n="feat.eyebrow">Tính năng</span></span>
             <h2 data-reveal data-i18n="feat.title">Đủ sâu cho vận hành. Đủ gọn cho người dùng.</h2>
           </div>
           <div class="features">
@@ -263,7 +249,7 @@
       <section class="section" id="cong-nghe">
         <div class="container">
           <div class="section-head">
-            <span class="eyebrow" data-reveal><span class="sec-code">S.03</span><span class="eyebrow-dot"></span><span data-i18n="pipe.eyebrow">Kiến trúc</span></span>
+            <span class="eyebrow" data-reveal><span data-i18n="pipe.eyebrow">Kiến trúc</span></span>
             <h2 data-reveal data-i18n="pipe.title">Đường ống xử lý sinh trắc học</h2>
           </div>
 
@@ -308,9 +294,8 @@
 
       <!-- ===== DEMO ===== -->
       <section class="demo-band">
-        <div class="demo-glow" aria-hidden="true"></div>
         <div class="container demo-inner">
-          <span class="eyebrow eyebrow-light" data-reveal><span class="sec-code">S.04</span><span class="eyebrow-dot"></span><span data-i18n="demo.eyebrow">Demo trực tuyến</span></span>
+          <span class="eyebrow eyebrow-light" data-reveal><span data-i18n="demo.eyebrow">Demo trực tuyến</span></span>
           <h2 data-reveal data-i18n="demo.title">Xem hệ thống đang chạy thật</h2>
           <p data-reveal data-i18n="demo.sub">
             Bản demo SecureFace AI đang hoạt động trên nền tảng đám mây — dashboard tổng quan

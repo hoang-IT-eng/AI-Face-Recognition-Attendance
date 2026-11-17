@@ -1,4 +1,4 @@
-// FaceAttend landing — i18n, interactions, canvas mesh, GSAP reveals.
+// FaceAttend landing — i18n, interactions, GSAP reveals.
 (function () {
   "use strict";
 
@@ -13,25 +13,20 @@
       "nav.tech": "Công nghệ",
       "nav.demo": "Xem demo trực tiếp",
       "hero.eyebrow": "Hệ thống điểm danh sinh trắc học",
-      "hero.title": "Điểm danh bằng <span class=\"grad\">khuôn mặt</span>.<br />Nhanh. Chính xác.<br />Không tiếp xúc.",
+      "hero.title": "Điểm danh bằng khuôn mặt.<br />Nhanh. Chính xác.<br />Không tiếp xúc.",
       "hero.sub": "FaceAttend nhận diện nhân viên ngay tại kiosk bằng AI — không thẻ, không vân tay, không xếp hàng chờ. Mọi lượt vào ra được ghi lại tức thì, đối chiếu với ca làm việc và tổng hợp thành báo cáo chấm công tự động.",
       "hero.cta1": "Trải nghiệm demo live",
       "hero.cta2": "Xem cách hoạt động",
+      "hero.t1k": "Nhận diện",
       "hero.t2k": "Chế độ",
       "hero.t2v": "Không tiếp xúc",
       "hero.t3k": "Ghi nhận",
       "hero.t3v": "Thời gian thực",
-      "kiosk.title": "KIOSK CỔNG A — TRỰC TIẾP",
-      "kiosk.badge": "ĐÃ NHẬN DIỆN",
+      "kiosk.title": "Kiosk điểm danh — Cổng A",
+      "kiosk.live": "Đang hoạt động",
+      "kiosk.imgalt": "Nhân viên trong sảnh văn phòng hiện đại, ánh sáng tự nhiên",
       "kiosk.meta": "Kỹ thuật • Ca 08:00",
-      "kiosk.status": "Có mặt 07:52",
-      "chip.a": "Có mặt hôm nay",
-      "chip.bt": "Thời gian thực",
-      "chip.bs": "Nhật ký điểm danh trực tiếp",
-      "hud.1": "SCANNING FACE MESH…",
-      "hud.2": "LIVENESS · ĐÃ PHÁT HIỆN CHỚP MẮT",
-      "hud.3": "EMBEDDING · VECTOR 512 CHIỀU",
-      "hud.4": "ĐỐI SÁNH · ĐỘ KHỚP 99.2%",
+      "kiosk.status": "Đã điểm danh 07:52",
       "how.eyebrow": "Cách hoạt động",
       "how.title": "Từ khuôn mặt đến bảng công — trong ba bước",
       "step1.t": "Đăng ký khuôn mặt",
@@ -87,25 +82,20 @@
       "nav.tech": "Technology",
       "nav.demo": "View live demo",
       "hero.eyebrow": "Biometric attendance system",
-      "hero.title": "Attendance by <span class=\"grad\">face</span>.<br />Fast. Accurate.<br />Contactless.",
+      "hero.title": "Attendance by face.<br />Fast. Accurate.<br />Contactless.",
       "hero.sub": "FaceAttend recognizes employees right at the kiosk with AI — no cards, no fingerprints, no queues. Every check-in is recorded instantly, matched against work shifts and rolled up into automatic timesheet reports.",
       "hero.cta1": "Try the live demo",
       "hero.cta2": "See how it works",
+      "hero.t1k": "Recognition",
       "hero.t2k": "Mode",
       "hero.t2v": "Contactless",
       "hero.t3k": "Logging",
       "hero.t3v": "Real-time",
-      "kiosk.title": "KIOSK GATE A — LIVE",
-      "kiosk.badge": "RECOGNIZED",
+      "kiosk.title": "Check-in kiosk — Gate A",
+      "kiosk.live": "Live",
+      "kiosk.imgalt": "An employee in a bright, modern office lobby",
       "kiosk.meta": "Engineering • Shift 08:00",
       "kiosk.status": "Checked in 07:52",
-      "chip.a": "Present today",
-      "chip.bt": "Real-time",
-      "chip.bs": "Live attendance feed",
-      "hud.1": "SCANNING FACE MESH…",
-      "hud.2": "LIVENESS · BLINK DETECTED",
-      "hud.3": "EMBEDDING · 512-D VECTOR",
-      "hud.4": "MATCH · CONFIDENCE 99.2%",
       "how.eyebrow": "How it works",
       "how.title": "From face to timesheet — in three steps",
       "step1.t": "Enroll a face",
@@ -190,7 +180,6 @@
       opt.setAttribute("aria-selected", active ? "true" : "false");
     });
     try { window.localStorage.setItem(LANG_KEY, lang); } catch (e) { /* ignore */ }
-    restartHud();
   }
 
   /* Language switcher open/close */
@@ -244,199 +233,16 @@
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = yearStr;
 
-  /* ================= HUD cycler ================= */
-  var hudEl = document.getElementById("hudText");
-  var hudTimer = null;
-  var hudIdx = 0;
-  function restartHud() {
-    if (!hudEl) return;
-    if (hudTimer) window.clearInterval(hudTimer);
-    var dict = I18N[currentLang];
-    var lines = [dict["hud.1"], dict["hud.2"], dict["hud.3"], dict["hud.4"]];
-    hudIdx = 0;
-    hudEl.textContent = lines[0];
-    hudTimer = window.setInterval(function () {
-      hudIdx = (hudIdx + 1) % lines.length;
-      hudEl.style.opacity = "0";
-      window.setTimeout(function () {
-        hudEl.textContent = lines[hudIdx];
-        hudEl.style.opacity = "1";
-      }, 180);
-    }, 2600);
-    hudEl.style.transition = "opacity 0.18s ease";
-  }
-
-  /* Apply language before starting the HUD */
+  /* Apply language */
   applyLang(currentLang);
 
-  /* ================= Canvas face-mesh ================= */
+  /* ================= GSAP motion (quiet reveals) ================= */
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  (function initMesh() {
-    var canvas = document.getElementById("meshCanvas");
-    if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext("2d");
-    var hero = canvas.parentElement;
-    var W = 0, H = 0, points = [], raf = null, running = true, t = 0;
-    var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
-
-    function buildPoints() {
-      points = [];
-      var cx = W * 0.68, cy = H * 0.44;
-      var rx = Math.min(W, H) * 0.30, ry = Math.min(W, H) * 0.40;
-      var rings = 5;
-      for (var r = 0; r < rings; r++) {
-        var n = 10 + r * 7;
-        var fr = (r + 1) / rings;
-        for (var i = 0; i < n; i++) {
-          var a = (i / n) * Math.PI * 2 + r * 0.35;
-          points.push({
-            bx: cx + Math.cos(a) * rx * fr,
-            by: cy + Math.sin(a) * ry * fr,
-            ph: Math.random() * Math.PI * 2,
-            sp: 0.4 + Math.random() * 0.7,
-            rad: 1 + Math.random() * 1.4
-          });
-        }
-      }
-      var scatter = W < 720 ? 22 : 40;
-      for (var s = 0; s < scatter; s++) {
-        points.push({
-          bx: Math.random() * W,
-          by: Math.random() * H,
-          ph: Math.random() * Math.PI * 2,
-          sp: 0.3 + Math.random() * 0.6,
-          rad: 0.7 + Math.random() * 1.1
-        });
-      }
-    }
-
-    function resize() {
-      var rect = hero.getBoundingClientRect();
-      W = rect.width; H = rect.height;
-      canvas.width = Math.round(W * DPR);
-      canvas.height = Math.round(H * DPR);
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      buildPoints();
-      if (reducedMotion) draw(0);
-    }
-
-    function draw(time) {
-      t = time * 0.001;
-      ctx.clearRect(0, 0, W, H);
-      var pts = points.map(function (p) {
-        return {
-          x: p.bx + Math.sin(t * p.sp + p.ph) * 7,
-          y: p.by + Math.cos(t * p.sp * 0.8 + p.ph) * 7,
-          rad: p.rad
-        };
-      });
-      var LINK = W < 720 ? 74 : 96;
-      ctx.lineWidth = 1;
-      for (var i = 0; i < pts.length; i++) {
-        for (var j = i + 1; j < pts.length; j++) {
-          var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
-          var d2 = dx * dx + dy * dy;
-          if (d2 < LINK * LINK) {
-            var alpha = (1 - Math.sqrt(d2) / LINK) * 0.30;
-            ctx.strokeStyle = "rgba(120,112,255," + alpha.toFixed(3) + ")";
-            ctx.beginPath();
-            ctx.moveTo(pts[i].x, pts[i].y);
-            ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-      // sweeping scan band
-      var bandY = ((t * 0.11) % 1.3 - 0.15) * H;
-      var grad = ctx.createLinearGradient(0, bandY - 46, 0, bandY + 46);
-      grad.addColorStop(0, "rgba(76,215,246,0)");
-      grad.addColorStop(0.5, "rgba(76,215,246,0.10)");
-      grad.addColorStop(1, "rgba(76,215,246,0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, bandY - 46, W, 92);
-      ctx.fillStyle = "rgba(76,215,246,0.5)";
-      ctx.fillRect(0, bandY, W, 1);
-      // nodes
-      pts.forEach(function (p, idx) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.rad, 0, Math.PI * 2);
-        ctx.fillStyle = idx % 5 === 0 ? "rgba(120,225,255,0.9)" : "rgba(157,151,255,0.75)";
-        ctx.fill();
-      });
-    }
-
-    function loop(time) {
-      if (!running) { raf = null; return; }
-      draw(time);
-      raf = window.requestAnimationFrame(loop);
-    }
-
-    resize();
-    window.addEventListener("resize", resize);
-    if (!reducedMotion) {
-      raf = window.requestAnimationFrame(loop);
-      if ("IntersectionObserver" in window) {
-        new IntersectionObserver(function (entries) {
-          var visible = entries[0].isIntersecting;
-          if (visible && !running) { running = true; raf = window.requestAnimationFrame(loop); }
-          if (!visible) running = false;
-        }).observe(hero);
-      }
-      document.addEventListener("visibilitychange", function () {
-        if (document.hidden) { running = false; }
-        else if (!running) { running = true; raf = window.requestAnimationFrame(loop); }
-      });
-    }
-  })();
-
-  /* ================= Feature-card spotlight (follows the cursor) ================= */
-  if (!reducedMotion && window.matchMedia("(pointer: fine)").matches) {
-    document.querySelectorAll(".feature-card").forEach(function (card) {
-      card.addEventListener("mousemove", function (e) {
-        var r = card.getBoundingClientRect();
-        card.style.setProperty("--mx", (e.clientX - r.left) + "px");
-        card.style.setProperty("--my", (e.clientY - r.top) + "px");
-      });
-    });
-  }
-
-  /* ================= GSAP motion suite ================= */
   if (window.gsap && !reducedMotion) {
     var gsap = window.gsap;
     gsap.from("[data-hero]", {
-      y: 36, opacity: 0, duration: 1.05, ease: "power3.out", stagger: 0.1, delay: 0.08
+      y: 16, opacity: 0, duration: 0.75, ease: "power3.out", stagger: 0.07, delay: 0.05
     });
-
-    // Count-up on the kiosk stat chip (142/150 present today)
-    var chip = document.getElementById("chipCount");
-    if (chip) {
-      var counter = { v: 0 };
-      gsap.to(counter, {
-        v: 142, duration: 1.8, delay: 1, ease: "power2.out",
-        onUpdate: function () { chip.textContent = Math.round(counter.v) + "/150"; }
-      });
-    }
-
-    // Kiosk card: gentle float + pointer tilt
-    var kioskCard = document.querySelector(".kiosk-card");
-    if (kioskCard) {
-      gsap.to(kioskCard, { y: -9, duration: 3.4, yoyo: true, repeat: -1, ease: "sine.inOut" });
-      if (window.matchMedia("(pointer: fine)").matches) {
-        var heroVisual = document.querySelector(".hero-visual");
-        heroVisual.addEventListener("mousemove", function (e) {
-          var r = heroVisual.getBoundingClientRect();
-          var relX = (e.clientX - r.left) / r.width - 0.5;
-          var relY = (e.clientY - r.top) / r.height - 0.5;
-          gsap.to(kioskCard, {
-            rotationY: relX * 6, rotationX: -relY * 6,
-            transformPerspective: 900, duration: 0.6, ease: "power2.out"
-          });
-        });
-        heroVisual.addEventListener("mouseleave", function () {
-          gsap.to(kioskCard, { rotationX: 0, rotationY: 0, duration: 0.7, ease: "power3.out" });
-        });
-      }
-    }
 
     if (window.ScrollTrigger) {
       gsap.registerPlugin(window.ScrollTrigger);
@@ -445,7 +251,7 @@
       // Generic reveals
       gsap.utils.toArray("[data-reveal]").forEach(function (el) {
         gsap.to(el, {
-          opacity: 1, y: 0, duration: 0.95, ease: "power3.out",
+          opacity: 1, y: 0, duration: 0.7, ease: "power3.out",
           scrollTrigger: { trigger: el, start: "top 88%", once: true }
         });
       });
@@ -472,9 +278,9 @@
       var pipeNodes = gsap.utils.toArray(".pipe-node");
       if (pipeNodes.length) {
         gsap.fromTo(pipeNodes,
-          { y: 26, opacity: 0 },
+          { y: 14, opacity: 0 },
           {
-            y: 0, opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.13,
+            y: 0, opacity: 1, duration: 0.55, ease: "power3.out", stagger: 0.08,
             scrollTrigger: { trigger: ".pipeline", start: "top 85%", once: true }
           });
       }
