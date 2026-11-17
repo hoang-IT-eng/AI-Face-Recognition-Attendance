@@ -481,3 +481,8 @@
     }
   }
 })();
+
+// Warm up the AI backend (it sleeps when idle) so the live demo connects faster.
+try {
+  fetch("https://faceattend-api.blueground-3385828b.eastasia.azurecontainerapps.io/api/health", { mode: "no-cors", cache: "no-store" }).catch(function () {});
+} catch (e) {}
