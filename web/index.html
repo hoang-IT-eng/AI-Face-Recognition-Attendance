@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FaceAttend — Điểm danh bằng nhận diện khuôn mặt AI</title>
+    <meta
+      name="description"
+      content="FaceAttend là hệ thống điểm danh sinh trắc học: nhận diện khuôn mặt tại kiosk, chống giả mạo bằng liveness detection, quản lý ca làm việc và báo cáo chấm công tự động."
+    />
+    <meta name="author" content="Trần Huy Hoàng" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" id="siteHeader">
+      <div class="container header-inner">
+        <a class="brand" href="#top" aria-label="FaceAttend">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+              <circle cx="12" cy="10" r="3.2" />
+              <path d="M6.5 19.5c.8-2.3 2.9-3.5 5.5-3.5s4.7 1.2 5.5 3.5" />
+            </svg>
+          </span>
+          <span class="brand-name">FaceAttend</span>
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav" id="siteNav">
+          <a href="#cach-hoat-dong">Cách hoạt động</a>
+          <a href="#tinh-nang">Tính năng</a>
+          <a href="#cong-nghe">Công nghệ</a>
+          <a class="nav-cta" href="https://attend-live.azurewebsites.net/" target="_blank" rel="noopener">Xem demo trực tiếp</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <span class="eyebrow">Hệ thống điểm danh sinh trắc học</span>
+            <h1>Điểm danh bằng khuôn mặt.<br />Nhanh, chính xác, <em>không tiếp xúc.</em></h1>
+            <p class="hero-sub">
+              FaceAttend nhận diện nhân viên ngay tại kiosk bằng AI — không thẻ, không vân tay,
+              không xếp hàng chờ. Mọi lượt vào ra được ghi lại tức thì, đối chiếu với ca làm việc
+              và tổng hợp thành báo cáo chấm công tự động.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="https://attend-live.azurewebsites.net/" target="_blank" rel="noopener">
+                Trải nghiệm demo live
+                <span aria-hidden="true">→</span>
+              </a>
+              <a class="btn btn-ghost" href="#cach-hoat-dong">Xem cách hoạt động</a>
+            </div>
+            <ul class="hero-points">
+              <li>Chống giả mạo bằng phát hiện người thật (liveness)</li>
+              <li>Quản lý ca, đi muộn, vắng mặt theo thời gian thực</li>
+              <li>Báo cáo &amp; cảnh báo tự động cho HR và quản trị viên</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual reveal" aria-hidden="true">
+            <div class="kiosk-card">
+              <div class="kiosk-head">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="kiosk-title">KIOSK CỔNG A — TRỰC TIẾP</span>
+              </div>
+              <div class="scan-frame">
+                <div class="scan-corner tl"></div>
+                <div class="scan-corner tr"></div>
+                <div class="scan-corner bl"></div>
+                <div class="scan-corner br"></div>
+                <svg class="scan-face" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <circle cx="12" cy="9.5" r="3.6" />
+                  <path d="M5.5 20c1-3.4 3.6-5 6.5-5s5.5 1.6 6.5 5" />
+                </svg>
+                <div class="scan-line"></div>
+                <span class="scan-badge">ĐÃ NHẬN DIỆN • 99.2%</span>
+              </div>
+              <div class="kiosk-row">
+                <div>
+                  <p class="kiosk-name">Nguyễn Văn A — NV001</p>
+                  <p class="kiosk-meta">Kỹ thuật • Ca 08:00</p>
+                </div>
+                <span class="kiosk-status">Có mặt 07:52</span>
+              </div>
+            </div>
+            <div class="stat-chip chip-a">
+              <strong>142/150</strong>
+              <span>Có mặt hôm nay</span>
+            </div>
+            <div class="stat-chip chip-b">
+              <strong>Thời gian thực</strong>
+              <span>Nhật ký điểm danh trực tiếp</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="section" id="cach-hoat-dong">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="eyebrow">Cách hoạt động</span>
+            <h2>Từ khuôn mặt đến bảng công trong ba bước</h2>
+          </div>
+          <div class="steps">
+            <article class="step-card reveal">
+              <span class="step-num">01</span>
+              <h3>Đăng ký khuôn mặt</h3>
+              <p>
+                Nhân viên đăng ký một lần tại quầy quản trị hoặc kiosk. Hệ thống trích xuất
+                đặc trưng khuôn mặt và lưu trữ an toàn làm hồ sơ sinh trắc học.
+              </p>
+            </article>
+            <article class="step-card reveal">
+              <span class="step-num">02</span>
+              <h3>Nhận diện tại kiosk</h3>
+              <p>
+                Khi đến cổng, camera nhận diện khuôn mặt trong tích tắc, đồng thời kiểm tra
+                liveness bằng chuyển động chớp mắt để ngăn điểm danh hộ bằng ảnh hoặc video.
+              </p>
+            </article>
+            <article class="step-card reveal">
+              <span class="step-num">03</span>
+              <h3>Báo cáo &amp; cảnh báo</h3>
+              <p>
+                Lượt điểm danh được đối chiếu với ca làm việc: đúng giờ, đi muộn hay vắng mặt.
+                HR xem dashboard trực tiếp, nhận cảnh báo bất thường và xuất báo cáo khi cần.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="section section-alt" id="tinh-nang">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="eyebrow">Tính năng</span>
+            <h2>Đủ sâu cho vận hành, đủ gọn cho người dùng</h2>
+          </div>
+          <div class="features">
+            <article class="feature-card reveal">
+              <h3>Nhận diện khuôn mặt AI</h3>
+              <p>DeepFace trích xuất và đối sánh vector khuôn mặt với độ chính xác cao, kể cả khi thay đổi góc mặt hay ánh sáng tại cổng.</p>
+            </article>
+            <article class="feature-card reveal">
+              <h3>Chống giả mạo hai lớp</h3>
+              <p>Anti-spoofing kết hợp phát hiện chớp mắt bằng MediaPipe giúp chặn điểm danh bằng ảnh in, màn hình điện thoại hay video phát lại.</p>
+            </article>
+            <article class="feature-card reveal">
+              <h3>Kiosk không tiếp xúc</h3>
+              <p>Màn hình kiosk toàn màn hình tại cổng ra vào: nhân viên chỉ cần bước qua camera, không chạm, không thẻ, không xếp hàng.</p>
+            </article>
+            <article class="feature-card reveal">
+              <h3>Quản lý ca làm việc</h3>
+              <p>Định nghĩa ca, giờ vào/ra và ngưỡng đi muộn. Hệ thống tự phân loại từng lượt điểm danh theo đúng ca của từng nhân viên.</p>
+            </article>
+            <article class="feature-card reveal">
+              <h3>Báo cáo chấm công</h3>
+              <p>Dashboard tổng quan theo ngày, tuần, tháng; báo cáo chi tiết từng nhân viên, lịch sử điểm danh và chỉnh sửa công có kiểm soát.</p>
+            </article>
+            <article class="feature-card reveal">
+              <h3>Cảnh báo &amp; quyền riêng tư</h3>
+              <p>Cảnh báo khi có lượt lạ hoặc bất thường, điểm danh thay thế khi camera gặp sự cố, và cài đặt quyền riêng tư cho dữ liệu sinh trắc học.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEMO -->
+      <section class="demo-band">
+        <div class="container demo-inner reveal">
+          <div>
+            <span class="eyebrow eyebrow-light">Demo trực tuyến</span>
+            <h2>Xem hệ thống đang chạy thật</h2>
+            <p>
+              Bản demo SecureFace AI đang hoạt động trên nền tảng đám mây — dashboard tổng quan
+              chấm công, nhật ký điểm danh thời gian thực và phân bố trạng thái ca làm việc.
+            </p>
+          </div>
+          <a class="btn btn-light" href="https://attend-live.azurewebsites.net/" target="_blank" rel="noopener">
+            Mở demo tại attend-live.azurewebsites.net
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- TECH -->
+      <section class="section" id="cong-nghe">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="eyebrow">Công nghệ</span>
+            <h2>Nền tảng kỹ thuật</h2>
+          </div>
+          <ul class="tech-list reveal">
+            <li><strong>FastAPI</strong><span>Backend Python hiệu năng cao</span></li>
+            <li><strong>DeepFace</strong><span>Nhận diện &amp; đối sánh khuôn mặt</span></li>
+            <li><strong>MediaPipe</strong><span>Phát hiện chớp mắt, liveness</span></li>
+            <li><strong>React + Vite</strong><span>Giao diện quản trị &amp; kiosk</span></li>
+            <li><strong>Tailwind CSS</strong><span>Hệ thống thiết kế nhất quán</span></li>
+            <li><strong>WebSocket</strong><span>Luồng camera &amp; giám sát trực tiếp</span></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="brand-name">FaceAttend</span>
+          <p>Hệ thống điểm danh bằng nhận diện khuôn mặt AI.</p>
+        </div>
+        <nav class="footer-links">
+          <a href="#cach-hoat-dong">Cách hoạt động</a>
+          <a href="#tinh-nang">Tính năng</a>
+          <a href="https://attend-live.azurewebsites.net/" target="_blank" rel="noopener">Demo trực tiếp</a>
+          <a href="https://github.com/hoang-IT-eng/AI-Face-Recognition-Attendance" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <p class="footer-credit">
+          Thiết kế &amp; phát triển bởi <strong>Trần Huy Hoàng</strong><br />
+          © <span id="year">2026</span> FaceAttend. Mọi quyền được bảo lưu.
+        </p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

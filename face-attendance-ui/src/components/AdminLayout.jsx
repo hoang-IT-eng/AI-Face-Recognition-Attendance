@@ -115,7 +115,7 @@ export default function AdminLayout() {
               />
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="font-title-lg text-title-lg text-on-surface tracking-tight font-bold group-hover:text-secondary transition-colors">
+              <span className="font-title-lg text-title-lg text-on-surface tracking-tight font-bold group-hover:text-primary transition-colors">
                 SecureFace AI
               </span>
               <span className="font-label-md text-label-md text-on-surface-variant">
@@ -133,7 +133,7 @@ export default function AdminLayout() {
                 className={({ isActive }) =>
                   `flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-colors font-label-lg text-label-lg ${
                     isActive
-                      ? "bg-secondary-fixed text-secondary font-semibold"
+                      ? "bg-primary-fixed text-primary font-semibold shadow-sm"
                       : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
                   }`
                 }
@@ -223,7 +223,7 @@ export default function AdminLayout() {
 
             <div className="flex items-center gap-3 pl-1">
               <div
-                className="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-label-md text-label-md font-bold ring-1 ring-outline-variant"
+                className="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-label-md text-label-md font-bold ring-1 ring-outline-variant"
                 title={adminName}
               >
                 {initials}

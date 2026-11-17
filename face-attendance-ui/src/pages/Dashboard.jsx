@@ -516,7 +516,7 @@ export default function Dashboard() {
                       y={155 - iHeight}
                     />
                     <text
-                      fill={d.isToday ? "#000000" : "#4c4546"}
+                      fill={d.isToday ? "#403ab8" : "#4c4a5e"}
                       fontSize="11"
                       fontWeight={d.isToday ? "700" : "500"}
                       textAnchor="middle"
