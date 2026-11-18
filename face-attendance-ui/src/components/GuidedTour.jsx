@@ -97,7 +97,7 @@ const STEPS = [
   {
     target: "kiosk-success",
     title: "Hoàn thành! 🏆",
-    body: "Khi nhận diện khớp, thẻ này sáng lên dòng chữ “ĐIỂM DANH THÀNH CÔNG” kèm họ tên, mã nhân viên và trạng thái ĐÃ VÀO. Bạn vừa đi trọn một vòng: đăng ký khuôn mặt → điểm danh tại Kiosk. Cảm ơn bạn đã trải nghiệm SecureFace AI!",
+    body: "Khi nhận diện khớp, thẻ này sáng lên dòng chữ “ĐIỂM DANH THÀNH CÔNG” kèm họ tên, mã nhân viên và trạng thái ĐÃ VÀO. Bạn vừa đi trọn một vòng: đăng ký khuôn mặt → điểm danh tại Kiosk. Cảm ơn bạn đã trải nghiệm FaceAttend!",
     nextLabel: "Hoàn thành",
   },
 ];

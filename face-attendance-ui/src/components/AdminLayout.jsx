@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getAlertStats, getMe } from "../api";
 import { useBackendStatus } from "../backendStatus";
-
-const LOGO_URL =
-  "https://lh3.googleusercontent.com/aida/AEtjO1Wchkkf-GzfXSzfqGNE7PvXyf_M0Mf2O92GevUbcwBwF3SGgIWf9dQoioPY-g-u0ESQvj9c818DFCKe9OgfiBfYKLcM5vSYK0MiFx23h5Y0HBNcm5rwpASI6k6Y6d9ZW49pxfpMvBPcJXPOjE3bEO6FG3gsoNR6wiuP6ueTQgDynLPfELlzIeqb-lesz4aarNYD6RPX7fWgYkML-YJuRgs42-iPCxMm9YVOEMIsOqTVaKQllpvULqjbtywJ";
+import Icon from "./Icon";
+import BrandMark from "./BrandMark";
 
 const NAV_BASE = [
   { to: "/dashboard", icon: "dashboard", label: "Dashboard", end: true },
@@ -22,37 +21,10 @@ const NAV_BASE = [
 export default function AdminLayout() {
   const navigate = useNavigate();
   const backendStatus = useBackendStatus();
-  const [clock, setClock] = useState("");
-  const [dateStr, setDateStr] = useState("");
   const [alertBadge, setAlertBadge] = useState(0);
   const [adminName, setAdminName] = useState(
     () => localStorage.getItem("sf_admin_name") || "Admin"
   );
-
-  useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      setClock(
-        now.toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        })
-      );
-      setDateStr(
-        now.toLocaleDateString("vi-VN", {
-          weekday: "long",
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      );
-    };
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     const load = () =>
@@ -109,16 +81,10 @@ export default function AdminLayout() {
             onClick={() => navigate("/dashboard")}
             className="flex items-center gap-3 px-2 cursor-pointer group"
           >
-            <div className="h-9 w-9 rounded-xl bg-surface-container-low flex items-center justify-center p-1.5 border border-outline-variant/50">
-              <img
-                alt="SecureFace AI Logo"
-                className="h-full w-full object-contain"
-                src={LOGO_URL}
-              />
-            </div>
+            <BrandMark size={36} />
             <div className="flex flex-col leading-tight">
               <span className="font-title-lg text-title-lg text-on-surface tracking-tight font-bold group-hover:text-primary transition-colors">
-                SecureFace AI
+                FaceAttend
               </span>
               <span className="font-label-md text-label-md text-on-surface-variant">
                 Điểm danh khuôn mặt
@@ -136,19 +102,17 @@ export default function AdminLayout() {
                 className={({ isActive }) =>
                   `flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-colors font-label-lg text-label-lg ${
                     isActive
-                      ? "bg-primary-fixed text-primary font-semibold shadow-sm"
+                      ? "bg-surface-container text-primary font-semibold"
                       : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
                   }`
                 }
               >
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[20px]">
-                    {item.icon}
-                  </span>
+                  <Icon name={item.icon} className="text-[20px]" />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-2 py-0.5 rounded-full bg-error text-on-error font-code-telemetry text-[11px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-error text-on-error text-[11px] font-bold">
                     {item.badge}
                   </span>
                 )}
@@ -163,14 +127,14 @@ export default function AdminLayout() {
             data-tour="nav-register-face"
             className="w-full h-11 bg-primary text-on-primary rounded-xl flex items-center justify-center gap-2 hover:bg-primary-container transition-all font-label-lg text-label-lg active:scale-[0.98] shadow-sm cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[20px]">face</span>
+            <Icon name="face" className="text-[20px]" />
             <span>Đăng ký khuôn mặt</span>
           </button>
           <button
             onClick={handleLogout}
             className="w-full h-9 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-xl flex items-center justify-center gap-1.5 font-label-md text-label-md transition-colors cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[16px]">logout</span>
+            <Icon name="logout" className="text-[16px]" />
             <span>Đăng xuất phiên quản trị</span>
           </button>
         </div>
@@ -180,14 +144,10 @@ export default function AdminLayout() {
       <div className="pl-[280px]">
         <header className="fixed top-0 left-[280px] right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-md border-b border-outline-variant z-40 px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              alt="SecureFace AI"
-              className="h-7 w-auto object-contain"
-              src={LOGO_URL}
-            />
+            <BrandMark size={26} />
             <div className="h-4 w-[1px] bg-outline-variant"></div>
             <span className="font-label-lg text-label-lg text-on-surface-variant">
-              Hệ thống Quản trị Doanh nghiệp
+              Hệ thống quản trị điểm danh
             </span>
           </div>
 
@@ -220,27 +180,9 @@ export default function AdminLayout() {
               onClick={() => window.dispatchEvent(new CustomEvent("sf-tour-start"))}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-colors font-label-md text-label-md font-semibold shadow-sm cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[16px]">
-                play_circle
-              </span>
+              <Icon name="play_circle" className="text-[16px]" />
               <span>Hướng dẫn demo</span>
             </button>
-
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant/40 font-label-md text-label-md">
-              <span className="relative flex h-2 w-2">
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-              </span>
-              <span>Online</span>
-            </div>
-
-            <div className="hidden xl:flex items-center gap-1.5 text-on-surface-variant font-code-telemetry text-code-telemetry">
-              <span className="material-symbols-outlined text-[16px]">
-                schedule
-              </span>
-              <span>
-                {clock} — {dateStr}
-              </span>
-            </div>
 
             <div className="relative flex items-center justify-center">
               <button
@@ -248,9 +190,7 @@ export default function AdminLayout() {
                 title="Cảnh báo an ninh"
                 className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors relative cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[22px]">
-                  notifications
-                </span>
+                <Icon name="notifications" className="text-[22px]" />
                 {alertBadge > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full ring-2 ring-surface-container-lowest"></span>
                 )}
@@ -261,7 +201,7 @@ export default function AdminLayout() {
 
             <div className="flex items-center gap-3 pl-1">
               <div
-                className="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-label-md text-label-md font-bold ring-1 ring-outline-variant"
+                className="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-label-md text-label-md font-bold ring-1 ring-outline-variant"
                 title={adminName}
               >
                 {initials}

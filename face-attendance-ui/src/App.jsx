@@ -1,10 +1,15 @@
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import AdminLayout from "./components/AdminLayout";
 import GuidedTour from "./components/GuidedTour";
 import { startBackendProbe } from "./backendStatus";
 import { initSimSync } from "./simSync";
-import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
@@ -19,6 +24,16 @@ import EmployeeReportDetail from "./pages/EmployeeReportDetail";
 import Alerts from "./pages/Alerts";
 import PrivacySettings from "./pages/PrivacySettings";
 
+// Root route: the console opens straight into the app. The query string is
+// preserved so the guided-tour entry (/?tour=1 from the public landing)
+// still reaches the tour trigger, whose first step is the login form.
+function RootRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate to={{ pathname: "/login", search: location.search }} replace />
+  );
+}
+
 export default function App() {
   // Đánh thức + theo dõi máy chủ AI; sẵn sàng thì tự đồng bộ dữ liệu mô phỏng.
   useEffect(() => {
@@ -30,7 +45,7 @@ export default function App() {
     <BrowserRouter>
       <GuidedTour />
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/kiosk" element={<Kiosk />} />
 

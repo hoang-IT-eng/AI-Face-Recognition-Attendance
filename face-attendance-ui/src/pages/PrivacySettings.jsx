@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Icon from "../components/Icon";
 import {
   getUsers,
   clearFaces,
@@ -83,12 +84,11 @@ export default function PrivacySettings() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
         <div className="flex flex-col gap-1.5">
           <div className="inline-flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-telemetry text-code-telemetry">
+            <span className="px-2.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
               QUẢN TRỊ QUYỀN RIÊNG TƯ &amp; DỮ LIỆU
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary font-label-sm text-label-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              Tuân thủ Nghị định 13/2023/NĐ-CP &amp; ISO 27701
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
+              Theo Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân
             </span>
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
@@ -105,7 +105,7 @@ export default function PrivacySettings() {
             onClick={handleSave}
             className="h-11 px-5 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center gap-2 shadow-xs hover:bg-primary-container transition-all cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[18px]">save</span>
+            <Icon name="save" className="text-[18px]" />
             <span>Lưu cấu hình</span>
           </button>
         </div>
@@ -116,21 +116,17 @@ export default function PrivacySettings() {
         <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3">
             <span className="font-label-md text-label-md text-on-surface-variant">
-              Trạng thái mã hóa
+              Dữ liệu khuôn mặt lưu trữ
             </span>
-            <span className="material-symbols-outlined text-secondary text-[22px]">
-              lock
-            </span>
+            <Icon name="lock" className="text-on-surface-variant text-[22px]" />
           </div>
           <div className="flex flex-col">
             <span className="font-headline-md text-headline-md text-on-surface">
-              AES-256 GCM
+              Vector đặc trưng 512 chiều
             </span>
-            <span className="font-label-sm text-label-sm text-secondary pt-1 flex items-center gap-1">
-              <span className="material-symbols-outlined text-[14px]">
-                check_circle
-              </span>
-              Vectorized &amp; Hash Salted
+            <span className="font-label-sm text-label-sm text-on-surface-variant pt-1 flex items-center gap-1">
+              <Icon name="check_circle" className="text-[14px]" />
+              Đặc trưng trích xuất từ ảnh chụp khi đăng ký
             </span>
           </div>
         </div>
@@ -140,9 +136,7 @@ export default function PrivacySettings() {
             <span className="font-label-md text-label-md text-on-surface-variant">
               Tỷ lệ đồng thuận
             </span>
-            <span className="material-symbols-outlined text-secondary text-[22px]">
-              fact_check
-            </span>
+            <Icon name="fact_check" className="text-secondary text-[22px]" />
           </div>
           <div className="flex flex-col">
             <span className="font-headline-md text-headline-md text-on-surface">
@@ -159,9 +153,7 @@ export default function PrivacySettings() {
             <span className="font-label-md text-label-md text-on-surface-variant">
               Lưu trữ ảnh raw
             </span>
-            <span className="material-symbols-outlined text-error text-[22px]">
-              no_photography
-            </span>
+            <Icon name="no_photography" className="text-error text-[22px]" />
           </div>
           <div className="flex flex-col">
             <span className="font-headline-md text-headline-md text-error">
@@ -178,9 +170,7 @@ export default function PrivacySettings() {
             <span className="font-label-md text-label-md text-on-surface-variant">
               Kỳ thanh lọc tự động
             </span>
-            <span className="material-symbols-outlined text-secondary text-[22px]">
-              auto_delete
-            </span>
+            <Icon name="auto_delete" className="text-secondary text-[22px]" />
           </div>
           <div className="flex flex-col">
             <span className="font-headline-md text-headline-md text-on-surface">
@@ -199,9 +189,7 @@ export default function PrivacySettings() {
           <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface">
-                <span className="material-symbols-outlined text-[24px]">
-                  visibility_off
-                </span>
+                <Icon name="visibility_off" className="text-[24px]" />
               </div>
               <div>
                 <h2 className="font-title-lg text-title-lg text-on-surface">
@@ -242,9 +230,7 @@ export default function PrivacySettings() {
               </div>
 
               <div className="p-4 rounded-xl bg-surface-container flex items-start gap-3">
-                <span className="material-symbols-outlined text-secondary text-[24px] mt-0.5">
-                  security
-                </span>
+                <Icon name="security" className="text-secondary text-[24px] mt-0.5" />
                 <div className="flex flex-col gap-1">
                   <span className="font-label-lg text-label-lg text-on-surface">
                     Tiêu chuẩn kỹ thuật: Trích xuất Vector Toán học
@@ -253,7 +239,7 @@ export default function PrivacySettings() {
                     Khi tắt: Hệ thống chỉ trích xuất và lưu trữ vector đặc trưng
                     toán học (
                     <strong className="text-on-surface">
-                      Facial Embedding 512 chiều mã hóa AES-256
+                      vector đặc trưng khuôn mặt 512 chiều
                     </strong>
                     ), hoàn toàn không lưu trữ ảnh chụp thực tế của nhân viên
                     trên máy chủ.
@@ -264,9 +250,7 @@ export default function PrivacySettings() {
 
             <div className="lg:col-span-5 flex flex-col gap-4 p-5 rounded-xl bg-surface-container-low">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-on-surface text-[20px]">
-                  timelapse
-                </span>
+                <Icon name="timelapse" className="text-on-surface text-[20px]" />
                 <span className="font-title-md text-title-md text-on-surface">
                   Thời gian lưu trữ dữ liệu khuôn mặt
                 </span>
@@ -299,9 +283,7 @@ export default function PrivacySettings() {
           <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface">
-                <span className="material-symbols-outlined text-[24px]">
-                  assignment_turned_in
-                </span>
+                <Icon name="assignment_turned_in" className="text-[24px]" />
               </div>
               <div>
                 <h2 className="font-title-lg text-title-lg text-on-surface">
@@ -368,16 +350,12 @@ export default function PrivacySettings() {
                     <td className="py-4 px-4">
                       {row.status === "signed" ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e6f7ef] text-[#008055] font-label-sm text-label-sm">
-                          <span className="material-symbols-outlined text-[16px]">
-                            verified
-                          </span>
+                          <Icon name="verified" className="text-[16px]" />
                           Đã ký số xác nhận
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fff4e5] text-[#b25e00] font-label-sm text-label-sm">
-                          <span className="material-symbols-outlined text-[16px]">
-                            gpp_maybe
-                          </span>
+                          <Icon name="gpp_maybe" className="text-[16px]" />
                           Từ chối thu thập (Sử dụng PIN)
                         </span>
                       )}
@@ -393,9 +371,7 @@ export default function PrivacySettings() {
         <section className="bg-surface-container-lowest rounded-xl p-7 border border-outline-variant/40 shadow-xs">
           <div className="flex items-center gap-3 pb-6">
             <div className="w-10 h-10 rounded-xl bg-error-container text-error flex items-center justify-center">
-              <span className="material-symbols-outlined text-[24px]">
-                warning
-              </span>
+              <Icon name="warning" className="text-[24px]" />
             </div>
             <div>
               <h2 className="font-title-lg text-title-lg text-error">
@@ -444,9 +420,7 @@ export default function PrivacySettings() {
               onClick={() => setConfirmOpen(true)}
               className="h-11 px-6 rounded-xl bg-error text-on-error font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-xs hover:opacity-90 transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">
-                delete_forever
-              </span>
+              <Icon name="delete_forever" className="text-[20px]" />
               <span>Xóa dữ liệu khuôn mặt</span>
             </button>
           </div>
@@ -455,9 +429,7 @@ export default function PrivacySettings() {
             <div className="mt-6 p-6 rounded-xl bg-error-container/40 flex flex-col gap-5">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-error text-[28px]">
-                    crisis_alert
-                  </span>
+                  <Icon name="crisis_alert" className="text-error text-[28px]" />
                   <div>
                     <h3 className="font-headline-md text-headline-md text-on-error-container tracking-tight">
                       Xác nhận xóa vĩnh viễn vector khuôn mặt của{" "}
@@ -472,9 +444,7 @@ export default function PrivacySettings() {
                   onClick={() => setConfirmOpen(false)}
                   className="p-1 rounded-lg text-on-surface-variant hover:text-on-surface cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
-                    close
-                  </span>
+                  <Icon name="close" className="text-[20px]" />
                 </button>
               </div>
 
@@ -498,9 +468,7 @@ export default function PrivacySettings() {
                   onClick={handlePurge}
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-error text-on-error font-label-lg text-label-lg shadow-xs hover:bg-on-error-container transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
-                    verified
-                  </span>
+                  <Icon name="verified" className="text-[18px]" />
                   <span>Xác nhận XÓA VĨNH VIỄN</span>
                 </button>
               </div>
@@ -511,9 +479,7 @@ export default function PrivacySettings() {
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 bg-inverse-surface text-inverse-on-surface px-5 py-3.5 rounded-xl shadow-xl flex items-center gap-3">
-          <span className="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">
-            check_circle
-          </span>
+          <Icon name="check_circle" className="text-tertiary-fixed-dim text-[20px]" />
           <span className="font-body-md text-body-md">{toast}</span>
         </div>
       )}

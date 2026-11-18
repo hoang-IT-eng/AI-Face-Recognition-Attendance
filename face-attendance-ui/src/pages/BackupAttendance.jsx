@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUsers, backupAttendance, getBackupRecent } from "../api";
+import Icon from "../components/Icon";
 
 export default function BackupAttendance() {
   const [tab, setTab] = useState("pin"); // pin | qr
@@ -82,29 +83,23 @@ export default function BackupAttendance() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-surface-container-high text-on-surface-variant font-code-telemetry text-code-telemetry">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
               KÊNH XÁC THỰC DỰ PHÒNG
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-fixed text-secondary font-label-sm text-label-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-              Kênh dự phòng cấp 2
             </span>
           </div>
           <h1 className="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
-            Điểm Danh Thay Thế Khẩn Cấp &amp; Bảo Trì
+            Điểm danh thay thế
           </h1>
         </div>
 
         <div className="flex items-center gap-3 bg-surface-container-lowest px-4 py-2.5 rounded-xl border border-outline-variant/40 shadow-xs">
-          <span className="material-symbols-outlined text-secondary text-[22px]">
-            verified_user
-          </span>
+          <Icon name="verified_user" className="text-on-surface-variant text-[22px]" />
           <div className="flex flex-col">
             <span className="font-label-sm text-label-sm text-on-surface-variant">
-              Mức độ bảo mật
+              Phương thức xác thực
             </span>
             <span className="font-label-md text-label-md text-on-surface font-semibold">
-              2FA Zero-Trust Node #04
+              Mã PIN cá nhân 4 số / mã QR
             </span>
           </div>
         </div>
@@ -113,18 +108,18 @@ export default function BackupAttendance() {
       {/* Info Banner */}
       <div className="relative overflow-hidden rounded-xl bg-surface-container-low p-4 mb-6 shadow-xs">
         <div className="flex items-start gap-3.5">
-          <div className="p-2 rounded-lg bg-secondary-container text-on-secondary-container shrink-0">
-            <span className="material-symbols-outlined text-[20px]">info</span>
+          <div className="p-2 rounded-lg bg-surface-container text-on-surface-variant shrink-0">
+            <Icon name="info" className="text-[20px]" />
           </div>
           <div className="flex flex-col gap-1 pr-6">
             <span className="font-title-md text-title-md text-on-surface font-semibold">
-              Phương thức xác thực dự phòng bảo mật cao
+              Khi nào dùng điểm danh thay thế
             </span>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Dành riêng cho nhân viên có văn bản miễn trừ sinh trắc khuôn mặt
-              hoặc trong tình huống camera Kiosk đang hiệu chuẩn, bảo trì định
-              kỳ. Hỗ trợ <strong>Mã PIN cá nhân 4 số</strong> hoặc{" "}
-              <strong>Mã QR động Time-based OTP (TOTP)</strong>.
+              Dành cho nhân viên có văn bản miễn trừ sinh trắc khuôn mặt hoặc
+              khi camera kiosk đang bảo trì. Hỗ trợ{" "}
+              <strong>mã PIN cá nhân 4 số</strong> hoặc{" "}
+              <strong>mã QR nhân viên</strong>.
             </p>
           </div>
         </div>
@@ -140,12 +135,10 @@ export default function BackupAttendance() {
               : "text-on-surface-variant hover:text-on-surface font-semibold"
           }`}
         >
-          <span className="material-symbols-outlined text-[20px] text-secondary">
-            pin
-          </span>
+          <Icon name="pin" className="text-[20px] text-on-surface-variant" />
           <span>Mã PIN cá nhân</span>
           {tab === "pin" && (
-            <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-secondary-container rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-full" />
           )}
         </button>
 
@@ -157,12 +150,10 @@ export default function BackupAttendance() {
               : "text-on-surface-variant hover:text-on-surface font-semibold"
           }`}
         >
-          <span className="material-symbols-outlined text-[20px]">
-            qr_code_scanner
-          </span>
-          <span>Quét mã QR động</span>
+          <Icon name="qr_code_scanner" className="text-[20px]" />
+          <span>Quét mã QR</span>
           {tab === "qr" && (
-            <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-secondary-container rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-full" />
           )}
         </button>
       </div>
@@ -176,9 +167,7 @@ export default function BackupAttendance() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-                    <span className="material-symbols-outlined text-[18px]">
-                      dialpad
-                    </span>
+                    <Icon name="dialpad" className="text-[18px]" />
                   </div>
                   <div>
                     <h2 className="font-title-md text-title-md text-on-surface font-bold">
@@ -189,9 +178,6 @@ export default function BackupAttendance() {
                     </p>
                   </div>
                 </div>
-                <span className="font-code-telemetry text-code-telemetry px-2 py-1 rounded bg-surface-container text-on-surface-variant">
-                  V3.8-SEC
-                </span>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -199,9 +185,7 @@ export default function BackupAttendance() {
                   Mã nhân viên (Staff ID)
                 </label>
                 <div className="relative flex items-center">
-                  <span className="material-symbols-outlined absolute left-3.5 text-on-surface-variant text-[20px]">
-                    badge
-                  </span>
+                  <Icon name="badge" className="absolute left-3.5 text-on-surface-variant text-[20px]" />
                   <input
                     value={empCode}
                     onChange={(e) => setEmpCode(e.target.value)}
@@ -210,9 +194,7 @@ export default function BackupAttendance() {
                     className="w-full h-11 pl-11 pr-24 rounded-xl bg-surface-container-low text-on-surface font-label-lg text-label-lg focus:outline-none focus:ring-2 focus:ring-secondary/30"
                   />
                   <span className="absolute right-3 inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary font-semibold bg-secondary-fixed/50 px-2 py-0.5 rounded">
-                    <span className="material-symbols-outlined text-[14px]">
-                      check
-                    </span>{" "}
+                    <Icon name="check" className="text-[14px]" />{" "}
                     Khớp
                   </span>
                 </div>
@@ -235,9 +217,7 @@ export default function BackupAttendance() {
                     </span>
                   </div>
                   <div className="ml-auto flex items-center gap-1 text-secondary font-label-sm text-label-sm">
-                    <span className="material-symbols-outlined text-[16px]">
-                      lock_reset
-                    </span>
+                    <Icon name="lock_reset" className="text-[16px]" />
                     <span>PIN: Sẵn sàng</span>
                   </div>
                 </div>
@@ -261,9 +241,7 @@ export default function BackupAttendance() {
                   ))}
                 </div>
                 <div className="flex items-center gap-1 text-on-surface-variant font-code-telemetry text-code-telemetry mt-1">
-                  <span className="material-symbols-outlined text-[15px]">
-                    security
-                  </span>
+                  <Icon name="security" className="text-[15px]" />
                   <span>Đã nhập {pin.length} / 4 ký tự</span>
                 </div>
               </div>
@@ -299,9 +277,7 @@ export default function BackupAttendance() {
                   onClick={() => setPin((p) => p.slice(0, -1))}
                   className="h-14 rounded-xl bg-surface-container hover:bg-surface-container-high active:scale-95 flex items-center justify-center text-on-surface transition-all cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[22px]">
-                    backspace
-                  </span>
+                  <Icon name="backspace" className="text-[22px]" />
                 </button>
               </div>
 
@@ -313,9 +289,7 @@ export default function BackupAttendance() {
                 onClick={handleSubmit}
                 className="w-full h-12 bg-primary text-on-primary rounded-xl flex items-center justify-center gap-2 hover:bg-primary-container active:scale-[0.99] font-label-lg text-label-lg transition-all shadow-sm mt-2 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  how_to_reg
-                </span>
+                <Icon name="how_to_reg" className="text-[20px]" />
                 <span>Xác nhận chấm công</span>
               </button>
             </div>
@@ -324,30 +298,23 @@ export default function BackupAttendance() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-                    <span className="material-symbols-outlined text-[18px]">
-                      qr_code_2
-                    </span>
+                    <Icon name="qr_code_2" className="text-[18px]" />
                   </div>
                   <div>
                     <h2 className="font-title-md text-title-md text-on-surface font-bold">
                       Quét mã QR nhân viên
                     </h2>
                     <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Camera cảm biến TOTP động
+                      Quét mã QR của nhân viên
                     </p>
                   </div>
                 </div>
-                <span className="font-code-telemetry text-code-telemetry px-2 py-1 rounded bg-secondary-fixed text-secondary">
-                  OPTICAL-AI
-                </span>
               </div>
 
               <div className="relative w-full aspect-square rounded-xl bg-surface-container-highest overflow-hidden flex items-center justify-center">
-                <div className="relative w-64 h-64 border-2 border-secondary-container rounded-2xl flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-xs">
+                <div className="relative w-64 h-64 border-2 border-outline-variant rounded-2xl flex items-center justify-center bg-surface-container-lowest/80">
                   <div className="p-4 bg-surface-container-lowest rounded-xl shadow-lg flex flex-col items-center gap-2">
-                    <span className="material-symbols-outlined text-secondary text-[48px]">
-                      qr_code_scanner
-                    </span>
+                    <Icon name="qr_code_scanner" className="text-on-surface-variant text-[48px]" />
                     <span className="font-label-sm text-label-sm text-on-surface font-semibold text-center">
                       Đang chờ quét mã QR...
                     </span>
@@ -360,9 +327,7 @@ export default function BackupAttendance() {
                 onClick={handleSubmit}
                 className="w-full h-11 bg-primary text-on-primary rounded-xl flex items-center justify-center gap-2 font-label-lg text-label-lg transition-all cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  qr_code_scanner
-                </span>
+                <Icon name="qr_code_scanner" className="text-[18px]" />
                 <span>Xác nhận mã QR hợp lệ</span>
               </button>
             </div>
@@ -374,29 +339,21 @@ export default function BackupAttendance() {
           <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/40 shadow-md relative overflow-hidden">
             <div className="flex items-center justify-between pb-4">
               <div className="flex items-center gap-2">
-                <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
-                </span>
+                <span className="w-3 h-3 rounded-full bg-primary"></span>
                 <span className="font-label-lg text-label-lg text-on-surface font-bold">
                   Kết quả điểm danh
                 </span>
               </div>
-              <span className="font-code-telemetry text-code-telemetry text-on-surface-variant">
-                NODE: REC_2410_01
-              </span>
             </div>
 
             <div className="p-5 rounded-xl bg-surface-container-low flex flex-col gap-5">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-secondary-fixed/50 flex items-center justify-center text-secondary shrink-0">
-                  <span className="material-symbols-outlined material-symbols-filled text-[36px]">
-                    check_circle
-                  </span>
+                <div className="w-14 h-14 rounded-2xl bg-success/10 flex items-center justify-center text-success shrink-0">
+                  <Icon name="check_circle" className="text-[36px]" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <div className="inline-flex items-center gap-1.5 text-secondary font-label-sm text-label-sm font-bold">
-                    <span>Hợp Lệ • Xác Thực Thành Công</span>
+                  <div className="inline-flex items-center gap-1.5 text-success font-label-sm text-label-sm font-bold">
+                    <span>Hợp lệ • Xác thực thành công</span>
                   </div>
                   <h3 className="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
                     ĐIỂM DANH THÀNH CÔNG
@@ -413,7 +370,7 @@ export default function BackupAttendance() {
                     <span className="font-label-lg text-label-lg text-on-surface font-bold">
                       {lastReceipt.name}
                     </span>
-                    <span className="font-code-telemetry text-code-telemetry px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
+                    <span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
                       {lastReceipt.code}
                     </span>
                   </div>
@@ -428,9 +385,9 @@ export default function BackupAttendance() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="font-body-sm text-body-sm text-on-surface-variant">
-                    Giờ máy ghi nhận
+                    Giờ ghi nhận
                   </span>
-                  <span className="font-headline-md text-headline-md font-bold font-code-telemetry text-secondary">
+                  <span className="font-headline-md text-headline-md font-bold text-on-surface">
                     {lastReceipt.time}
                   </span>
                 </div>
@@ -438,10 +395,8 @@ export default function BackupAttendance() {
                   <span className="font-body-sm text-body-sm text-on-surface-variant">
                     Trạng thái ca làm việc
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-secondary font-label-md text-label-md font-bold">
-                    <span className="material-symbols-outlined text-[16px]">
-                      login
-                    </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 text-success font-label-md text-label-md font-bold">
+                    <Icon name="login" className="text-[16px]" />
                     ĐÃ VÀO (Đúng giờ)
                   </span>
                 </div>
@@ -450,9 +405,7 @@ export default function BackupAttendance() {
                     Phương thức xác nhận
                   </span>
                   <span className="inline-flex items-center gap-1 font-label-md text-label-md text-on-surface">
-                    <span className="material-symbols-outlined text-[16px] text-secondary">
-                      pin
-                    </span>
+                    <Icon name="pin" className="text-[16px] text-secondary" />
                     {lastReceipt.method}
                   </span>
                 </div>
@@ -464,9 +417,7 @@ export default function BackupAttendance() {
           <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/40 shadow-md flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-on-surface">
-                  history
-                </span>
+                <Icon name="history" className="text-[20px] text-on-surface" />
                 <h4 className="font-title-md text-title-md text-on-surface font-bold">
                   Lịch sử điểm danh thay thế gần đây
                 </h4>

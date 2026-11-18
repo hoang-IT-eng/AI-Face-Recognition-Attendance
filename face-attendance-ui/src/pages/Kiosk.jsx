@@ -5,6 +5,7 @@ import { WS_LIVENESS_URL, getUsers, backupAttendance } from "../api";
 import { useBackendStatus } from "../backendStatus";
 import { analyzeFrame } from "../faceDetect";
 import { loadSimCaptures } from "../simSync";
+import Icon from "../components/Icon";
 
 export default function Kiosk() {
   const navigate = useNavigate();
@@ -254,35 +255,16 @@ export default function Kiosk() {
 
   return (
     <main className="w-full h-screen bg-background relative flex flex-col justify-between overflow-hidden select-none">
-      {/* Ambient Background */}
-      <div
-        className="absolute inset-0 z-0 bg-cover bg-center blur-md scale-105 opacity-35 pointer-events-none"
-        style={{
-          backgroundImage:
-            "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZCd7GXMwSauD8b08vdPQ-RKFCoQdta-jhqis7HSqb5-KmFNvC_pgOGkNRu_Urm9spmeLALsZP7PA0-uzp9tKOuDee-lrg3djecGJiCLRW_48BhqP5QwlGJLFOSn7vX31tZDgUl6-Afa1lK6QUS8ypcjc2QxYunlMljCDo6OGrAhHyDWirXjbtMIArdBJol9kh0W8ZQnzN4ecLkXgPG1yesMR9U2dIQMvuvYt7BmgZ7UutwQASkB6RyA')",
-        }}
-      />
-      <div className="absolute inset-0 z-0 bg-gradient-to-t from-background via-background/80 to-background/90 pointer-events-none" />
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(#00687a_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
-
-      {/* Top System Ribbon */}
+      {/* Top Ribbon */}
       <header className="relative z-20 flex items-center justify-between px-8 py-4 w-full">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/dashboard")}
-            className="px-3 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-code-telemetry text-code-telemetry shadow-xs flex items-center gap-1.5 hover:bg-primary-container cursor-pointer"
+            className="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-md text-label-md shadow-xs flex items-center gap-1.5 hover:bg-surface-container-high cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[16px]">
-              arrow_back
-            </span>
-            <span>KIOSK ĐIỂM DANH SINH TRẮC</span>
+            <Icon name="arrow_back" className="text-[16px]" />
+            <span>Kiosk điểm danh</span>
           </button>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-highest shadow-xs">
-            <span className="w-2.5 h-2.5 rounded-full bg-secondary-fixed animate-ping"></span>
-            <span className="font-label-sm text-label-sm text-secondary">
-              Neural Mesh v4.2 • Live Feed Active
-            </span>
-          </div>
           {backendStatus !== "real" && (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 shadow-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
@@ -293,52 +275,27 @@ export default function Kiosk() {
           )}
         </div>
 
-        {/* Device Telemetry Pill */}
+        {/* Camera toggle */}
         <div className="flex items-center gap-4 bg-surface-container-lowest px-4 py-1.5 rounded-xl border border-outline-variant/40 shadow-xs">
           <button
             data-tour="kiosk-camera"
             onClick={() => setLiveCamera((v) => !v)}
             className={`px-2.5 py-1 rounded-lg font-label-sm text-label-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors ${
               liveCamera
-                ? "bg-secondary text-on-secondary"
+                ? "bg-primary text-on-primary"
                 : "bg-surface-container text-on-surface"
             }`}
           >
-            <span className="material-symbols-outlined text-[15px]">
-              videocam
-            </span>
+            <Icon name="videocam" className="text-[15px]" />
             <span>{liveCamera ? "Camera Thật: Bật" : "Bật Camera Thật"}</span>
           </button>
-          <span className="w-1 h-3 rounded-full bg-surface-container-high"></span>
-          <div className="flex items-center gap-1 text-on-surface-variant font-code-telemetry text-code-telemetry">
-            <span className="material-symbols-outlined text-secondary text-base">
-              lens_blur
-            </span>
-            <span>FPS: 60.1</span>
-          </div>
-          <span className="w-1 h-3 rounded-full bg-surface-container-high"></span>
-          <div className="flex items-center gap-1 text-on-surface-variant font-code-telemetry text-code-telemetry">
-            <span className="material-symbols-outlined text-secondary text-base">
-              speed
-            </span>
-            <span>Latency: 14ms</span>
-          </div>
-          <span className="w-1 h-3 rounded-full bg-surface-container-high"></span>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#009668]"></span>
-            <span className="font-label-sm text-label-sm text-on-surface font-semibold">
-              Online
-            </span>
-          </div>
         </div>
       </header>
 
       {/* Instructional Banner */}
       <div className="relative z-20 flex justify-center w-full px-4 -mt-1 mb-2">
         <div className="bg-surface-container-lowest px-6 py-2 rounded-full border border-outline-variant/40 shadow-md flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-secondary text-2xl animate-pulse">
-            visibility
-          </span>
+          <Icon name="visibility" className="text-on-surface-variant text-2xl" />
           <p className="font-headline-md text-headline-md text-on-surface tracking-tight text-center">
             Nhìn thẳng vào camera và chớp mắt 2 lần để xác thực
           </p>
@@ -347,17 +304,12 @@ export default function Kiosk() {
 
       {/* Center 12-Col Grid */}
       <div className="relative z-10 flex-1 grid grid-cols-12 gap-6 px-8 items-center min-h-0">
-        {/* Left Diagnostic Panel (3 cols) */}
+        {/* Left Panel: real liveness state (3 cols) */}
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-4 justify-center">
           <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/40 shadow-xs flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="font-label-md text-label-md text-on-surface-variant">
-                Thuật toán Liveness 3D
-              </span>
-              <span className="material-symbols-outlined text-secondary text-lg">
-                csv
-              </span>
-            </div>
+            <span className="font-label-md text-label-md text-on-surface-variant">
+              Kiểm tra người thật (liveness)
+            </span>
             <div className="flex items-center gap-4 my-1">
               <div className="relative w-16 h-16 flex items-center justify-center">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -369,7 +321,7 @@ export default function Kiosk() {
                     strokeWidth="3.5"
                   />
                   <path
-                    className="text-[#009668]"
+                    className="text-success"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
                     stroke="currentColor"
@@ -378,16 +330,18 @@ export default function Kiosk() {
                     strokeWidth="3.5"
                   />
                 </svg>
-                <span className="absolute font-code-telemetry text-code-telemetry font-bold text-on-surface">
-                  {blinkRatio}%
+                <span className="absolute font-label-md text-label-md font-bold text-on-surface">
+                  {livenessState.blink_count}/{livenessState.required}
                 </span>
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="font-title-md text-title-md text-on-surface">
-                  Đạt chuẩn ISO/IEC
+                  Chớp mắt để xác thực
                 </span>
                 <span className="font-body-sm text-body-sm text-on-surface-variant">
-                  PAD Level 2 Verified
+                  {livenessState.passed
+                    ? "Đã đủ số lần chớp mắt yêu cầu."
+                    : "Hệ thống đếm số lần chớp mắt qua camera để phân biệt người thật với ảnh/video."}
                 </span>
               </div>
             </div>
@@ -397,61 +351,25 @@ export default function Kiosk() {
                 <span className="font-label-sm text-label-sm">
                   Tiến độ chớp mắt
                 </span>
-                <span className="font-code-telemetry text-code-telemetry text-[#009668] font-bold">
+                <span className="font-label-md text-label-md text-success font-bold">
                   {livenessState.blink_count} / {livenessState.required} lần
                 </span>
               </div>
               <div className="w-full h-2 rounded-full bg-surface-container-highest overflow-hidden">
                 <div
-                  className="h-full bg-[#009668] rounded-full transition-all duration-300"
+                  className="h-full bg-success rounded-full transition-all duration-300"
                   style={{ width: `${blinkRatio}%` }}
                 />
               </div>
             </div>
           </div>
-
-          <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/40 shadow-xs flex flex-col gap-2">
-            <span className="font-label-sm text-label-sm text-on-surface-variant">
-              Biometric Telemetry
-            </span>
-            <div className="font-code-telemetry text-body-sm flex flex-col gap-1.5 text-on-surface-variant">
-              <div className="flex justify-between">
-                <span>Face Bounding:</span>
-                <span className="text-on-surface font-semibold">
-                  982 x 982 px
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Yaw / Pitch:</span>
-                <span className="text-on-surface font-semibold">
-                  -0.4° / +1.1°
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Lighting Exposure:</span>
-                <span className="text-[#009668] font-semibold">
-                  Tối ưu (420 Lux)
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Anti-Spoofing:</span>
-                <span
-                  className={`font-semibold ${
-                    scenario === "spoof" ? "text-error" : "text-[#009668]"
-                  }`}
-                >
-                  {scenario === "spoof" ? "FAIL (2D Screen)" : "PASS (0.002)"}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Center Optical HUD Viewport (6 cols) */}
+        {/* Center Camera Viewport (6 cols) */}
         <div className="col-span-12 lg:col-span-6 flex flex-col items-center justify-center relative">
           <div
             data-tour="kiosk-viewport"
-            className="relative w-full max-w-[820px] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-[#0b0f19] flex items-center justify-center"
+            className="relative w-full max-w-[820px] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-[#101014] flex items-center justify-center"
           >
             {liveCamera ? (
               <Webcam
@@ -461,75 +379,41 @@ export default function Kiosk() {
                 className="absolute inset-0 w-full h-full object-cover"
               />
             ) : (
-              <div
-                className="absolute inset-0 bg-cover bg-center contrast-105"
-                style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCjv_O08-aUOREjG4kjf4N5EI12PtBIwkOu1pzoECFpxQq4Oao7WqOwpe_R26JW3v8dtyDgIIfVfwCn3AGexfEIautNViOcniuxdMoLQHOlX60PYXVUTomV42Alvik6Z0ToxYqGeJoQTi9anY5ypMK-SVOHQR1vi46_vMGt9X3NPM9C091MRMGdGJQGf9Z8UfB7iKb9I1JT1RPfCsX9CbczrWr_5a-nQh0v83PLdZP42LN34qOt1IIDkQ')",
-                }}
-              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/70 px-8 text-center">
+                <Icon name="videocam_off" className="text-[44px]" />
+                <span className="font-title-md text-title-md">
+                  Camera đang tắt
+                </span>
+                <span className="font-body-md text-body-md text-white/50">
+                  Bấm “Bật Camera Thật” ở thanh trên cùng để bắt đầu điểm danh
+                  bằng khuôn mặt.
+                </span>
+              </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(87,223,254,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(87,223,254,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
-            {/* Biometric HUD Face Reticle */}
-            <div className="relative w-[52%] aspect-square flex items-center justify-center">
-              <div className="absolute -top-3 -left-3 w-10 h-10 border-t-4 border-l-4 border-secondary-container rounded-tl-lg shadow-[0_0_16px_rgba(87,223,254,0.9)]" />
-              <div className="absolute -top-3 -right-3 w-10 h-10 border-t-4 border-r-4 border-secondary-container rounded-tr-lg shadow-[0_0_16px_rgba(87,223,254,0.9)]" />
-              <div className="absolute -bottom-3 -left-3 w-10 h-10 border-b-4 border-l-4 border-secondary-container rounded-bl-lg shadow-[0_0_16px_rgba(87,223,254,0.9)]" />
-              <div className="absolute -bottom-3 -right-3 w-10 h-10 border-b-4 border-r-4 border-secondary-container rounded-br-lg shadow-[0_0_16px_rgba(87,223,254,0.9)]" />
+            {/* Plain face guide — a simple rounded outline, no HUD chrome */}
+            {liveCamera && (
+              <div className="relative w-[46%] aspect-[3/4] rounded-[2rem] border-2 border-white/70 pointer-events-none" />
+            )}
 
-              <div className="absolute inset-x-0 top-1/2 h-0.5 bg-secondary-fixed/40 -translate-y-1/2 pointer-events-none" />
-              <div className="absolute inset-y-0 left-1/2 w-0.5 bg-secondary-fixed/40 -translate-x-1/2 pointer-events-none" />
-              <div className="w-16 h-16 rounded-full border border-secondary-fixed/50 animate-ping opacity-30" />
-
-              <div className="absolute inset-x-2 top-0 h-1 bg-gradient-to-r from-transparent via-[#57dffe] to-transparent shadow-[0_0_18px_#57dffe] animate-laser" />
-
-              <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-code-telemetry text-secondary-fixed">
-                PTS: 128/128 • CONF: 99.8%
-              </div>
-            </div>
-
-            {/* Top Floating Indicator */}
-            <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-              <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full">
-                <span className="w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span>
-                <span className="font-code-telemetry text-code-telemetry text-white tracking-widest">
-                  REC • AI_CAM_01
-                </span>
-              </div>
-              <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-white font-code-telemetry text-code-telemetry">
-                <span className="material-symbols-outlined text-secondary-container text-sm">
-                  lock_open
-                </span>
-                <span>SECURE LINK</span>
-              </div>
-            </div>
-
-            {/* Bottom Verification Ribbon */}
-            <div className="absolute bottom-4 inset-x-6 flex justify-between items-center bg-black/75 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10">
+            {/* Bottom Verification Ribbon — real blink state only */}
+            <div className="absolute bottom-4 inset-x-6 flex justify-between items-center bg-black/75 px-4 py-2.5 rounded-xl border border-white/10">
               <div className="flex items-center gap-2.5 text-white">
-                <span className="material-symbols-outlined text-[#009668] text-xl">
-                  verified
+                <Icon name="verified" className="text-success text-xl" />
+                <span className="font-label-md text-label-md">
+                  Chớp mắt: {livenessState.blink_count} /{" "}
+                  {livenessState.required} lần
+                  {livenessState.passed ? " — đã đạt" : ""}
                 </span>
-                <div className="flex flex-col">
-                  <span className="font-label-sm text-label-sm text-secondary-fixed">
-                    Chớp mắt: {livenessState.blink_count} /{" "}
-                    {livenessState.required} lần (Đạt chuẩn Liveness)
-                  </span>
-                  <span className="font-body-sm text-body-sm text-surface-dim">
-                    Khoảng cách khuôn mặt tối ưu (65 cm)
-                  </span>
-                </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-24 h-2 bg-surface-container-highest/30 rounded-full overflow-hidden">
+                <div className="w-24 h-2 bg-white/20 rounded-full overflow-hidden">
                   <div
-                    className="bg-[#009668] h-full rounded-full"
+                    className="bg-success h-full rounded-full"
                     style={{ width: `${blinkRatio}%` }}
                   />
                 </div>
-                <span className="font-code-telemetry text-label-sm text-[#009668] font-bold">
+                <span className="font-label-sm text-label-sm text-white font-bold">
                   {blinkRatio}%
                 </span>
               </div>
@@ -579,16 +463,14 @@ export default function Kiosk() {
               data-tour="kiosk-success"
               className="bg-surface-container-lowest rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col gap-4"
             >
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#009668]" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-success" />
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#009668]/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined material-symbols-filled text-[#009668] text-3xl">
-                    check_circle
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                  <Icon name="check_circle" className="text-success text-3xl" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="font-label-sm text-label-sm text-[#009668] font-bold">
-                    Hệ thống mở cửa
+                  <span className="font-label-sm text-label-sm text-success font-bold">
+                    Đã ghi nhận điểm danh
                   </span>
                   <h2 className="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
                     ĐIỂM DANH THÀNH CÔNG
@@ -597,19 +479,21 @@ export default function Kiosk() {
               </div>
 
               <div className="flex items-center gap-4 bg-surface-container-low p-4 rounded-lg">
-                <div
-                  className="w-14 h-14 rounded-full bg-cover bg-center shrink-0 shadow-xs"
-                  style={{
-                    backgroundImage:
-                      "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB8AwIqSNeD22La3g8LzUtl_WXhKnhMDou_yiSb5YiJ0BvExNUcck-SxEL6qcYB28nmmKC9ZNOkf6bf8rm0BnjWdkeCXdZnjkgtSyKlcIIzP3wsLbH_UDJydswopcMjvgb5__wC4Nd289kqtFBsC7sX6hcHnv3sn8E7e9og-_KerkY1kckalRAZ94m7Dcgo0H3X6MvWTAYV_vWZAiwv37Ft0wnWXl41vz3jiPEv5Za64oAQsv8Bjh2eyA')",
-                  }}
-                />
+                <div className="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0 text-on-surface font-title-md text-title-md font-bold">
+                  {matchedPerson.name
+                    ?.split(/\s+/)
+                    .filter(Boolean)
+                    .slice(-2)
+                    .map((w) => w[0])
+                    .join("")
+                    .toUpperCase() || "NV"}
+                </div>
                 <div className="flex flex-col min-w-0">
                   <h3 className="font-title-lg text-title-lg text-on-surface font-bold truncate">
                     {matchedPerson.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-code-telemetry text-code-telemetry text-on-surface-variant font-medium">
+                    <span className="font-label-md text-label-md text-on-surface-variant font-medium">
                       Mã:{" "}
                       <strong className="text-on-surface">
                         {matchedPerson.code}
@@ -637,19 +521,12 @@ export default function Kiosk() {
                     Trạng thái
                   </span>
                   <div>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#009668]/15 text-[#009668] font-label-lg text-label-lg font-bold">
-                      <span className="w-2 h-2 rounded-full bg-[#009668]" />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/15 text-success font-label-lg text-label-lg font-bold">
+                      <span className="w-2 h-2 rounded-full bg-success" />
                       {matchedPerson.status}
                     </span>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
-                <span className="material-symbols-outlined text-secondary text-base">
-                  door_sliding
-                </span>
-                <span>Cửa tự động Cổng A đã nhả chốt khóa từ (4s)</span>
               </div>
             </div>
           )}
@@ -659,9 +536,7 @@ export default function Kiosk() {
             <div className="bg-error text-on-error rounded-xl p-6 shadow-xl relative overflow-hidden flex flex-col gap-4">
               <div className="flex items-start gap-3">
                 <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-on-error text-3xl">
-                    gpp_maybe
-                  </span>
+                  <Icon name="gpp_maybe" className="text-on-error text-3xl" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="font-label-sm text-label-sm text-white/80 font-bold">
@@ -681,10 +556,6 @@ export default function Kiosk() {
                   in giấy 2D. Vui lòng xác thực người thật.
                 </p>
               </div>
-              <div className="flex items-center justify-between text-xs text-white/80 font-code-telemetry pt-1">
-                <span>Error Code: #SP-204</span>
-                <span>Security Alert Sent (SOC)</span>
-              </div>
             </div>
           )}
 
@@ -694,9 +565,7 @@ export default function Kiosk() {
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-error" />
               <div className="flex items-start gap-3">
                 <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-error text-3xl">
-                    person_off
-                  </span>
+                  <Icon name="person_off" className="text-error text-3xl" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="font-label-sm text-label-sm text-error font-bold">
@@ -709,9 +578,7 @@ export default function Kiosk() {
               </div>
               <div className="bg-surface-container-low p-4 rounded-lg flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-error">
-                  <span className="material-symbols-outlined text-lg">
-                    warning
-                  </span>
+                  <Icon name="warning" className="text-lg" />
                   <span className="font-label-md text-label-md font-bold">
                     Không có dữ liệu trong hệ thống
                   </span>
@@ -722,21 +589,11 @@ export default function Kiosk() {
                   ký khách thăm.
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
-                <span className="material-symbols-outlined text-on-surface-variant text-base">
-                  support_agent
-                </span>
-                <span>
-                  Hotline hỗ trợ bảo vệ sảnh: <strong>Ext. 102</strong>
-                </span>
-              </div>
             </div>
           )}
 
           <div className="bg-surface-container-low rounded-xl p-4 flex items-center gap-2.5">
-            <span className="material-symbols-outlined text-secondary text-xl">
-              info
-            </span>
+            <Icon name="info" className="text-on-surface-variant text-xl" />
             <p className="font-body-sm text-body-sm text-on-surface-variant">
               Đảm bảo không đội mũ sụp trán hoặc đeo kính râm che khuất mắt.
             </p>
@@ -756,12 +613,10 @@ export default function Kiosk() {
             }}
             className="flex items-center gap-3 px-6 py-3 rounded-xl bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-high transition-all shadow-xs active:scale-95 group cursor-pointer"
           >
-            <span className="material-symbols-outlined text-on-surface text-2xl group-hover:text-secondary transition-colors">
-              dialpad
-            </span>
+            <Icon name="dialpad" className="text-on-surface text-2xl group-hover:text-primary transition-colors" />
             <div className="flex flex-col text-left">
-              <span className="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-secondary transition-colors">
-                Điểm danh bằng mã PIN / QR
+              <span className="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-primary transition-colors">
+                Điểm danh bằng mã PIN
               </span>
               <span className="font-body-sm text-body-sm text-on-surface-variant">
                 Dành cho khách hoặc camera lỗi
@@ -769,7 +624,7 @@ export default function Kiosk() {
             </div>
           </button>
           <button className="flex items-center gap-2 px-4 py-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-all text-on-surface-variant font-label-md text-label-md">
-            <span className="material-symbols-outlined text-lg">language</span>
+            <Icon name="language" className="text-lg" />
             <span>Tiếng Việt</span>
           </button>
         </div>
@@ -782,14 +637,10 @@ export default function Kiosk() {
               </span>
             </div>
             <div className="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant mt-0.5">
-              <span className="material-symbols-outlined text-secondary text-sm">
-                calendar_today
-              </span>
+              <Icon name="calendar_today" className="text-secondary text-sm" />
               <span>{dateStr}</span>
               <span className="w-1 h-3 rounded-full bg-outline-variant" />
-              <span className="material-symbols-outlined text-secondary text-sm">
-                location_on
-              </span>
+              <Icon name="location_on" className="text-secondary text-sm" />
               <span className="font-semibold text-on-surface">
                 Kiosk Cổng A (Tòa nhà TechCenter)
               </span>
@@ -800,31 +651,22 @@ export default function Kiosk() {
 
       {/* SCREEN 05 POP-UP: MODAL NHẬP MÃ PIN / QR */}
       {pinModalOpen && (
-        <div className="fixed inset-0 z-50 bg-on-surface/50 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="relative w-full max-w-[790px] bg-surface-container-lowest rounded-[28px] shadow-2xl flex flex-col justify-between overflow-hidden">
-            <div className="w-full h-1.5 bg-gradient-to-r from-secondary-fixed via-secondary to-primary" />
-
             <div className="p-8 flex flex-col flex-1 justify-between gap-5">
               {/* Modal Header */}
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-secondary-fixed/30 flex items-center justify-center text-secondary">
-                    <span className="material-symbols-outlined text-headline-md">
-                      pin
-                    </span>
+                  <div className="w-14 h-14 rounded-2xl bg-surface-container flex items-center justify-center text-on-surface">
+                    <Icon name="pin" className="text-headline-md" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight">
-                        Điểm danh dự phòng bằng Mã PIN / QR
-                      </h2>
-                      <span className="px-2.5 py-0.5 rounded-full bg-secondary-fixed/40 text-on-secondary-fixed-variant font-label-sm text-label-sm font-semibold">
-                        2FA Zero-Trust
-                      </span>
-                    </div>
+                    <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight">
+                      Điểm danh dự phòng bằng mã PIN
+                    </h2>
                     <p className="font-body-md text-body-md text-on-surface-variant mt-0.5">
-                      Dành cho nhân viên miễn trừ sinh trắc hoặc khi camera đang
-                      hiệu chuẩn
+                      Dành cho nhân viên được miễn trừ sinh trắc hoặc khi camera
+                      gặp sự cố
                     </p>
                   </div>
                 </div>
@@ -837,14 +679,12 @@ export default function Kiosk() {
                     <span className="font-label-sm text-label-sm text-on-surface font-semibold">
                       Quay lại Camera
                     </span>
-                    <span className="font-code-telemetry text-label-sm text-secondary font-bold">
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">
                       ({countdown}s)
                     </span>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-surface-container-lowest shadow-xs flex items-center justify-center">
-                    <span className="material-symbols-outlined text-title-md text-on-surface-variant">
-                      close
-                    </span>
+                    <Icon name="close" className="text-title-md text-on-surface-variant" />
                   </div>
                 </button>
               </div>
@@ -859,9 +699,7 @@ export default function Kiosk() {
                       : "text-on-surface-variant hover:text-on-surface font-semibold"
                   }`}
                 >
-                  <span className="material-symbols-outlined text-title-md text-secondary">
-                    dialpad
-                  </span>
+                  <Icon name="dialpad" className="text-title-md text-on-surface-variant" />
                   <span className="font-label-lg text-label-lg">
                     Bàn phím PIN cá nhân
                   </span>
@@ -872,9 +710,7 @@ export default function Kiosk() {
                   title="Chưa hỗ trợ"
                   className="flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 opacity-50 cursor-not-allowed text-on-surface-variant font-semibold"
                 >
-                  <span className="material-symbols-outlined text-title-md">
-                    qr_code_scanner
-                  </span>
+                  <Icon name="qr_code_scanner" className="text-title-md" />
                   <span className="font-label-lg text-label-lg">
                     Quét mã QR (chưa hỗ trợ)
                   </span>
@@ -912,9 +748,7 @@ export default function Kiosk() {
                         title="Đổi nhân viên"
                         className="p-1.5 text-on-surface-variant hover:text-on-surface rounded-lg hover:bg-surface-container cursor-pointer"
                       >
-                        <span className="material-symbols-outlined text-title-md">
-                          swap_horiz
-                        </span>
+                        <Icon name="swap_horiz" className="text-title-md" />
                       </button>
                     </div>
 
@@ -972,9 +806,7 @@ export default function Kiosk() {
                         }}
                         className="h-12 bg-surface-container-low hover:bg-surface-container active:scale-95 rounded-2xl flex items-center justify-center text-on-surface transition-all cursor-pointer"
                       >
-                        <span className="material-symbols-outlined text-headline-md">
-                          backspace
-                        </span>
+                        <Icon name="backspace" className="text-headline-md" />
                       </button>
                     </div>
 
@@ -986,15 +818,9 @@ export default function Kiosk() {
                     <button
                       onClick={handleConfirmPin}
                       disabled={pinValue.length !== 4 || pinSubmitting}
-                      className={`w-full h-12 mt-1 text-on-primary rounded-2xl flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                        pinValue.length === 4
-                          ? "bg-secondary hover:bg-secondary/90"
-                          : "bg-primary hover:bg-primary-container"
-                      }`}
+                      className="w-full h-12 mt-1 text-on-primary bg-primary hover:bg-primary-container rounded-2xl flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <span className="material-symbols-outlined text-secondary-fixed">
-                        check_circle
-                      </span>
+                      <Icon name="check_circle" />
                       <span className="font-title-md text-title-md font-bold">
                         {pinSubmitting
                           ? "ĐANG XÁC THỰC..."
@@ -1005,9 +831,7 @@ export default function Kiosk() {
                 ) : (
                   <div className="col-span-12 md:col-span-7 flex flex-col items-center justify-center bg-surface-container-low rounded-2xl p-6 gap-4">
                     <div className="w-48 h-48 rounded-2xl border-2 border-outline-variant bg-surface-container-lowest flex flex-col items-center justify-center gap-2 shadow-md relative overflow-hidden opacity-70">
-                      <span className="material-symbols-outlined text-on-surface-variant text-[64px]">
-                        qr_code_scanner
-                      </span>
+                      <Icon name="qr_code_scanner" className="text-on-surface-variant text-[64px]" />
                       <span className="font-label-sm text-label-sm text-on-surface font-semibold text-center px-4">
                         Quét mã QR chưa được hỗ trợ
                       </span>
@@ -1020,78 +844,44 @@ export default function Kiosk() {
                 )}
 
                 {/* Right Column Guidance */}
-                <div className="col-span-12 md:col-span-5 flex flex-col justify-between gap-3">
+                <div className="col-span-12 md:col-span-5 flex flex-col gap-3">
                   <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-title-md text-secondary">
-                          record_voice_over
-                        </span>
-                        <span className="font-label-md text-label-md font-bold text-on-surface">
-                          Chỉ dẫn phản hồi
-                        </span>
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-semibold">
-                        Bật
+                    <div className="flex items-center gap-2">
+                      <Icon name="info" className="text-title-md text-on-surface" />
+                      <span className="font-label-md text-label-md font-bold text-on-surface">
+                        Cách điểm danh bằng PIN
                       </span>
                     </div>
                     <p className="font-body-sm text-body-sm text-on-surface leading-snug">
-                      Kiosk sẽ phát giọng nói tiếng Việt:{" "}
-                      <strong>"Xác thực thành công"</strong> và tự động kích
-                      hoạt chốt khóa mở cửa.
+                      Chọn đúng nhân viên ở cột trái, nhập mã PIN cá nhân 4 số
+                      rồi bấm “Xác nhận điểm danh”. Lượt điểm danh được ghi vào
+                      hệ thống như một lượt điểm danh thay thế.
                     </p>
                   </div>
 
                   <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-title-md text-on-surface">
-                        verified_user
-                      </span>
+                      <Icon name="verified_user" className="text-title-md text-on-surface" />
                       <span className="font-label-md text-label-md font-bold text-on-surface">
-                        Trạng thái xác thực
+                        Mã PIN cá nhân
                       </span>
                     </div>
-                    <div className="space-y-1.5 font-code-telemetry text-label-sm">
-                      <div className="flex justify-between">
-                        <span className="text-on-surface-variant">
-                          Bảo mật mã hóa:
-                        </span>
-                        <span className="font-bold text-on-surface">
-                          2FA Zero-Trust Node #04
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-on-surface-variant">
-                          Độ trễ xác thực:
-                        </span>
-                        <span className="text-secondary font-bold">
-                          &lt; 15ms (Local Bus)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3.5 rounded-2xl bg-amber-50 text-amber-950 flex items-start gap-2.5">
-                    <span className="material-symbols-outlined text-title-md text-amber-700 shrink-0 mt-0.5">
-                      lock_clock
-                    </span>
-                    <p className="font-body-sm text-body-sm leading-tight text-amber-900">
-                      Mã PIN hết hạn nhập sau{" "}
-                      <strong className="font-semibold text-amber-950">
-                        15 giây
-                      </strong>{" "}
-                      nếu không thao tác để bảo vệ quyền riêng tư cá nhân.
+                    <p className="font-body-sm text-body-sm text-on-surface leading-snug">
+                      Mã PIN do bộ phận Nhân sự cấp cho từng nhân viên. Không
+                      chia sẻ mã PIN cho người khác; nếu quên, liên hệ Nhân sự
+                      để được cấp lại.
                     </p>
                   </div>
 
-                  <div className="py-1.5 px-3 rounded-xl bg-surface-container flex items-center justify-between text-on-surface-variant font-code-telemetry text-label-sm">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-secondary" />
-                      Relay Controller ID #01
-                    </span>
-                    <span className="text-on-surface font-semibold">
-                      ONLINE
-                    </span>
+                  <div className="p-3.5 rounded-2xl bg-amber-50 text-amber-950 flex items-start gap-2.5">
+                    <Icon name="lock_clock" className="text-title-md text-amber-700 shrink-0 mt-0.5" />
+                    <p className="font-body-sm text-body-sm leading-tight text-amber-900">
+                      Màn hình tự quay lại camera sau{" "}
+                      <strong className="font-semibold text-amber-950">
+                        15 giây
+                      </strong>{" "}
+                      nếu không thao tác, để tránh lộ thông tin cá nhân.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1099,18 +889,14 @@ export default function Kiosk() {
 
             <div className="bg-surface-container-low px-8 py-3 flex items-center justify-between text-on-surface-variant">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-title-md text-secondary">
-                  help_outline
-                </span>
+                <Icon name="help_outline" className="text-title-md text-on-surface-variant" />
                 <span className="font-body-sm text-body-sm">
-                  Cần cấp lại mã PIN? Mở app di động chọn{" "}
+                  Cần cấp lại mã PIN? Liên hệ bộ phận{" "}
                   <strong className="text-on-surface font-medium">
-                    Bảo mật &gt; Cấp PIN Offline
-                  </strong>
+                    Nhân sự
+                  </strong>{" "}
+                  để được hỗ trợ.
                 </span>
-              </div>
-              <div className="font-code-telemetry text-label-sm">
-                FIRMWARE V4.2.8-PROD
               </div>
             </div>
           </div>

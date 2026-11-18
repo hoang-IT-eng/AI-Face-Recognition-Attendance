@@ -1,55 +1,63 @@
 @import "tailwindcss";
 
+/*
+ * FaceAttend console palette — one accent (indigo) on neutral surfaces,
+ * plus semantic error / warning (Tailwind amber) / success only.
+ * Token names are kept from the original theme so existing utility
+ * classes keep working; the former teal "secondary" family now resolves
+ * to a muted slate, and the green "tertiary" family to a quiet success
+ * green. No cyan/teal HUD hues remain.
+ */
 @theme {
   --color-on-error-container: #93000a;
-  --color-on-primary-fixed: #0e006a;
+  --color-on-primary-fixed: #1d1a4d;
   --color-inverse-on-surface: #eff1f3;
   --color-surface: #f8f9fc;
-  --color-surface-tint: #5b5896;
-  --color-on-tertiary-fixed: #00210f;
-  --color-tertiary: #005a3c;
+  --color-surface-tint: #77748c;
+  --color-on-tertiary-fixed: #0d2b1d;
+  --color-tertiary: #2e7d5b;
   --color-on-secondary: #ffffff;
   --color-on-surface-variant: #4c4a5e;
   --color-primary-container: #5955d1;
   --color-surface-dim: #d5d8e6;
   --color-on-background: #17171f;
   --color-surface-container-lowest: #ffffff;
-  --color-tertiary-fixed-dim: #4ade9e;
+  --color-tertiary-fixed-dim: #a9d3ba;
   --color-on-primary: #ffffff;
   --color-on-error: #ffffff;
   --color-error: #ba1a1a;
-  --color-on-secondary-fixed-variant: #004e5c;
+  --color-on-secondary-fixed-variant: #44415c;
   --color-surface-bright: #f8f9fc;
-  --color-on-secondary-container: #076a7c;
+  --color-on-secondary-container: #3c3952;
   --color-surface-container-high: #e6e8f2;
   --color-surface-container-highest: #dde0ee;
-  --color-secondary: #00687a;
+  --color-secondary: #57536e;
   --color-surface-container-low: #f3f4fa;
-  --color-on-tertiary-container: #d1fae5;
-  --color-secondary-container: #9ce8fd;
+  --color-on-tertiary-container: #e6f4ec;
+  --color-secondary-container: #e3e1ee;
   --color-primary-fixed-dim: #c0beff;
   --color-inverse-primary: #c0beff;
   --color-surface-variant: #dde0ee;
   --color-surface-container: #eef0f7;
   --color-error-container: #ffdad6;
-  --color-tertiary-container: #007550;
-  --color-inverse-surface: #23223f;
-  --color-secondary-fixed: #abedff;
+  --color-tertiary-container: #2e7d5b;
+  --color-inverse-surface: #26262e;
+  --color-secondary-fixed: #e9e7f2;
   --color-background: #f6f7fb;
   --color-on-surface: #17171f;
-  --color-on-tertiary-fixed-variant: #00513a;
-  --color-on-primary-fixed-variant: #2f2a9e;
-  --color-secondary-fixed-dim: #86d2e6;
+  --color-on-tertiary-fixed-variant: #1f5138;
+  --color-secondary-fixed-dim: #c6c3d8;
   --color-outline-variant: #d9d7e6;
   --color-primary: #403ab8;
   --color-outline: #77748c;
   --color-on-primary-container: #ffffff;
-  --color-tertiary-fixed: #a7f3cf;
+  --color-tertiary-fixed: #d8ecdf;
   --color-on-tertiary: #ffffff;
-  --color-on-secondary-fixed: #001f26;
+  --color-on-secondary-fixed: #232038;
   --color-primary-fixed: #e2dfff;
+  --color-success: #2e7d5b;
 
-  /* Landing-only tokens (overridden inside .landing-root) */
+  /* Extra tokens referenced by a few secondary screens */
   --color-surface-subtle: #f6f7fb;
   --color-surface-card: #ffffff;
   --color-border-subtle: #e7e8ee;
@@ -70,7 +78,7 @@
   --spacing-space-sm: 0.5rem;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-headline: "Plus Jakarta Sans", Inter, sans-serif;
   --font-body: Inter, system-ui, sans-serif;
 }
@@ -116,21 +124,11 @@
 /* Shared elevation for cards across the console */
 .shadow-card {
   box-shadow:
-    0 1px 2px rgba(23, 23, 47, 0.05),
-    0 10px 30px -12px rgba(64, 58, 184, 0.12);
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 10px 30px -12px rgba(15, 23, 42, 0.1);
 }
 
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  user-select: none;
-  line-height: 1;
-}
-
-.material-symbols-filled {
-  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
-}
-
-/* Typography tokens matching Stitch Design System */
+/* Typography scale (sizes only — family inherits from the app font) */
 .font-headline-xl, .text-headline-xl {
   font-size: 36px;
   line-height: 44px;
@@ -193,76 +191,17 @@
   letter-spacing: 0.04em;
   font-weight: 600;
 }
+/*
+ * Retired as a decorative device: this class used to render labels in a
+ * letterspaced mono "telemetry" voice. It now resolves to the standard
+ * sans label style (tabular numerals kept so genuine data columns still
+ * align). Remaining usages render as ordinary labels.
+ */
 .font-code-telemetry, .text-code-telemetry {
-  font-family: "JetBrains Mono", "Inter", monospace;
+  font-family: "Inter", system-ui, sans-serif;
   font-size: 13px;
   line-height: 18px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-}
-
-@keyframes laser-sweep {
-  0%, 100% { transform: translateY(0%); opacity: 0.85; }
-  50% { transform: translateY(240px); opacity: 1; }
-}
-
-.animate-laser {
-  animation: laser-sweep 2.8s ease-in-out infinite;
-}
-
-/* FaceAttend landing (Stitch) — scoped so admin console tokens stay intact */
-.landing-root {
-  --color-surface: #fbfbfe;
-  --color-surface-subtle: #f6f7fb;
-  --color-surface-container-low: #f1f2f7;
-  --color-surface-card: #ffffff;
-  --color-border-subtle: #e7e8ee;
-  --color-border-crisp: #dde0eb;
-  --color-primary: #403ab8;
-  --color-primary-container: #5955d1;
-  --color-primary-fixed: #e2dfff;
-  --color-on-primary-fixed: #0e006a;
-  --color-on-surface: #0f172a;
-  --color-on-surface-variant: #52596c;
-  --color-secondary: #5f5a7d;
-  --color-tertiary: #005a3c;
-  --color-tertiary-container: #007550;
-  --color-emerald-badge-bg: #ecfdf5;
-  --color-emerald-accent: #059669;
-  --color-slate-deep: #0b0e14;
-  --color-midnight-dark: #0a0b10;
-  --font-headline: "Plus Jakarta Sans", Inter, sans-serif;
-  --font-body: Inter, system-ui, sans-serif;
-  --font-sans: "Plus Jakarta Sans", Inter, sans-serif;
-  font-family: var(--font-body);
-  background-color: var(--color-surface);
-  color: var(--color-on-surface);
-}
-
-.landing-root .font-headline {
-  font-family: var(--font-headline);
-}
-
-.landing-root .font-body {
-  font-family: var(--font-body);
-}
-
-.landing-root .italic-accent {
-  font-style: italic;
-  font-family: "Plus Jakarta Sans", serif;
-  font-weight: 400;
-}
-
-.landing-root .shadow-soft-elevation {
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 8px 30px rgba(15, 23, 42, 0.06),
-    0 20px 48px rgba(64, 58, 184, 0.04);
-}
-
-.landing-root .shadow-floating {
-  box-shadow:
-    0 12px 32px -4px rgba(15, 23, 42, 0.08),
-    0 4px 12px -2px rgba(15, 23, 42, 0.04);
 }

@@ -13,7 +13,7 @@
       "nav.tech": "Công nghệ",
       "nav.demo": "Xem demo trực tiếp",
       "hero.eyebrow": "Hệ thống điểm danh sinh trắc học",
-      "hero.title": "Điểm danh bằng khuôn mặt.<br />Nhanh. Chính xác.<br />Không tiếp xúc.",
+      "hero.title": "Điểm danh bằng nhận diện khuôn mặt cho văn phòng.",
       "hero.sub": "FaceAttend nhận diện nhân viên ngay tại kiosk bằng AI — không thẻ, không vân tay, không xếp hàng chờ. Mọi lượt vào ra được ghi lại tức thì, đối chiếu với ca làm việc và tổng hợp thành báo cáo chấm công tự động.",
       "hero.cta1": "Trải nghiệm demo live",
       "hero.cta2": "Xem cách hoạt động",
@@ -22,23 +22,20 @@
       "hero.t2v": "Không tiếp xúc",
       "hero.t3k": "Ghi nhận",
       "hero.t3v": "Thời gian thực",
-      "kiosk.title": "Kiosk điểm danh — Cổng A",
-      "kiosk.live": "Đang hoạt động",
       "kiosk.imgalt": "Nhân viên trong sảnh văn phòng hiện đại, ánh sáng tự nhiên",
-      "kiosk.meta": "Kỹ thuật • Ca 08:00",
-      "kiosk.status": "Đã điểm danh 07:52",
+      "kiosk.caption": "Ảnh minh họa — nhân viên tại sảnh văn phòng.",
       "how.eyebrow": "Cách hoạt động",
       "how.title": "Từ khuôn mặt đến bảng công — trong ba bước",
       "step1.t": "Đăng ký khuôn mặt",
       "step1.p": "Nhân viên đăng ký một lần tại quầy quản trị hoặc kiosk. Hệ thống trích xuất đặc trưng khuôn mặt và lưu trữ an toàn làm hồ sơ sinh trắc học.",
       "step2.t": "Nhận diện tại kiosk",
-      "step2.p": "Khi đến cổng, camera nhận diện khuôn mặt trong tích tắc, đồng thời kiểm tra liveness bằng chuyển động chớp mắt để ngăn điểm danh hộ bằng ảnh hoặc video.",
+      "step2.p": "Ngay khi nhân viên đến cổng, camera nhận diện khuôn mặt, đồng thời kiểm tra liveness bằng chuyển động chớp mắt để ngăn điểm danh hộ bằng ảnh hoặc video.",
       "step3.t": "Báo cáo & cảnh báo",
       "step3.p": "Lượt điểm danh được đối chiếu với ca làm việc: đúng giờ, đi muộn hay vắng mặt. HR xem dashboard trực tiếp, nhận cảnh báo bất thường và xuất báo cáo khi cần.",
       "feat.eyebrow": "Tính năng",
       "feat.title": "Đủ sâu cho vận hành. Đủ gọn cho người dùng.",
       "f1.t": "Nhận diện khuôn mặt AI",
-      "f1.p": "DeepFace trích xuất và đối sánh vector khuôn mặt với độ chính xác cao, kể cả khi thay đổi góc mặt hay ánh sáng tại cổng.",
+      "f1.p": "DeepFace trích xuất và đối sánh vector khuôn mặt tại cổng, thích ứng với thay đổi về góc mặt và ánh sáng.",
       "f2.t": "Chống giả mạo hai lớp",
       "f2.p": "Anti-spoofing kết hợp phát hiện chớp mắt bằng MediaPipe giúp chặn điểm danh bằng ảnh in, màn hình điện thoại hay video phát lại.",
       "f3.t": "Kiosk không tiếp xúc",
@@ -62,11 +59,11 @@
       "tech.2": "Nhận diện & đối sánh khuôn mặt",
       "tech.3": "Phát hiện chớp mắt, liveness",
       "tech.4": "Giao diện quản trị & kiosk",
-      "tech.5": "Hệ thống thiết kế nhất quán",
+      "tech.5": "Hệ thống thiết kế của console quản trị",
       "tech.6": "Luồng camera & giám sát trực tiếp",
       "demo.eyebrow": "Demo trực tuyến",
       "demo.title": "Xem hệ thống đang chạy thật",
-      "demo.sub": "Bản demo SecureFace AI đang hoạt động trên nền tảng đám mây — dashboard tổng quan chấm công, nhật ký điểm danh thời gian thực và phân bố trạng thái ca làm việc.",
+      "demo.sub": "Bản demo FaceAttend đang hoạt động trên nền tảng đám mây — dashboard tổng quan chấm công, nhật ký điểm danh thời gian thực và phân bố trạng thái ca làm việc.",
       "demo.cta": "Mở demo tại hoang-attend.pages.dev",
       "footer.tag": "Hệ thống điểm danh bằng nhận diện khuôn mặt AI.",
       "footer.demo": "Demo trực tiếp",
@@ -82,7 +79,7 @@
       "nav.tech": "Technology",
       "nav.demo": "View live demo",
       "hero.eyebrow": "Biometric attendance system",
-      "hero.title": "Attendance by face.<br />Fast. Accurate.<br />Contactless.",
+      "hero.title": "Face-recognition attendance for the office.",
       "hero.sub": "FaceAttend recognizes employees right at the kiosk with AI — no cards, no fingerprints, no queues. Every check-in is recorded instantly, matched against work shifts and rolled up into automatic timesheet reports.",
       "hero.cta1": "Try the live demo",
       "hero.cta2": "See how it works",
@@ -91,23 +88,20 @@
       "hero.t2v": "Contactless",
       "hero.t3k": "Logging",
       "hero.t3v": "Real-time",
-      "kiosk.title": "Check-in kiosk — Gate A",
-      "kiosk.live": "Live",
       "kiosk.imgalt": "An employee in a bright, modern office lobby",
-      "kiosk.meta": "Engineering • Shift 08:00",
-      "kiosk.status": "Checked in 07:52",
+      "kiosk.caption": "Illustrative photo — an employee in an office lobby.",
       "how.eyebrow": "How it works",
       "how.title": "From face to timesheet — in three steps",
       "step1.t": "Enroll a face",
       "step1.p": "Employees enroll once at the admin desk or a kiosk. The system extracts facial features and stores them securely as a biometric profile.",
       "step2.t": "Recognize at the kiosk",
-      "step2.p": "At the gate, the camera identifies the face in a split second while a blink-based liveness check blocks buddy punching with photos or videos.",
+      "step2.p": "As the employee arrives at the gate, the camera identifies the face while a blink-based liveness check blocks buddy punching with photos or videos.",
       "step3.t": "Reports & alerts",
       "step3.p": "Each check-in is matched against the work shift: on time, late or absent. HR watches a live dashboard, gets anomaly alerts and exports reports on demand.",
       "feat.eyebrow": "Features",
       "feat.title": "Deep enough for operations. Simple enough for everyone.",
       "f1.t": "AI face recognition",
-      "f1.p": "DeepFace extracts and matches face vectors with high accuracy, even as face angles and gate lighting change.",
+      "f1.p": "DeepFace extracts and matches face vectors at the gate, coping with changes in face angle and gate lighting.",
       "f2.t": "Two-layer anti-spoofing",
       "f2.p": "Anti-spoofing combined with MediaPipe blink detection stops check-ins faked with printed photos, phone screens or replayed video.",
       "f3.t": "Contactless kiosk",
@@ -131,11 +125,11 @@
       "tech.2": "Face recognition & matching",
       "tech.3": "Blink detection, liveness",
       "tech.4": "Admin & kiosk interfaces",
-      "tech.5": "Consistent design system",
+      "tech.5": "Design system of the admin console",
       "tech.6": "Live camera & monitoring streams",
       "demo.eyebrow": "Online demo",
       "demo.title": "See the system running live",
-      "demo.sub": "The SecureFace AI demo is running in the cloud — an attendance overview dashboard, a real-time check-in log and shift status distribution.",
+      "demo.sub": "The FaceAttend demo is running in the cloud — an attendance overview dashboard, a real-time check-in log and shift status distribution.",
       "demo.cta": "Open the demo at hoang-attend.pages.dev",
       "footer.tag": "AI face-recognition attendance system.",
       "footer.demo": "Live demo",
@@ -254,24 +248,6 @@
           opacity: 1, y: 0, duration: 0.7, ease: "power3.out",
           scrollTrigger: { trigger: el, start: "top 88%", once: true }
         });
-      });
-
-      // Top scroll-progress hairline
-      gsap.to("#scrollProgress", {
-        scaleX: 1, ease: "none",
-        scrollTrigger: { start: 0, end: "max", scrub: 0.3 }
-      });
-
-      // Steps: numerals fill with indigo as each row arrives + progress hairline
-      gsap.utils.toArray(".step-row").forEach(function (row) {
-        window.ScrollTrigger.create({
-          trigger: row, start: "top 78%", once: true,
-          onEnter: function () { row.classList.add("filled"); }
-        });
-      });
-      gsap.to("#stepsProgress", {
-        scaleX: 1, ease: "none",
-        scrollTrigger: { trigger: ".steps", start: "top 78%", end: "bottom 55%", scrub: 0.4 }
       });
 
       // Pipeline: nodes cascade in sequence

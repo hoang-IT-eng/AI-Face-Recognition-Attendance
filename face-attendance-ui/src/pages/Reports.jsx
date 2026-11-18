@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUsers, getAttendance, exportExcel, getPayrollReport } from "../api";
+import Icon from "../components/Icon";
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -110,9 +111,7 @@ export default function Reports() {
 
         <div className="flex items-center gap-3 text-on-surface-variant font-body-sm text-body-sm">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-low shadow-xs">
-            <span className="material-symbols-outlined text-[18px] text-secondary">
-              verified_user
-            </span>
+            <Icon name="verified_user" className="text-[18px] text-secondary" />
             <span>Dữ liệu AI sinh trắc học đã đồng bộ</span>
           </div>
         </div>
@@ -126,9 +125,7 @@ export default function Reports() {
               Nhân sự kích hoạt
             </span>
             <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-              <span className="material-symbols-outlined text-[18px]">
-                badge
-              </span>
+              <Icon name="badge" className="text-[18px]" />
             </span>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
@@ -147,9 +144,7 @@ export default function Reports() {
               Tổng công chuẩn kỳ
             </span>
             <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-              <span className="material-symbols-outlined text-[18px]">
-                calendar_today
-              </span>
+              <Icon name="calendar_today" className="text-[18px]" />
             </span>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
@@ -168,9 +163,7 @@ export default function Reports() {
               Tổng giờ OT (Tăng ca)
             </span>
             <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-              <span className="material-symbols-outlined text-[18px]">
-                timelapse
-              </span>
+              <Icon name="timelapse" className="text-[18px]" />
             </span>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
@@ -194,9 +187,7 @@ export default function Reports() {
               Tuân thủ đúng giờ
             </span>
             <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-              <span className="material-symbols-outlined text-[18px]">
-                verified
-              </span>
+              <Icon name="verified" className="text-[18px]" />
             </span>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
@@ -224,9 +215,7 @@ export default function Reports() {
                 : "text-on-surface-variant hover:text-on-surface"
             }`}
           >
-            <span className="material-symbols-outlined text-[20px]">
-              calendar_view_day
-            </span>
+            <Icon name="calendar_view_day" className="text-[20px]" />
             <span>Báo cáo chi tiết theo ngày</span>
           </button>
           <button
@@ -237,9 +226,7 @@ export default function Reports() {
                 : "text-on-surface-variant hover:text-on-surface"
             }`}
           >
-            <span className="material-symbols-outlined text-[20px] text-secondary">
-              calculate
-            </span>
+            <Icon name="calculate" className="text-[20px] text-secondary" />
             <span>Kỳ lương &amp; Bảng tổng hợp công</span>
             <span className="ml-1 w-2 h-2 rounded-full bg-secondary"></span>
           </button>
@@ -300,9 +287,7 @@ export default function Reports() {
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
           <div className="relative w-full sm:w-80">
-            <span className="material-symbols-outlined absolute left-3 top-3 text-[20px] text-on-surface-variant">
-              search
-            </span>
+            <Icon name="search" className="absolute left-3 top-3 text-[20px] text-on-surface-variant" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -317,18 +302,14 @@ export default function Reports() {
               onClick={handleExport}
               className="h-11 px-4 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">
-                table_view
-              </span>
+              <Icon name="table_view" className="text-[20px]" />
               <span>Xuất Excel chi tiết</span>
             </button>
             <button
               onClick={handleExport}
               className="h-11 px-5 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg shadow-xs hover:bg-primary-container transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">
-                file_download
-              </span>
+              <Icon name="file_download" className="text-[20px]" />
               <span>Xuất kỳ lương</span>
             </button>
           </div>
@@ -439,9 +420,7 @@ export default function Reports() {
                   </td>
                   <td className="py-4 px-4 text-center">
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-fixed text-secondary font-label-sm text-label-sm font-bold">
-                      <span className="material-symbols-outlined text-[14px]">
-                        verified
-                      </span>
+                      <Icon name="verified" className="text-[14px]" />
                       {r.compliance}
                     </span>
                   </td>
@@ -462,9 +441,7 @@ export default function Reports() {
         <div className="p-6 bg-surface-container-low flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-on-surface font-body-md text-body-md">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-secondary text-[20px]">
-                corporate_fare
-              </span>
+              <Icon name="corporate_fare" className="text-secondary text-[20px]" />
               <span className="font-medium">
                 Toàn công ty:{" "}
                 <strong className="font-semibold text-on-surface">
@@ -489,9 +466,7 @@ export default function Reports() {
           </div>
 
           <div className="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
-            <span className="material-symbols-outlined text-[18px] text-secondary">
-              lock
-            </span>
+            <Icon name="lock" className="text-[18px] text-secondary" />
             <span>Dữ liệu kỳ lương đã khóa sổ kế toán</span>
           </div>
         </div>

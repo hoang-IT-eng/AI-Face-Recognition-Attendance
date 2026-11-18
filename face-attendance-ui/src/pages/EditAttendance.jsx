@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUsers, manualAttendance, getAdjustments } from "../api";
+import Icon from "../components/Icon";
 
 function mapAdj(r) {
   return {
@@ -105,29 +106,23 @@ export default function EditAttendance() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-primary text-on-primary font-code-telemetry text-label-sm">
+            <span className="px-2.5 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm">
               KIỂM TOÁN &amp; ĐIỀU CHỈNH CÔNG
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-secondary font-code-telemetry text-label-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-secondary"></span>
-              AUDIT ENGINE ACTIVE
             </span>
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
             Sửa công &amp; Giải trình bảng công
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant">
-            Quản lý các bản ghi điểm danh ngoại lệ, xác thực camera AI và phê
-            duyệt điều chỉnh giờ công thủ công.
+            Quản lý các bản ghi điểm danh ngoại lệ và phê duyệt điều chỉnh giờ
+            công thủ công.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3 bg-surface-container-lowest px-4 py-2.5 rounded-xl border border-outline-variant/40 shadow-xs">
-            <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
-              <span className="material-symbols-outlined text-[20px]">
-                history_edu
-              </span>
+            <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+              <Icon name="history_edu" className="text-[20px]" />
             </div>
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm text-on-surface-variant">
@@ -135,22 +130,6 @@ export default function EditAttendance() {
               </span>
               <span className="font-title-md text-title-md text-on-surface leading-none font-bold">
                 {rows.filter((x) => x.isManual).length} trường hợp
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-surface-container-lowest px-4 py-2.5 rounded-xl border border-outline-variant/40 shadow-xs">
-            <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined text-[20px]">
-                verified_user
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-label-sm text-label-sm text-on-surface-variant">
-                Tỉ lệ AI tin cậy
-              </span>
-              <span className="font-title-md text-title-md text-on-surface leading-none font-bold">
-                98.6%
               </span>
             </div>
           </div>
@@ -162,9 +141,7 @@ export default function EditAttendance() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
           <div className="flex flex-col gap-1">
             <label className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px]">
-                calendar_today
-              </span>
+              <Icon name="calendar_today" className="text-[16px]" />
               <span>Chọn ngày</span>
             </label>
             <input
@@ -177,9 +154,7 @@ export default function EditAttendance() {
 
           <div className="flex flex-col gap-1">
             <label className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px]">
-                domain
-              </span>
+              <Icon name="domain" className="text-[16px]" />
               <span>Phòng ban</span>
             </label>
             <select className="w-full h-11 px-3.5 bg-surface-container-low text-on-surface font-body-md rounded-xl focus:outline-none cursor-pointer">
@@ -193,9 +168,7 @@ export default function EditAttendance() {
 
           <div className="flex flex-col gap-1">
             <label className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px]">
-                filter_alt
-              </span>
+              <Icon name="filter_alt" className="text-[16px]" />
               <span>Nguồn ghi nhận</span>
             </label>
             <select
@@ -215,9 +188,7 @@ export default function EditAttendance() {
             onClick={() => setModalRow(rows[0])}
             className="h-11 px-6 bg-primary text-on-primary rounded-xl flex items-center gap-2.5 font-label-lg text-label-lg hover:bg-primary-container shadow-sm transition-all cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[20px]">
-              edit_calendar
-            </span>
+            <Icon name="edit_calendar" className="text-[20px]" />
             <span>Thêm công tay</span>
           </button>
         </div>
@@ -246,9 +217,7 @@ export default function EditAttendance() {
                     type="text"
                     className="h-9 pl-8 pr-3 text-body-sm bg-surface-container-low rounded-lg text-on-surface focus:outline-none"
                   />
-                  <span className="material-symbols-outlined text-[16px] text-on-surface-variant absolute left-2.5 top-2.5">
-                    search
-                  </span>
+                  <Icon name="search" className="text-[16px] text-on-surface-variant absolute left-2.5 top-2.5" />
                 </div>
               </div>
             </div>
@@ -335,9 +304,7 @@ export default function EditAttendance() {
                           {r.reason}
                         </p>
                         <div className="mt-1 flex items-center gap-1 text-label-sm font-label-sm text-secondary">
-                          <span className="material-symbols-outlined text-[14px]">
-                            attach_file
-                          </span>
+                          <Icon name="attach_file" className="text-[14px]" />
                           <span>{r.attachment}</span>
                         </div>
                       </td>
@@ -346,16 +313,17 @@ export default function EditAttendance() {
                           <span
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md font-label-sm text-label-sm font-medium ${
                               r.isManual
-                                ? "bg-secondary-fixed text-on-secondary-fixed"
-                                : "bg-secondary/10 text-secondary"
+                                ? "bg-surface-container-high text-on-surface"
+                                : "bg-primary-fixed/60 text-primary"
                             }`}
                           >
-                            <span className="material-symbols-outlined text-[14px]">
-                              {r.isManual ? "badge" : "videocam"}
-                            </span>
+                            <Icon
+                              name={r.isManual ? "badge" : "videocam"}
+                              className="text-[14px]"
+                            />
                             {r.source}
                           </span>
-                          <span className="font-code-telemetry text-label-sm text-on-surface-variant">
+                          <span className="font-label-sm text-label-sm text-on-surface-variant">
                             {r.timestamp}
                           </span>
                         </div>
@@ -366,9 +334,7 @@ export default function EditAttendance() {
                             onClick={() => setModalRow(r)}
                             className="px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1 transition-colors cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-[16px]">
-                              edit
-                            </span>
+                            <Icon name="edit" className="text-[16px]" />
                             <span>Sửa</span>
                           </button>
                           <button
@@ -378,9 +344,7 @@ export default function EditAttendance() {
                             className="p-1.5 rounded-lg text-error hover:bg-error-container transition-colors cursor-pointer"
                             title="Xóa điều chỉnh"
                           >
-                            <span className="material-symbols-outlined text-[18px]">
-                              delete_sweep
-                            </span>
+                            <Icon name="delete_sweep" className="text-[18px]" />
                           </button>
                         </div>
                       </td>
@@ -406,9 +370,7 @@ export default function EditAttendance() {
           <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-start gap-3.5">
               <div className="p-2.5 rounded-xl bg-secondary-fixed text-secondary shrink-0">
-                <span className="material-symbols-outlined text-[24px]">
-                  verified
-                </span>
+                <Icon name="verified" className="text-[24px]" />
               </div>
               <div className="flex flex-col">
                 <h2 className="font-title-md text-title-md text-on-surface font-semibold">
@@ -430,9 +392,7 @@ export default function EditAttendance() {
             <div className="flex items-center justify-between pb-1">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[18px]">
-                    post_add
-                  </span>
+                  <Icon name="post_add" className="text-[18px]" />
                 </div>
                 <div className="flex flex-col">
                   <h2 className="font-title-lg text-title-lg text-on-surface font-bold leading-tight">
@@ -490,9 +450,7 @@ export default function EditAttendance() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <label className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[14px]">
-                      login
-                    </span>
+                    <Icon name="login" className="text-[14px]" />
                     <span>Giờ vào thực tế</span>
                   </label>
                   <input
@@ -504,9 +462,7 @@ export default function EditAttendance() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[14px]">
-                      logout
-                    </span>
+                    <Icon name="logout" className="text-[14px]" />
                     <span>Giờ ra thực tế</span>
                   </label>
                   <input
@@ -537,9 +493,7 @@ export default function EditAttendance() {
               </div>
 
               <div className="p-3 rounded-lg bg-surface-container-low flex items-center gap-3">
-                <span className="material-symbols-outlined text-secondary text-[20px]">
-                  shield
-                </span>
+                <Icon name="shield" className="text-secondary text-[20px]" />
                 <div className="flex flex-col font-body-sm text-on-surface-variant">
                   <span>
                     Người xác thực:{" "}
@@ -564,9 +518,7 @@ export default function EditAttendance() {
                   type="submit"
                   className="w-2/3 h-11 bg-primary text-on-primary rounded-xl font-label-lg text-label-lg hover:bg-primary-container shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
-                    save
-                  </span>
+                  <Icon name="save" className="text-[18px]" />
                   <span>Xác nhận lưu công</span>
                 </button>
               </div>
@@ -590,9 +542,7 @@ export default function EditAttendance() {
                 onClick={() => setModalRow(null)}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  close
-                </span>
+                <Icon name="close" className="text-[20px]" />
               </button>
             </div>
 
@@ -642,9 +592,7 @@ export default function EditAttendance() {
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 bg-primary text-on-primary px-5 py-3 rounded-xl shadow-xl flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-secondary-fixed text-[20px]">
-            check_circle
-          </span>
+          <Icon name="check_circle" className="text-secondary-fixed text-[20px]" />
           <span className="font-body-md text-body-md">{toast}</span>
         </div>
       )}

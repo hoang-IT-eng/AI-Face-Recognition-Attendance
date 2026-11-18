@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getEmployeeReport } from "../api";
+import Icon from "../components/Icon";
 
 export default function EmployeeReportDetail() {
   const navigate = useNavigate();
@@ -44,6 +45,29 @@ export default function EmployeeReportDetail() {
 
   const empName = report?.name || empCode;
 
+  // Derived from the report's own day rows — no invented figures.
+  const totalDays = dailyLogs.length;
+  const workedDays = dailyLogs.filter((d) => d.checkIn).length;
+  const ontimeDays = dailyLogs.filter((d) => d.status === "ontime").length;
+  const otDays = dailyLogs.filter((d) => d.status === "ot").length;
+  const workedPct = totalDays
+    ? Math.round((workedDays / totalDays) * 100)
+    : 0;
+  const avgConf = report?.avg_confidence ?? null;
+
+  const parseDayNum = (dateStr) => {
+    const s = String(dateStr || "");
+    let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return Number(m[3]);
+    m = s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+    if (m) return Number(m[1]);
+    return null;
+  };
+  const calendarDays = dailyLogs
+    .map((d) => ({ ...d, dayNum: parseDayNum(d.date) }))
+    .filter((d) => d.dayNum != null)
+    .sort((a, b) => a.dayNum - b.dayNum);
+
   return (
     <div className="flex flex-col w-full">
       {/* Top Breadcrumbs & Actions */}
@@ -52,40 +76,25 @@ export default function EmployeeReportDetail() {
           <div className="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
             <button
               onClick={() => navigate("/reports")}
-              className="hover:text-secondary flex items-center gap-1 transition-colors cursor-pointer"
+              className="hover:text-primary flex items-center gap-1 transition-colors cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                description
-              </span>
+              <Icon name="description" className="text-[18px]" />
               <span>Báo cáo</span>
-            </button>
-            <span className="text-outline-variant">/</span>
-            <button
-              onClick={() => navigate("/reports")}
-              className="hover:text-secondary transition-colors cursor-pointer"
-            >
-              Kỳ lương T10/2026
             </button>
             <span className="text-outline-variant">/</span>
             <span className="px-2 py-0.5 rounded bg-surface-container font-semibold text-on-surface">
               {empCode} — {empName}
             </span>
           </div>
-
-          <span className="px-2.5 py-1 rounded-full bg-secondary-fixed text-secondary font-code-telemetry text-[11px] font-semibold flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-            BÁO CÁO CÁ NHÂN &amp; ĐỐI SOÁT AI
-          </span>
         </div>
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
-              Chi tiết dữ liệu chấm công &amp; sinh trắc học
+              Chi tiết chấm công của nhân viên
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant mt-0.5">
-              Hồ sơ nhật ký điểm danh máy học AI, đối soát liveness và phân bổ
-              thời gian thực tế
+              Nhật ký điểm danh chi tiết theo ngày trong kỳ báo cáo.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
@@ -93,27 +102,21 @@ export default function EmployeeReportDetail() {
               onClick={() => navigate("/reports")}
               className="h-11 px-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant hover:bg-surface-container transition-all flex items-center gap-2 font-label-lg text-label-lg cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                arrow_back
-              </span>
+              <Icon name="arrow_back" className="text-[18px]" />
               <span>Quay lại</span>
             </button>
             <button
               onClick={() => navigate("/edit-attendance")}
-              className="h-11 px-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant hover:text-secondary hover:border-secondary transition-all flex items-center gap-2 font-label-lg text-label-lg cursor-pointer"
+              className="h-11 px-4 rounded-xl bg-surface-container-lowest text-on-surface border border-outline-variant hover:text-primary hover:border-primary transition-all flex items-center gap-2 font-label-lg text-label-lg cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                edit_calendar
-              </span>
+              <Icon name="edit_calendar" className="text-[18px]" />
               <span>Chỉnh sửa công</span>
             </button>
             <button
               onClick={() => window.print()}
               className="h-11 px-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all flex items-center gap-2 font-label-lg text-label-lg shadow-xs cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                picture_as_pdf
-              </span>
+              <Icon name="picture_as_pdf" className="text-[18px]" />
               <span>Xuất PDF phiếu công</span>
             </button>
           </div>
@@ -124,84 +127,70 @@ export default function EmployeeReportDetail() {
       <div className="bg-surface-container-lowest rounded-xl p-6 mb-6 shadow-xs border border-outline-variant/60 relative overflow-hidden">
         <div className="flex flex-col xl:flex-row gap-6 items-start xl:items-center justify-between relative z-10">
           <div className="flex items-center gap-4 min-w-[320px]">
-            <div className="relative">
-              <img
-                className="w-20 h-20 rounded-2xl object-cover ring-2 ring-secondary/20 shadow-xs"
-                alt="Nguyễn Văn A"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4IkX4Q8Xp3I2UeBgnWF2TRjOtllVQl-JoQNE09Iyr7zyqkvxY-2bI7hgpek0e4x3Gup58BjVOJp4IDGt7MDW6Tk-RRl0hx195z0EocjFzZudOix7EHIDTVYg88c6hIwV56CI0dRMW74K_XRPJ1PSY_Nz07MQ_0hDYRkl8XpJ7pxkktIePO2XrK2dgjLAuSrc1vt71fcu3ACAlAMiFEIqDaBuJl6TnqhZd7dgcWeR6kYUjWCG7uaWRuw"
-              />
-              <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-xs">
-                <span className="material-symbols-outlined material-symbols-filled text-[16px] text-[#009668]">
-                  verified
-                </span>
-              </span>
+            <div className="w-20 h-20 rounded-2xl bg-surface-container-high flex items-center justify-center shrink-0 text-on-surface font-headline-md text-headline-md font-bold">
+              {empName
+                ?.split(/\s+/)
+                .filter(Boolean)
+                .slice(-2)
+                .map((w) => w[0])
+                .join("")
+                .toUpperCase() || "NV"}
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <h2 className="font-title-lg text-title-lg text-on-surface font-bold">
                   {empName}
                 </h2>
-                <span className="px-2 py-0.5 rounded-full bg-secondary-fixed text-secondary font-code-telemetry text-label-sm font-semibold">
+                <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">
                   {empCode}
                 </span>
               </div>
-              <span className="font-body-md text-body-md text-on-surface font-medium">
-                Kỹ sư Lập trình Senior
-              </span>
-              <span className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mt-0.5">
-                <span className="material-symbols-outlined text-[15px]">
-                  apartment
+              {report?.group && (
+                <span className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mt-0.5">
+                  <Icon name="apartment" className="text-[15px]" />
+                  {report.group}
                 </span>
-                Phòng Kỹ thuật &amp; Công nghệ
-              </span>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#009668] bg-[#009668]/10 px-2 py-0.5 rounded">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#009668]"></span>
-                  3D Liveness Verified
-                </span>
-                <span className="text-[11px] font-code-telemetry text-on-surface-variant">
-                  Model: Facenet512
-                </span>
-              </div>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full xl:w-auto xl:flex-1">
             <div className="bg-surface-container-low p-3.5 rounded-xl flex flex-col justify-between">
               <span className="font-label-md text-label-md text-on-surface-variant">
-                Công chuẩn
+                Ngày có chấm công
               </span>
               <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="font-headline-md text-headline-md text-on-surface font-bold">
-                  22/22
+                  {workedDays}/{totalDays}
                 </span>
-                <span className="font-label-md text-label-md text-[#009668] font-semibold">
-                  100%
+                <span className="font-label-md text-label-md text-on-surface-variant font-semibold">
+                  {workedPct}%
                 </span>
               </div>
               <div className="w-full bg-surface-container h-1.5 rounded-full mt-2 overflow-hidden">
-                <div className="bg-secondary h-full rounded-full w-full" />
+                <div
+                  className="bg-primary h-full rounded-full"
+                  style={{ width: `${workedPct}%` }}
+                />
               </div>
             </div>
 
             <div className="bg-surface-container-low p-3.5 rounded-xl flex flex-col justify-between">
               <span className="font-label-md text-label-md text-on-surface-variant">
-                Đi muộn / Về sớm
+                Ngày đúng giờ
               </span>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-headline-md text-headline-md text-on-surface font-bold">
-                  0 / 0
+                  {ontimeDays}
                 </span>
                 <span className="font-label-md text-label-md text-on-surface-variant">
-                  lần
+                  / {totalDays} ngày
                 </span>
               </div>
               <div className="flex items-center gap-1.5 mt-2">
-                <span className="material-symbols-outlined text-[16px] text-[#009668]">
-                  check_circle
-                </span>
-                <span className="font-label-sm text-label-sm text-[#009668]">
-                  Chuẩn xác 100%
+                <Icon name="check_circle" className="text-[16px] text-success" />
+                <span className="font-label-sm text-label-sm text-on-surface-variant">
+                  Theo trạng thái từng ngày trong kỳ
                 </span>
               </div>
             </div>
@@ -211,38 +200,29 @@ export default function EmployeeReportDetail() {
                 Tăng ca (OT)
               </span>
               <div className="mt-2 flex items-baseline gap-1.5">
-                <span className="font-headline-md text-headline-md text-secondary font-bold">
+                <span className="font-headline-md text-headline-md text-on-surface font-bold">
                   {report?.ot_hours ?? 0}
                 </span>
                 <span className="font-label-md text-label-md text-on-surface-variant">
                   giờ
                 </span>
               </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant mt-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px] text-secondary">
-                  verified_user
-                </span>
-                Đã duyệt: {report?.ot_hours ?? 0}h
+              <span className="font-label-sm text-label-sm text-on-surface-variant mt-2">
+                Tổng giờ tăng ca trong kỳ báo cáo
               </span>
             </div>
 
             <div className="bg-surface-container-low p-3.5 rounded-xl flex flex-col justify-between">
               <span className="font-label-md text-label-md text-on-surface-variant">
-                AI Confidence
+                Độ tin cậy nhận diện trung bình
               </span>
               <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="font-headline-md text-headline-md text-on-surface font-bold">
-                  {report?.avg_confidence ?? 0}%
-                </span>
-                <span className="font-label-sm text-label-sm text-[#009668] font-bold">
-                  Hạng A+
+                  {avgConf != null ? `${avgConf}%` : "—"}
                 </span>
               </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant mt-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px] text-secondary">
-                  speed
-                </span>
-                18ms phản hồi
+              <span className="font-label-sm text-label-sm text-on-surface-variant mt-2">
+                Trung bình các lượt khớp trong kỳ
               </span>
             </div>
           </div>
@@ -253,9 +233,9 @@ export default function EmployeeReportDetail() {
       <div className="bg-surface-container-lowest rounded-xl p-3 mb-6 shadow-xs border border-outline-variant/60 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           {[
-            ["all", "Tất cả (22)"],
-            ["ontime", "Đúng giờ (17)"],
-            ["ot", "Tăng ca OT (5)"],
+            ["all", `Tất cả (${totalDays})`],
+            ["ontime", `Đúng giờ (${ontimeDays})`],
+            ["ot", `Tăng ca OT (${otDays})`],
           ].map(([key, label]) => (
             <button
               key={key}
@@ -280,9 +260,7 @@ export default function EmployeeReportDetail() {
                 : "text-on-surface-variant hover:text-on-surface"
             }`}
           >
-            <span className="material-symbols-outlined text-[18px]">
-              table_rows
-            </span>
+            <Icon name="table_rows" className="text-[18px]" />
             <span>Bảng chi tiết</span>
           </button>
           <button
@@ -293,9 +271,7 @@ export default function EmployeeReportDetail() {
                 : "text-on-surface-variant hover:text-on-surface"
             }`}
           >
-            <span className="material-symbols-outlined text-[18px]">
-              calendar_view_month
-            </span>
+            <Icon name="calendar_view_month" className="text-[18px]" />
             <span>Lịch trực quan</span>
           </button>
         </div>
@@ -311,13 +287,9 @@ export default function EmployeeReportDetail() {
                   <span className="font-title-md text-title-md text-on-surface">
                     Nhật ký chấm công từng ngày
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-code-telemetry text-label-sm font-semibold">
-                    {filteredLogs.length} Phiên hiển thị
+                  <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-semibold">
+                    {filteredLogs.length} ngày hiển thị
                   </span>
-                </div>
-                <div className="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
-                  <span className="w-2 h-2 rounded-full bg-[#009668]"></span>
-                  <span>100% Đối soát khớp thuật toán</span>
                 </div>
               </div>
 
@@ -356,53 +328,49 @@ export default function EmployeeReportDetail() {
                           <span className="font-label-md text-label-md text-on-surface">
                             {row.shift}
                           </span>
-                          <span className="block font-code-telemetry text-[11px] text-on-surface-variant">
+                          <span className="block font-label-sm text-label-sm text-on-surface-variant">
                             {row.hours}
                           </span>
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-1.5 font-code-telemetry font-bold text-on-surface">
+                          <div className="flex items-center gap-1.5 font-label-md text-label-md font-bold text-on-surface">
                             <span>{row.checkIn}</span>
-                            <span className="material-symbols-outlined text-[15px] text-[#009668]">
-                              verified
-                            </span>
+                            <Icon name="verified" className="text-[15px] text-success" />
                           </div>
-                          <span className="text-[11px] text-secondary font-code-telemetry block">
+                          <span className="text-[11px] text-on-surface-variant font-label-sm block">
                             {row.kioskIn}
                           </span>
                         </td>
                         <td className="py-3.5 px-4">
                           {row.checkOut ? (
                             <>
-                              <div className="flex items-center gap-1.5 font-code-telemetry font-bold text-on-surface">
+                              <div className="flex items-center gap-1.5 font-label-md text-label-md font-bold text-on-surface">
                                 <span>{row.checkOut}</span>
-                                <span className="material-symbols-outlined text-[15px] text-[#009668]">
-                                  verified
-                                </span>
+                                <Icon name="verified" className="text-[15px] text-success" />
                               </div>
-                              <span className="text-[11px] text-on-surface-variant font-code-telemetry block">
+                              <span className="text-[11px] text-on-surface-variant font-label-sm block">
                                 {row.kioskOut}
                               </span>
                             </>
                           ) : (
-                            <span className="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary bg-secondary-fixed/50 px-2 py-0.5 rounded-md">
-                              <span className="animate-pulse w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            <span className="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary bg-primary-fixed/60 px-2 py-0.5 rounded-md">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                               Đang làm việc
                             </span>
                           )}
                         </td>
-                        <td className="py-3.5 px-4 text-center font-code-telemetry font-semibold">
+                        <td className="py-3.5 px-4 text-center font-label-md text-label-md font-semibold">
                           {row.totalHours}
                         </td>
                         <td className="py-3.5 px-4">
                           {row.status === "ontime" ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-label-sm font-semibold bg-[#009668]/10 text-[#009668]">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#009668]"></span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-label-sm font-semibold bg-success/10 text-success">
+                              <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
                               {row.statusLabel}
                             </span>
                           ) : (
                             <div className="flex flex-col gap-1 items-start">
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-secondary-fixed text-secondary">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface">
                                 {row.statusLabel}
                               </span>
                               <span className="font-label-sm text-label-sm text-on-surface-variant">
@@ -414,11 +382,9 @@ export default function EmployeeReportDetail() {
                         <td className="py-3.5 px-4 pr-6 text-center">
                           <button
                             onClick={() => setSnapshotModal(row)}
-                            className="p-1.5 rounded-lg hover:bg-secondary-fixed text-on-surface-variant hover:text-secondary transition-all cursor-pointer"
+                            className="p-1.5 rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-all cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-[20px]">
-                              photo_camera_front
-                            </span>
+                            <Icon name="photo_camera_front" className="text-[20px]" />
                           </button>
                         </td>
                       </tr>
@@ -432,54 +398,48 @@ export default function EmployeeReportDetail() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <h3 className="font-title-md text-title-md text-on-surface">
-                    Lịch biểu Tháng 10/2026
+                    Lịch ngày công trong kỳ báo cáo
                   </h3>
-                  <span className="font-label-sm text-label-sm text-secondary bg-secondary-fixed/50 px-2 py-0.5 rounded">
-                    22 ngày đủ công
+                  <span className="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">
+                    {workedDays} ngày có chấm công
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-7 gap-2 text-center font-label-md text-label-md font-semibold text-on-surface-variant mb-2">
-                <span>T2</span>
-                <span>T3</span>
-                <span>T4</span>
-                <span>T5</span>
-                <span>T6</span>
-                <span className="text-error/70">T7</span>
-                <span className="text-error/70">CN</span>
-              </div>
-              <div className="grid grid-cols-7 gap-2">
-                {Array.from({ length: 28 }, (_, idx) => {
-                  const day = idx + 1;
-                  const isWeekend = (idx + 1) % 7 === 6 || (idx + 1) % 7 === 0;
-                  const isOt = [3, 10, 16, 21, 23].includes(day);
-                  return (
+              {calendarDays.length === 0 ? (
+                <p className="font-body-md text-body-md text-on-surface-variant py-8 text-center">
+                  Chưa có dữ liệu ngày công trong kỳ.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                  {calendarDays.map((d) => (
                     <div
-                      key={day}
+                      key={d.date}
                       className={`p-2.5 rounded-lg text-left min-h-[76px] flex flex-col justify-between ${
-                        isWeekend
-                          ? "bg-surface-container-low text-on-surface-variant"
-                          : isOt
-                          ? "bg-secondary-fixed/40 text-on-surface"
-                          : "bg-[#009668]/10 text-on-surface"
+                        d.status === "ontime"
+                          ? "bg-success/10 text-on-surface"
+                          : d.checkIn
+                          ? "bg-surface-container-high text-on-surface"
+                          : "bg-surface-container-low text-on-surface-variant"
                       }`}
                     >
-                      <span className="font-code-telemetry font-bold text-xs">
-                        {String(day).padStart(2, "0")}
+                      <span className="font-label-md text-label-md font-bold">
+                        {String(d.dayNum).padStart(2, "0")}
                       </span>
-                      {!isWeekend && (
-                        <span
-                          className={`text-[10px] font-bold ${
-                            isOt ? "text-secondary" : "text-[#009668]"
-                          }`}
-                        >
-                          {isOt ? "OT +2.0h" : "8h00m"}
+                      <span className="flex flex-col">
+                        <span className="text-[11px] font-semibold">
+                          {d.statusLabel || (d.checkIn ? "Có chấm công" : "—")}
                         </span>
-                      )}
+                        {d.checkIn && (
+                          <span className="text-[10px] text-on-surface-variant">
+                            Vào {d.checkIn}
+                            {d.checkOut ? ` · Ra ${d.checkOut}` : ""}
+                          </span>
+                        )}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -489,32 +449,24 @@ export default function EmployeeReportDetail() {
           <div className="bg-surface-container-lowest rounded-xl p-5 shadow-xs border border-outline-variant/60">
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/60">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-secondary">
-                  csv
-                </span>
+                <Icon name="csv" className="text-[20px] text-on-surface-variant" />
                 <h3 className="font-title-md text-title-md text-on-surface">
-                  Đối soát sinh trắc học AI
+                  Độ tin cậy nhận diện
                 </h3>
               </div>
-              <span className="px-2 py-0.5 rounded bg-[#009668]/10 text-[#009668] font-code-telemetry text-[11px] font-bold">
-                ISO/IEC 30107-3
-              </span>
             </div>
 
             <div className="mt-4 space-y-4">
               <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-low">
                 <div className="flex flex-col">
                   <span className="font-label-md text-label-md text-on-surface-variant">
-                    Độ tin cậy liveness trung bình
+                    Độ tin cậy nhận diện trung bình
                   </span>
                   <span className="font-headline-md text-headline-md font-bold text-on-surface mt-0.5">
-                    99.42%
+                    {avgConf != null ? `${avgConf}%` : "—"}
                   </span>
-                  <span className="text-[11px] text-[#009668] font-medium flex items-center gap-1 mt-0.5">
-                    <span className="material-symbols-outlined text-[14px]">
-                      shield
-                    </span>{" "}
-                    Không phát hiện Deepfake / Spoof
+                  <span className="text-[11px] text-on-surface-variant mt-0.5">
+                    Trung bình độ tin cậy các lượt khớp của nhân viên trong kỳ.
                   </span>
                 </div>
                 <div className="relative w-16 h-16 flex items-center justify-center">
@@ -530,17 +482,17 @@ export default function EmployeeReportDetail() {
                       strokeWidth="3.5"
                     />
                     <path
-                      className="text-secondary"
+                      className="text-primary"
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       fill="none"
                       stroke="currentColor"
-                      strokeDasharray="99.4, 100"
+                      strokeDasharray={`${avgConf ?? 0}, 100`}
                       strokeLinecap="round"
                       strokeWidth="3.5"
                     />
                   </svg>
-                  <span className="absolute font-code-telemetry text-[11px] font-bold text-on-surface">
-                    99.4%
+                  <span className="absolute font-label-sm text-label-sm font-bold text-on-surface">
+                    {avgConf != null ? `${avgConf}%` : "—"}
                   </span>
                 </div>
               </div>
@@ -550,46 +502,26 @@ export default function EmployeeReportDetail() {
           <div className="bg-surface-container-lowest rounded-xl p-5 shadow-xs border border-outline-variant/60">
             <div className="flex items-center justify-between pb-3 border-b border-outline-variant/60">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-on-surface">
-                  verified_user
-                </span>
+                <Icon name="verified_user" className="text-[20px] text-on-surface" />
                 <h3 className="font-title-md text-title-md text-on-surface">
-                  Nhật ký can thiệp &amp; kiểm toán
+                  Nguồn dữ liệu
                 </h3>
               </div>
-              <span className="material-symbols-outlined text-[18px] text-[#009668]">
-                lock
-              </span>
             </div>
 
-            <div className="mt-4 space-y-3.5">
+            <div className="mt-4">
               <div className="flex items-start gap-3 p-3 rounded-lg bg-surface-container-low">
-                <span className="material-symbols-outlined text-[20px] text-[#009668] mt-0.5">
-                  check_circle
-                </span>
+                <Icon name="info" className="text-[20px] text-on-surface-variant mt-0.5" />
                 <div className="flex flex-col">
                   <span className="font-label-md text-label-md font-semibold text-on-surface">
-                    Không có can thiệp thủ công
+                    Dữ liệu gốc từ hệ thống điểm danh
                   </span>
                   <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                    Dữ liệu 100% tự động trích xuất trực tiếp từ camera sinh
-                    trắc học.
+                    Trang này hiển thị dữ liệu ghi nhận tại các kiosk. Các
+                    chỉnh sửa thủ công (nếu có) được thực hiện ở màn hình Sửa
+                    công.
                   </p>
                 </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-surface-container text-left border border-outline-variant/60">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-                    Chứng thực tính toàn vẹn
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded bg-secondary-fixed text-secondary font-code-telemetry text-[10px] font-bold">
-                    SHA-256 SEAL
-                  </span>
-                </div>
-                <p className="font-code-telemetry text-[11px] text-on-surface break-all mt-1.5 select-all bg-surface-container-lowest p-2 rounded">
-                  e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-                </p>
               </div>
             </div>
           </div>
@@ -598,65 +530,51 @@ export default function EmployeeReportDetail() {
 
       {/* Snapshot Modal Dialog */}
       {snapshotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-surface-container-lowest rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-outline-variant">
             <div className="p-4 px-6 bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[22px]">
-                  face
-                </span>
+                <Icon name="face" className="text-on-surface-variant text-[22px]" />
                 <span className="font-title-md text-title-md text-on-surface">
-                  Đối soát ảnh chụp camera sinh trắc
+                  Chi tiết lượt điểm danh
                 </span>
               </div>
               <button
                 onClick={() => setSnapshotModal(null)}
                 className="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  close
-                </span>
+                <Icon name="close" className="text-[20px]" />
               </button>
             </div>
 
             <div className="p-6 flex flex-col gap-4">
-              <div className="relative w-full h-64 rounded-xl overflow-hidden bg-black flex items-center justify-center">
-                <img
-                  className="w-full h-full object-cover opacity-90"
-                  alt="Snapshot"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvMjFfAdJfPJtf6jV6OQ9ss7CVO7VQ96WDxTxBLypuxjq0ToLDun1KC3PBqMT91R5AYlwK5VrvGT0ooemDanCQGF_ZRHjD87ZIQjTAp79F-LA1oL9fAEqoFS9uyp7OdC67VZp6klrS1kRxnDmvTveVoDgbuMqSUqPbsDrxxekGgXIeVUPzBtXdR0rGbIEyJipxUcco6fPQUrx6FEVemnTkf_evswzPdZPUj5WplEFis5I10HDmvwCTkQ"
-                />
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-36 h-48 border-2 border-secondary rounded-lg relative shadow-[0_0_16px_rgba(87,223,254,0.45)]">
-                    <div className="absolute -top-6 left-0 bg-secondary text-on-secondary px-2 py-0.5 rounded text-[10px] font-code-telemetry font-bold">
-                      {empCode} • {snapshotModal.conf}
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute bottom-2 left-2 right-2 p-2 bg-black/70 backdrop-blur-md rounded-lg flex items-center justify-between text-white font-code-telemetry text-xs">
-                  <span>{snapshotModal.kioskIn}</span>
-                  <span className="text-[#009668] flex items-center gap-1 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-[#009668] animate-ping"></span>{" "}
-                    LIVENESS PASS
+              <div className="w-full rounded-xl bg-surface-container-low p-5 flex flex-col items-center justify-center gap-2 text-center">
+                <Icon name="photo_camera_front" className="text-[36px] text-on-surface-variant" />
+                <span className="font-label-md text-label-md text-on-surface-variant">
+                  Ảnh chụp tại kiosk không được đính kèm trong báo cáo này.
+                </span>
+                {snapshotModal.kioskIn && (
+                  <span className="font-body-sm text-body-sm text-on-surface-variant">
+                    {snapshotModal.kioskIn}
                   </span>
-                </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3 bg-surface-container-low p-3.5 rounded-xl font-label-md text-label-md">
                 <div>
                   <span className="text-on-surface-variant block text-xs">
-                    Thời điểm quét:
+                    Thời điểm điểm danh:
                   </span>
-                  <span className="font-code-telemetry font-bold text-on-surface">
+                  <span className="font-label-md text-label-md font-bold text-on-surface">
                     {snapshotModal.date} {snapshotModal.checkIn}
                   </span>
                 </div>
                 <div>
                   <span className="text-on-surface-variant block text-xs">
-                    Chống giả mạo 3D:
+                    Độ tin cậy khớp:
                   </span>
-                  <span className="font-code-telemetry font-bold text-[#009668]">
-                    Hợp lệ (Genuine)
+                  <span className="font-label-md text-label-md font-bold text-on-surface">
+                    {snapshotModal.conf ?? "—"}
                   </span>
                 </div>
               </div>

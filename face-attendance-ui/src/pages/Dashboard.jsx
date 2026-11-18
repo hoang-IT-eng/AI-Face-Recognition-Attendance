@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Icon from "../components/Icon";
 import { useNavigate } from "react-router-dom";
 import {
   getTodayAttendance,
@@ -188,17 +189,9 @@ export default function Dashboard() {
     <div className="flex flex-col w-full">
       {/* Top Meta & Control Bar */}
       <div className="flex flex-col gap-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-high text-on-surface-variant font-code-telemetry text-label-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-            <span>TRUNG TÂM ĐIỀU HÀNH CHẤM CÔNG AI</span>
-          </div>
-          <div className="inline-flex items-center gap-2 text-on-surface-variant font-code-telemetry text-label-md">
-            <span className="inline-block w-2 h-2 rounded-full bg-secondary-fixed-dim animate-pulse"></span>
-            <span className="px-2 py-0.5 rounded bg-secondary-fixed text-secondary font-label-sm">
-              Đồng hồ máy chủ
-            </span>
-            <span className="text-on-surface-variant/40">|</span>
+        <div className="flex items-center justify-end">
+          <div className="inline-flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+            <span>Giờ trên thiết bị này:</span>
             <span className="text-on-surface font-semibold tracking-tight text-title-md font-mono">
               {clock}
             </span>
@@ -217,18 +210,16 @@ export default function Dashboard() {
               })}
             </h1>
             <span className="font-body-md text-body-md text-on-surface-variant mt-0.5">
-              Hệ thống nhận diện camera AI đồng bộ trực tiếp tại các cổng Kiosk
-              chấm công
+              Dữ liệu điểm danh hôm nay từ các kiosk và điểm danh thay thế, tự
+              làm mới mỗi 15 giây
             </span>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/monitoring")}
-              className="h-11 px-4 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface hover:text-secondary hover:border-secondary transition-all font-label-lg text-label-lg flex items-center gap-2 cursor-pointer"
+              className="h-11 px-4 rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-all font-label-lg text-label-lg flex items-center gap-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px] text-secondary">
-                videocam
-              </span>
+              <Icon name="videocam" className="text-[20px] text-on-surface-variant" />
               <span>Xem giám sát</span>
             </button>
             <button
@@ -236,9 +227,7 @@ export default function Dashboard() {
               disabled={exporting}
               className="h-11 px-5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all font-label-lg text-label-lg flex items-center gap-2 shadow-sm active:scale-[0.98] cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">
-                download
-              </span>
+              <Icon name="download" className="text-[20px]" />
               <span>{exporting ? "Đang xuất..." : "Xuất Excel hôm nay"}</span>
             </button>
           </div>
@@ -248,16 +237,9 @@ export default function Dashboard() {
       {/* 4 KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
         <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="font-label-md text-label-md text-on-surface-variant">
-              Có mặt hôm nay
-            </span>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-secondary-fixed/50 text-[#009668]">
-              <span className="material-symbols-outlined material-symbols-filled text-[22px]">
-                check_circle
-              </span>
-            </div>
-          </div>
+          <span className="font-label-md text-label-md text-on-surface-variant">
+            Có mặt hôm nay
+          </span>
           <div className="my-3 flex items-baseline gap-2">
             <span className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
               {presentCount}
@@ -265,31 +247,19 @@ export default function Dashboard() {
             <span className="font-title-lg text-title-lg text-on-surface-variant font-medium">
               / {totalStaff}
             </span>
-            <span className="ml-auto font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-[#009668]/10 text-[#009668] font-semibold">
-              {presentRatio}%
-            </span>
           </div>
           <div className="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
-            <span className="material-symbols-outlined text-[16px] text-[#009668]">
-              update
-            </span>
-            <span>Theo dữ liệu điểm danh hôm nay</span>
+            <Icon name="update" className="text-[16px]" />
+            <span>Chiếm {presentRatio}% tổng nhân sự, theo dữ liệu hôm nay</span>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="font-label-md text-label-md text-on-surface-variant">
-              Đi muộn
-            </span>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-100 text-amber-700">
-              <span className="material-symbols-outlined material-symbols-filled text-[22px]">
-                warning
-              </span>
-            </div>
-          </div>
+          <span className="font-label-md text-label-md text-on-surface-variant">
+            Đi muộn
+          </span>
           <div className="my-3 flex items-baseline gap-2">
-            <span className="font-headline-xl text-headline-xl text-amber-700 font-bold tracking-tight">
+            <span className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
               {lateCount}
             </span>
             <span className="font-body-sm text-body-sm text-on-surface-variant">
@@ -297,26 +267,17 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
-            <span className="material-symbols-outlined text-[16px] text-amber-600">
-              schedule
-            </span>
-            <span>Ca 08:00 (vào sau 08:15)</span>
+            <Icon name="schedule" className="text-[16px]" />
+            <span>Vào sau giờ bắt đầu ca theo lịch phân ca</span>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="font-label-md text-label-md text-on-surface-variant">
-              Vắng mặt
-            </span>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-error-container text-error">
-              <span className="material-symbols-outlined material-symbols-filled text-[22px]">
-                cancel
-              </span>
-            </div>
-          </div>
+          <span className="font-label-md text-label-md text-on-surface-variant">
+            Vắng mặt
+          </span>
           <div className="my-3 flex items-baseline gap-2">
-            <span className="font-headline-xl text-headline-xl text-error font-bold tracking-tight">
+            <span className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
               {absentCount}
             </span>
             <span className="font-body-sm text-body-sm text-on-surface-variant">
@@ -324,24 +285,15 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
-            <span className="material-symbols-outlined text-[16px] text-error">
-              info
-            </span>
+            <Icon name="info" className="text-[16px]" />
             <span>Chưa có check-in trong ngày</span>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="font-label-md text-label-md text-on-surface-variant">
-              Tổng nhân viên
-            </span>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-surface-container-highest text-on-surface">
-              <span className="material-symbols-outlined text-[22px]">
-                groups
-              </span>
-            </div>
-          </div>
+          <span className="font-label-md text-label-md text-on-surface-variant">
+            Tổng nhân viên
+          </span>
           <div className="my-3 flex items-baseline gap-2">
             <span className="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight">
               {totalStaff}
@@ -351,9 +303,7 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
-            <span className="material-symbols-outlined text-[16px] text-secondary">
-              domain
-            </span>
+            <Icon name="domain" className="text-[16px]" />
             <span>
               {deptCount > 0
                 ? `${deptCount} phòng ban / nhóm`
@@ -377,7 +327,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-4 text-label-sm font-label-sm">
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-xs bg-secondary"></span>
+                <span className="w-3 h-3 rounded-xs bg-primary"></span>
                 <span className="text-on-surface">Có mặt</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -391,9 +341,7 @@ export default function Dashboard() {
             {trend.length === 0 ||
             trend.every((d) => d.present === 0 && d.issue === 0) ? (
               <div className="h-full flex flex-col items-center justify-center text-on-surface-variant gap-2">
-                <span className="material-symbols-outlined text-[36px] opacity-50">
-                  bar_chart
-                </span>
+                <Icon name="bar_chart" className="text-[36px] opacity-50" />
                 <span className="font-body-md text-body-md">
                   Chưa có dữ liệu điểm danh 7 ngày gần đây
                 </span>
@@ -498,7 +446,7 @@ export default function Dashboard() {
                       />
                     )}
                     <rect
-                      fill="#00687a"
+                      fill="#403ab8"
                       height={pHeight}
                       opacity="0.95"
                       rx="3"
@@ -526,7 +474,7 @@ export default function Dashboard() {
                       {d.label}
                     </text>
                     <text
-                      fill="#00687a"
+                      fill="#403ab8"
                       fontSize="10"
                       fontWeight="700"
                       textAnchor="middle"
@@ -580,7 +528,7 @@ export default function Dashboard() {
                 cy="80"
                 fill="none"
                 r="62"
-                stroke="#00687a"
+                stroke="#403ab8"
                 strokeDasharray={`${onTimeLen} ${CIRC}`}
                 strokeLinecap="round"
                 strokeWidth="16"
@@ -619,7 +567,7 @@ export default function Dashboard() {
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between text-body-sm font-body-sm">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
                 <span className="text-on-surface">Có mặt đúng giờ</span>
               </div>
               <span className="font-semibold text-on-surface">
@@ -652,19 +600,18 @@ export default function Dashboard() {
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-xs overflow-hidden flex flex-col">
         <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-lowest">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-secondary animate-pulse"></div>
+            <div className="w-3 h-3 rounded-full bg-primary"></div>
             <div>
               <h2 className="font-title-md text-title-md text-on-surface tracking-tight">
                 Nhật ký điểm danh thời gian thực (8 lượt gần nhất)
               </h2>
               <span className="font-body-sm text-body-sm text-on-surface-variant">
-                Tự động nhận dạng khuôn mặt qua luồng Camera Kiosk Cổng A, B
-                &amp; C
+                Các lượt điểm danh mới nhất được ghi nhận trong ngày
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="font-code-telemetry text-label-sm text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-lg">
+            <span className="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-lg">
               {displayLogs.length} bản ghi hôm nay
             </span>
           </div>
@@ -673,9 +620,7 @@ export default function Dashboard() {
         <div className="overflow-x-auto w-full">
           {displayLogs.length === 0 ? (
             <div className="py-16 flex flex-col items-center justify-center gap-2 text-on-surface-variant">
-              <span className="material-symbols-outlined text-[40px] opacity-50">
-                event_busy
-              </span>
+              <Icon name="event_busy" className="text-[40px] opacity-50" />
               <span className="font-body-md text-body-md">
                 Chưa có lượt điểm danh hôm nay
               </span>
@@ -694,7 +639,7 @@ export default function Dashboard() {
                 <th className="py-3 px-4">Phòng ban</th>
                 <th className="py-3 px-4">Giờ vào</th>
                 <th className="py-3 px-4">Giờ ra</th>
-                <th className="py-3 px-4">Độ chính xác AI</th>
+                <th className="py-3 px-4">Độ tin cậy khớp</th>
                 <th className="py-3 px-4 text-right">Trạng thái công</th>
               </tr>
             </thead>
@@ -711,7 +656,7 @@ export default function Dashboard() {
                         className={`relative w-10 h-10 rounded-full p-0.5 ${
                           row.status === "late"
                             ? "bg-amber-300"
-                            : "bg-secondary-fixed"
+                            : "bg-surface-container-high"
                         }`}
                       >
                         <img
@@ -723,9 +668,7 @@ export default function Dashboard() {
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant font-semibold">
                         {row.status === "absent" ? (
-                          <span className="material-symbols-outlined text-[20px]">
-                            person_off
-                          </span>
+                          <Icon name="person_off" className="text-[20px]" />
                         ) : (
                           row.user_name?.[0] || "NV"
                         )}
@@ -755,24 +698,20 @@ export default function Dashboard() {
                   </td>
                   <td className="py-3 px-4">
                     {row.status === "absent" ? (
-                      <div className="flex items-center gap-1.5 text-on-surface-variant/60 font-code-telemetry">
-                        <span className="material-symbols-outlined text-[16px]">
-                          remove
-                        </span>
+                      <div className="flex items-center gap-1.5 text-on-surface-variant/60">
+                        <Icon name="remove" className="text-[16px]" />
                         <span>0.0%</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5 text-secondary font-code-telemetry">
-                        <span className="material-symbols-outlined text-[16px]">
-                          verified
-                        </span>
+                      <div className="flex items-center gap-1.5 text-primary">
+                        <Icon name="verified" className="text-[16px]" />
                         <span>{row.confidence}</span>
                       </div>
                     )}
                   </td>
                   <td className="py-3 px-4 text-right">
                     {row.status === "present" && (
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-[#009668]/10 text-[#009668]">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-success/10 text-success">
                         Có mặt
                       </span>
                     )}
@@ -801,16 +740,14 @@ export default function Dashboard() {
 
         <div className="p-4 bg-surface-container-low/50 flex flex-col sm:flex-row items-center justify-between gap-2 text-body-sm font-body-sm text-on-surface-variant">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-secondary">
-              sync
-            </span>
+            <Icon name="sync" className="text-[16px]" />
             <span>Làm mới tự động mỗi 15 giây từ API điểm danh</span>
           </div>
           <div className="flex items-center gap-4">
             <span>Hiển thị {displayLogs.length} bản ghi gần nhất</span>
             <button
               onClick={() => navigate("/reports")}
-              className="font-label-md text-label-md text-secondary hover:underline font-semibold cursor-pointer"
+              className="font-label-md text-label-md text-primary hover:underline font-semibold cursor-pointer"
             >
               Xem toàn bộ lịch sử
             </button>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Icon from "../components/Icon";
 import {
   getSchedules,
   createSchedule,
@@ -175,7 +176,7 @@ export default function Schedules() {
               onClick={handleNewShift}
               className="h-11 px-5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all flex items-center gap-2 font-label-lg text-label-lg shadow-sm active:scale-[0.98] cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">add</span>
+              <Icon name="add" className="text-[20px]" />
               <span>Thêm ca mới</span>
             </button>
           </div>
@@ -195,9 +196,7 @@ export default function Schedules() {
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs">
               <div className="w-8 h-8 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
-                <span className="material-symbols-outlined text-[20px]">
-                  calendar_view_week
-                </span>
+                <Icon name="calendar_view_week" className="text-[20px]" />
               </div>
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm text-on-surface-variant">
@@ -210,9 +209,7 @@ export default function Schedules() {
             </div>
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs">
               <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
-                <span className="material-symbols-outlined text-[20px]">
-                  groups
-                </span>
+                <Icon name="groups" className="text-[20px]" />
               </div>
               <div className="flex flex-col">
                 <span className="font-label-sm text-label-sm text-on-surface-variant">
@@ -229,7 +226,7 @@ export default function Schedules() {
         {/* Guidance Banner */}
         <div className="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex items-start gap-3.5">
           <div className="w-9 h-9 rounded-lg bg-secondary-fixed text-secondary flex items-center justify-center shrink-0 mt-0.5">
-            <span className="material-symbols-outlined text-[22px]">info</span>
+            <Icon name="info" className="text-[22px]" />
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
@@ -245,7 +242,7 @@ export default function Schedules() {
               <strong className="text-on-surface font-semibold">Đi muộn</strong>{" "}
               và{" "}
               <strong className="text-on-surface font-semibold">Về sớm</strong>{" "}
-              được SecureFace AI tính toán hoàn toàn tự động dựa trên mốc giờ
+              được FaceAttend tính toán hoàn toàn tự động dựa trên mốc giờ
               quy định và số phút ân hạn của từng ca.
             </p>
           </div>
@@ -361,8 +358,8 @@ export default function Schedules() {
                           </span>
                         </td>
                         <td className="py-4 px-3">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#009668]/10 text-[#009668] font-label-sm text-label-sm font-semibold">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#009668]" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success font-label-sm text-label-sm font-semibold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-success" />
                             Hoạt động
                           </span>
                         </td>
@@ -376,18 +373,14 @@ export default function Schedules() {
                               className="p-1.5 rounded-lg text-secondary hover:bg-secondary-fixed/50 transition-colors cursor-pointer"
                               title="Sửa ca"
                             >
-                              <span className="material-symbols-outlined text-[18px]">
-                                edit
-                              </span>
+                              <Icon name="edit" className="text-[18px]" />
                             </button>
                             <button
                               onClick={() => handleDelete(s)}
                               className="p-1.5 rounded-lg text-error hover:bg-error-container/30 transition-colors cursor-pointer"
                               title="Xóa ca"
                             >
-                              <span className="material-symbols-outlined text-[18px]">
-                                delete
-                              </span>
+                              <Icon name="delete" className="text-[18px]" />
                             </button>
                           </div>
                         </td>
@@ -400,9 +393,7 @@ export default function Schedules() {
 
             <div className="p-4 bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-on-surface-variant font-label-md text-label-md">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-secondary">
-                  sync
-                </span>
+                <Icon name="sync" className="text-[18px] text-secondary" />
                 <span>
                   Đồng bộ thời gian thực với Kiosk Camera sảnh A &amp; B
                 </span>
@@ -417,9 +408,7 @@ export default function Schedules() {
           <div className="p-5 rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-secondary">
-                  timeline
-                </span>
+                <Icon name="timeline" className="text-[20px] text-secondary" />
                 <span className="font-label-lg text-label-lg text-on-surface">
                   Mô phỏng trục thời gian ca ({form.name || "Ca mới"})
                 </span>
@@ -475,9 +464,7 @@ export default function Schedules() {
             <div className="flex items-center justify-between pb-4 border-b border-surface-container">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[22px]">
-                    tune
-                  </span>
+                  <Icon name="tune" className="text-[22px]" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-title-md text-title-md text-on-surface font-bold">
@@ -506,9 +493,7 @@ export default function Schedules() {
                     type="text"
                     className="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-secondary/30 transition-all"
                   />
-                  <span className="absolute right-3.5 material-symbols-outlined text-[20px] text-on-surface-variant">
-                    badge
-                  </span>
+                  <Icon name="badge" className="absolute right-3.5 text-[20px] text-on-surface-variant" />
                 </div>
               </div>
 
@@ -561,9 +546,7 @@ export default function Schedules() {
                     }
                     className="w-full h-11 px-4 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-secondary/30"
                   />
-                  <span className="absolute right-3.5 material-symbols-outlined text-[20px] text-on-surface-variant">
-                    timer
-                  </span>
+                  <Icon name="timer" className="absolute right-3.5 text-[20px] text-on-surface-variant" />
                 </div>
               </div>
 
@@ -598,10 +581,8 @@ export default function Schedules() {
 
               <div className="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-2.5">
                 <span className="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[18px] text-secondary">
-                    verified
-                  </span>
-                  Ràng buộc bảo mật SecureFace AI
+                  <Icon name="verified" className="text-[18px] text-on-surface-variant" />
+                  Ràng buộc bảo mật FaceAttend
                 </span>
                 <div className="flex items-center justify-between">
                   <span className="font-body-sm text-body-sm text-on-surface-variant">
@@ -627,9 +608,7 @@ export default function Schedules() {
                   type="submit"
                   className="h-11 px-6 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all flex items-center gap-2 font-label-lg text-label-lg shadow-sm cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
-                    save
-                  </span>
+                  <Icon name="save" className="text-[20px]" />
                   <span>Lưu thay đổi ca</span>
                 </button>
               </div>
@@ -640,9 +619,7 @@ export default function Schedules() {
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 bg-primary text-on-primary px-5 py-3 rounded-xl shadow-xl flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-secondary-fixed text-[20px]">
-            check_circle
-          </span>
+          <Icon name="check_circle" className="text-secondary-fixed text-[20px]" />
           <span className="font-body-md text-body-md">{toast}</span>
         </div>
       )}
