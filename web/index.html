@@ -73,28 +73,43 @@
     <main id="top">
       <!-- ===== HERO ===== -->
       <section class="hero">
+        <div class="hero-media">
+          <img
+            class="hero-bg-img"
+            src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2400&auto=format&fit=crop"
+            data-i18n-attr="alt:kiosk.imgalt"
+            alt="Nhân viên trong sảnh văn phòng hiện đại, ánh sáng tự nhiên"
+            width="2400"
+            height="1600"
+          />
+          <div class="hero-shade" aria-hidden="true"></div>
+        </div>
         <div class="film-frame" aria-hidden="true">
           <span class="ff-corner ff-tl">FaceAttend</span>
           <span class="ff-corner ff-tr">DeepFace · MediaPipe</span>
           <span class="ff-corner ff-bl">FastAPI · React</span>
           <span class="ff-corner ff-br">Trần Huy Hoàng</span>
         </div>
-        <div class="container hero-grid">
+        <div class="container hero-inner">
           <div class="hero-copy">
-            <span class="eyebrow" data-hero><span data-i18n="hero.eyebrow">Hệ thống điểm danh sinh trắc học</span></span>
-            <h1 data-hero data-i18n="hero.title">Điểm danh bằng nhận diện khuôn mặt cho văn phòng.</h1>
-            <p class="hero-sub" data-hero data-i18n="hero.sub">
+            <div class="mask"><span class="eyebrow" data-hero><span data-i18n="hero.eyebrow">Hệ thống điểm danh sinh trắc học</span></span></div>
+            <div class="mask"><h1 data-hero data-i18n="hero.title">Điểm danh bằng nhận diện khuôn mặt cho văn phòng.</h1></div>
+            <div class="mask"><p class="hero-sub" data-hero data-i18n="hero.sub">
               FaceAttend nhận diện nhân viên ngay tại kiosk bằng AI — không thẻ, không vân tay,
               không xếp hàng chờ. Mọi lượt vào ra được ghi lại tức thì, đối chiếu với ca làm việc
               và tổng hợp thành báo cáo chấm công tự động.
-            </p>
-            <div class="hero-actions" data-hero>
+            </p></div>
+            <div class="mask"><div class="hero-actions" data-hero>
               <a class="btn btn-primary" href="https://hoang-attend.pages.dev/?tour=1" target="_blank" rel="noopener">
                 <span data-i18n="hero.cta1">Trải nghiệm demo live</span>
                 <span aria-hidden="true">→</span>
               </a>
               <a class="btn btn-ghost" href="#cach-hoat-dong" data-i18n="hero.cta2">Xem cách hoạt động</a>
-            </div>
+            </div></div>
+          </div>
+        </div>
+        <div class="hero-specs-bar">
+          <div class="container specs-bar-inner">
             <dl class="hero-specs" data-hero>
               <div>
                 <dt data-i18n="hero.t1k">Nhận diện</dt>
@@ -109,22 +124,7 @@
                 <dd data-i18n="hero.t3v">Thời gian thực</dd>
               </div>
             </dl>
-          </div>
-
-          <div class="hero-visual" data-hero>
-            <figure class="kiosk-card">
-              <div class="photo-frame">
-                <img
-                  class="hero-photo"
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1200&auto=format&fit=crop"
-                  data-i18n-attr="alt:kiosk.imgalt"
-                  alt="Nhân viên trong sảnh văn phòng hiện đại, ánh sáng tự nhiên"
-                  width="1200"
-                  height="900"
-                />
-              </div>
-              <figcaption class="kiosk-caption" data-i18n="kiosk.caption">Ảnh minh họa — nhân viên tại sảnh văn phòng.</figcaption>
-            </figure>
+            <p class="hero-caption" data-i18n="kiosk.caption">Ảnh minh họa — nhân viên tại sảnh văn phòng.</p>
           </div>
         </div>
       </section>

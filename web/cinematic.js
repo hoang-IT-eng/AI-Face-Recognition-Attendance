@@ -3,15 +3,19 @@
 // Everything here is additive and gated: it only activates when the visitor
 // welcomes motion (no prefers-reduced-motion) and the vendored libraries are
 // present. What it adds:
-//   - a quiet real-time Three.js depth field behind the hero — abstract
-//     points of light in charcoal/azure suggesting depth, never a face,
-//     never a HUD. The interface floats above it; the pointer drifts it,
-//     and hovering the primary CTA stills it.
+//   - camera motion on the hero's full-bleed photo: a slow Ken Burns drift,
+//     pointer parallax, and a ScrollTrigger-scrubbed scroll parallax — the
+//     background travels slower than the copy above it.
+//   - a real-time Three.js depth field above the photo, below the copy —
+//     abstract points of light in charcoal/azure suggesting depth, never a
+//     face, never a HUD. The pointer drifts it, and hovering the primary
+//     CTA stills it.
 //   - Lenis smooth scrolling glued to GSAP ScrollTrigger.
-//   - a masked per-line reveal for the hero headline.
-//   - gentle parallax on the kiosk card and its photo.
+//   - masked block reveals for the hero copy: each copy block rises inside
+//     its own .mask wrapper. Text nodes are never split, so script.js can
+//     keep swapping textContent for i18n at any moment.
 // If anything is unavailable (reduced motion, no WebGL, missing library),
-// the page keeps its original static presentation, fully visible.
+// the page keeps its static full-bleed photo hero, fully visible.
 (function () {
   "use strict";
 
@@ -24,74 +28,37 @@
   var hero = document.querySelector(".hero");
   html.classList.add("cine");
 
-  /* ================= Masked per-line headline reveal ================= */
-  function splitHeadline(el) {
-    var original = (el.textContent || "").replace(/\s+/g, " ").trim();
-    if (!original) return;
-    try {
-      el.setAttribute("aria-label", original);
-      el.innerHTML = "";
-      var words = original.split(" ").map(function (w) {
-        var s = document.createElement("span");
-        s.className = "cine-word";
-        s.textContent = w;
-        s.setAttribute("aria-hidden", "true");
-        el.appendChild(s);
-        el.appendChild(document.createTextNode(" "));
-        return s;
-      });
-      // Group words into visual lines by their measured offset.
-      var lines = [], cur = [], top = null;
-      words.forEach(function (s) {
-        var t = s.offsetTop;
-        if (top === null || Math.abs(t - top) <= 2) {
-          cur.push(s.textContent);
-          if (top === null) top = t;
-        } else {
-          lines.push(cur);
-          cur = [s.textContent];
-          top = t;
-        }
-      });
-      if (cur.length) lines.push(cur);
-      el.innerHTML = "";
-      var inners = lines.map(function (lineWords) {
-        var mask = document.createElement("span");
-        mask.className = "line-mask";
-        var inner = document.createElement("span");
-        inner.className = "line-inner";
-        inner.textContent = lineWords.join(" ");
-        inner.setAttribute("aria-hidden", "true");
-        mask.appendChild(inner);
-        el.appendChild(mask);
-        return inner;
-      });
-      el.classList.add("cine-split");
-      gsap.fromTo(inners,
-        { yPercent: 118 },
-        {
-          yPercent: 0, duration: 1.15, ease: "power4.out",
-          stagger: 0.09, delay: 0.15,
-          onComplete: function () { el.classList.add("lines-done"); }
-        });
-      // Watchdog: the headline must never stay masked away.
-      window.setTimeout(function () {
-        el.classList.add("lines-done");
-        gsap.set(inners, { yPercent: 0 });
-      }, 3200);
-    } catch (e) {
-      el.textContent = original;
-    }
-  }
-
+  /* ================= Masked block reveal (hero copy) =================
+     Each copy block sits in a .mask wrapper in the markup. We slide the
+     block itself up inside its mask — the text node is never touched, so
+     the i18n swap in script.js keeps working before, during and after. */
   if (hero) {
-    var h1 = hero.querySelector("h1");
-    if (h1) {
-      // script.js queued a plain block fade for the h1 — replace it with lines.
-      gsap.killTweensOf(h1);
-      gsap.set(h1, { clearProps: "transform,opacity" });
-      splitHeadline(h1);
+    var masked = hero.querySelectorAll(".mask [data-hero]");
+    var specs = hero.querySelector(".hero-specs");
+    var caption = hero.querySelector(".hero-caption");
+    // script.js queued plain block fades for every [data-hero] — replace
+    // them with the masked treatment.
+    hero.querySelectorAll("[data-hero]").forEach(function (el) {
+      gsap.killTweensOf(el);
+    });
+    if (masked.length) {
+      gsap.set(masked, { yPercent: 118, opacity: 1 });
+      gsap.to(masked, {
+        yPercent: 0, duration: 1.15, ease: "power4.out",
+        stagger: 0.09, delay: 0.12
+      });
     }
+    var strip = [specs, caption].filter(Boolean);
+    if (strip.length) {
+      gsap.fromTo(strip,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08, delay: 0.55 });
+    }
+    // Watchdog: hero copy must never stay hidden, whatever happens.
+    window.setTimeout(function () {
+      if (masked.length) gsap.set(masked, { yPercent: 0, opacity: 1 });
+      if (strip.length) gsap.set(strip, { opacity: 1, y: 0 });
+    }, 3500);
   }
 
   /* ================= Lenis smooth scroll ================= */
@@ -122,26 +89,40 @@
     }
   }
 
-  /* ================= Parallax (scrubbed, restrained) ================= */
-  if (window.ScrollTrigger && hero) {
-    gsap.registerPlugin(window.ScrollTrigger);
-    var card = hero.querySelector(".kiosk-card");
-    if (card) {
-      gsap.to(card, {
-        y: -22, ease: "none",
-        scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.6 }
-      });
-    }
-    var photo = hero.querySelector(".hero-photo");
-    if (photo) {
-      gsap.to(photo, {
-        scale: 1.09, ease: "none",
-        scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.6 }
-      });
-    }
-    window.addEventListener("load", function () {
-      window.ScrollTrigger.refresh();
+  /* ================= Hero camera motion =================
+     Ken Burns drift on the photo itself; pointer + scroll parallax on the
+     oversized .hero-media layer (it bleeds past the hero on every side, so
+     no travel ever exposes an edge). */
+  var media = hero ? hero.querySelector(".hero-media") : null;
+  var bgImg = hero ? hero.querySelector(".hero-bg-img") : null;
+  if (bgImg) {
+    gsap.fromTo(bgImg,
+      { scale: 1.08, y: 8 },
+      { scale: 1, y: 0, duration: 14, ease: "power1.out" });
+  }
+  if (media) {
+    hero.addEventListener("pointermove", function (e) {
+      if (e.pointerType !== "mouse") return;
+      var r = hero.getBoundingClientRect();
+      var nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      var ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      gsap.to(media, { x: nx * -12, y: ny * -8, duration: 0.9, ease: "power2.out", overwrite: "auto" });
     });
+    hero.addEventListener("pointerleave", function () {
+      gsap.to(media, { x: 0, y: 0, duration: 0.9, ease: "power2.out", overwrite: "auto" });
+    });
+    if (window.ScrollTrigger) {
+      gsap.registerPlugin(window.ScrollTrigger);
+      gsap.fromTo(media,
+        { yPercent: -3 },
+        {
+          yPercent: 3, ease: "none",
+          scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.6 }
+        });
+      window.addEventListener("load", function () {
+        window.ScrollTrigger.refresh();
+      });
+    }
   }
 
   /* ================= Quiet depth field (Three.js) ================= */
@@ -193,12 +174,12 @@
 
     // Two slow azure light planes far behind the field — atmosphere only.
     var glowTex = makeRadialTexture(256, [[0, "rgba(255,255,255,0.85)"], [0.4, "rgba(255,255,255,0.28)"], [1, "rgba(255,255,255,0)"]]);
-    var glowMat = new THREE.SpriteMaterial({ map: glowTex, color: 0x2f6bff, transparent: true, opacity: 0.15, depthWrite: false });
+    var glowMat = new THREE.SpriteMaterial({ map: glowTex, color: 0x2f6bff, transparent: true, opacity: 0.22, depthWrite: false });
     var glow = new THREE.Sprite(glowMat);
     glow.scale.set(30, 17, 1);
     glow.position.set(-5, 1.6, -8);
     scene.add(glow);
-    var glow2Mat = new THREE.SpriteMaterial({ map: glowTex, color: 0x8fb0ff, transparent: true, opacity: 0.06, depthWrite: false });
+    var glow2Mat = new THREE.SpriteMaterial({ map: glowTex, color: 0x8fb0ff, transparent: true, opacity: 0.09, depthWrite: false });
     var glow2 = new THREE.Sprite(glow2Mat);
     glow2.scale.set(18, 11, 1);
     glow2.position.set(7, -2.4, -6);
@@ -232,7 +213,7 @@
     geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
     var dotTex = makeRadialTexture(64, [[0, "rgba(255,255,255,1)"], [0.35, "rgba(255,255,255,0.6)"], [1, "rgba(255,255,255,0)"]]);
     var mat = new THREE.PointsMaterial({
-      size: 0.075, map: dotTex, transparent: true, opacity: 0.55,
+      size: 0.095, map: dotTex, transparent: true, opacity: 0.78,
       depthWrite: false, vertexColors: true, sizeAttenuation: true
     });
     var points = new THREE.Points(geo, mat);
@@ -288,8 +269,8 @@
       camera.lookAt(0, 0, -2);
 
       glow.position.x = -5 + Math.sin(fieldTime * 0.045) * 1.8;
-      glowMat.opacity = 0.13 + state.hover * 0.09;
-      mat.opacity = 0.5 + state.hover * 0.2;
+      glowMat.opacity = 0.19 + state.hover * 0.1;
+      mat.opacity = 0.74 + state.hover * 0.24;
 
       renderer.render(scene, camera);
     });
