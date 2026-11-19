@@ -12,7 +12,7 @@
     <meta name="author" content="Trần Huy Hoàng" />
     <meta property="og:title" content="FaceAttend — AI Face Recognition Attendance" />
     <meta property="og:description" content="Biometric attendance: kiosk face recognition, liveness anti-spoofing, shift management and automatic timesheets." />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366d1' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2'/%3E%3Ccircle cx='12' cy='10' r='3.2'/%3E%3Cpath d='M6.5 19.5c.8-2.3 2.9-3.5 5.5-3.5s4.7 1.2 5.5 3.5'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f6bff' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2'/%3E%3Ccircle cx='12' cy='10' r='3.2'/%3E%3Cpath d='M6.5 19.5c.8-2.3 2.9-3.5 5.5-3.5s4.7 1.2 5.5 3.5'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -73,6 +73,12 @@
     <main id="top">
       <!-- ===== HERO ===== -->
       <section class="hero">
+        <div class="film-frame" aria-hidden="true">
+          <span class="ff-corner ff-tl">FaceAttend</span>
+          <span class="ff-corner ff-tr">DeepFace · MediaPipe</span>
+          <span class="ff-corner ff-bl">FastAPI · React</span>
+          <span class="ff-corner ff-br">Trần Huy Hoàng</span>
+        </div>
         <div class="container hero-grid">
           <div class="hero-copy">
             <span class="eyebrow" data-hero><span data-i18n="hero.eyebrow">Hệ thống điểm danh sinh trắc học</span></span>
@@ -305,8 +311,19 @@
       </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <svg class="film-grain" aria-hidden="true" focusable="false">
+      <filter id="fa-grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" />
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#fa-grain)" />
+    </svg>
+
+    <script src="vendor/three.min.js"></script>
+    <script src="vendor/gsap.min.js"></script>
+    <script src="vendor/ScrollTrigger.min.js"></script>
+    <script src="vendor/lenis.min.js"></script>
     <script src="script.js"></script>
+    <script src="cinematic.js"></script>
   </body>
 </html>

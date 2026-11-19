@@ -3,10 +3,10 @@
   --bg-2: #0e0f12;
   --panel: #121317;
   --panel-2: #16171c;
-  --accent: #6366d1;
-  --accent-hover: #7274da;
-  --accent-bright: #9a9ce8;
-  --accent-soft: rgba(99, 102, 209, 0.13);
+  --accent: #2f6bff;
+  --accent-hover: #4d82ff;
+  --accent-bright: #8fb0ff;
+  --accent-soft: rgba(47, 107, 255, 0.13);
   --green: #58b183;
   --ink: #f4f4f1;
   --ink-soft: #a7a9b0;
@@ -457,6 +457,100 @@ a { color: inherit; text-decoration: none; }
 .footer-links a:hover { color: #fff; }
 .footer-credit { margin: 0; color: var(--ink-dim); font-size: 0.92rem; line-height: 1.7; }
 .footer-credit strong { color: #fff; }
+
+/* ---------- Cinematic layer (JS-gated by html.cine) ----------
+   Film grain, vignette, letterbox hairlines and credit corners only
+   exist when cinematic.js is active; without it the page is unchanged. */
+/* Lenis owns scroll easing while active; CSS smoothing would double-ease.
+   (ScrollTrigger also restores an inline "smooth" — this rule wins.) */
+html.lenis { scroll-behavior: auto !important; }
+
+.film-grain { display: none; }
+.cine .film-grain {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.05;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.cine .hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(120% 92% at 50% 42%, transparent 55%, rgba(0, 0, 0, 0.52) 100%);
+}
+
+.film-frame { display: none; }
+.cine .film-frame {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.cine .film-frame::before,
+.cine .film-frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244, 244, 241, 0.15) 14%, rgba(244, 244, 241, 0.15) 86%, transparent);
+}
+.cine .film-frame::before { top: 88px; }
+.cine .film-frame::after { bottom: 0; }
+.ff-corner {
+  position: absolute;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.ff-tl { top: 100px; left: 1.6rem; }
+.ff-tr { top: 100px; right: 1.6rem; }
+.ff-bl { bottom: 1.15rem; left: 1.6rem; }
+.ff-br { bottom: 1.15rem; right: 1.6rem; }
+
+/* Masked per-line headline reveal (spans built by cinematic.js) */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.13em;
+  margin-bottom: -0.13em;
+}
+.line-inner { display: block; will-change: transform; }
+.cine-split.lines-done .line-mask { overflow: visible; }
+
+.cine .demo-band { position: relative; }
+.cine .demo-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(90% 100% at 50% 0%, transparent 60%, rgba(0, 0, 0, 0.35) 100%);
+}
+.cine .demo-inner { position: relative; }
+
+@media (max-width: 720px) {
+  .ff-tr, .ff-bl { display: none; }
+  .ff-tl { top: 92px; left: 1.2rem; }
+  .ff-br { right: 1.2rem; }
+  .cine .film-frame::before { top: 82px; }
+}
 
 /* ---------- Scroll animations (JS-gated) ---------- */
 .gsap-on [data-reveal] { opacity: 0; transform: translateY(14px); }
