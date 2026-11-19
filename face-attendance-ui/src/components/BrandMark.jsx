@@ -3,35 +3,20 @@ export default function BrandMark({ size = 34, className = "" }) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 40 40"
+      viewBox="0 0 64 64"
       fill="none"
       className={className}
       aria-hidden="true"
     >
-      <rect
-        x="2"
-        y="2"
-        width="36"
-        height="36"
-        rx="9"
-        fill="#17171f"
-        stroke="#2c2c38"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M10 14.5V10h4.5M30 14.5V10h-4.5M10 25.5V30h4.5M30 25.5V30h-4.5"
-        stroke="#8f8ce0"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="20" cy="17.5" r="4.4" stroke="#f2f2f5" strokeWidth="1.6" />
-      <path
-        d="M12.5 28.5c1.6-3.2 4.3-4.6 7.5-4.6s5.9 1.4 7.5 4.6"
-        stroke="#f2f2f5"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
+      <g stroke="#2f6bff" strokeWidth="4.6" strokeLinecap="round">
+        <path d="M22 6 H14 a8 8 0 0 0 -8 8 v8" />
+        <path d="M42 6 h8 a8 8 0 0 1 8 8 v8" />
+        <path d="M58 42 v8 a8 8 0 0 1 -8 8 h-8" />
+        <path d="M22 58 h-8 a8 8 0 0 1 -8 -8 v-8" />
+        <path d="M23 39 q9 7 18 0" strokeWidth="4.2" />
+      </g>
+      <circle cx="25" cy="27" r="3.1" fill="#2f6bff" />
+      <circle cx="39" cy="27" r="3.1" fill="#2f6bff" />
     </svg>
   );
 }
