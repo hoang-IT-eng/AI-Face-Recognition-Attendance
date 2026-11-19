@@ -302,14 +302,18 @@
     var storyCount = story.querySelector(".story-count-num");
     var storyFill = story.querySelector(".story-fill");
     var storyDot = story.querySelector(".story-dot");
-    var DAY_START = 7 * 60 + 58;   // 07:58
-    var DAY_END = 17 * 60 + 32;    // 17:32
+    // The rail clock always names the ACTIVE chapter's moment — it sweeps
+    // quickly to the next chapter's time when the chapter changes, instead
+    // of drifting continuously (which disagreed with the giant numerals).
+    var CHAPTER_TIMES = [7 * 60 + 58, 8 * 60, 12 * 60 + 30, 17 * 60 + 32];
+    var clockState = { mins: CHAPTER_TIMES[0], idx: 0 };
 
-    function storyClockText(progress) {
-      var mins = Math.round(DAY_START + progress * (DAY_END - DAY_START));
+    function storyClockRender() {
+      if (!storyClock) return;
+      var mins = Math.round(clockState.mins);
       var h = Math.floor(mins / 60);
       var m = mins % 60;
-      return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+      storyClock.textContent = (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
     }
 
     function buildStory() {
@@ -331,10 +335,17 @@
           anticipatePin: 1,
           onUpdate: function (self) {
             var p = self.progress;
-            if (storyClock) storyClock.textContent = storyClockText(p);
-            if (storyCount) {
-              var idx = Math.min(3, Math.floor(p * 4));
-              storyCount.textContent = "0" + (idx + 1);
+            var idx = Math.min(3, Math.floor(p * 4));
+            if (storyCount) storyCount.textContent = "0" + (idx + 1);
+            if (idx !== clockState.idx) {
+              clockState.idx = idx;
+              gsap.to(clockState, {
+                mins: CHAPTER_TIMES[idx],
+                duration: 0.6,
+                ease: "power2.out",
+                overwrite: true,
+                onUpdate: storyClockRender
+              });
             }
           }
         }
