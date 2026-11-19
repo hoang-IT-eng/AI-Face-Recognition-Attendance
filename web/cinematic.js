@@ -281,4 +281,96 @@
   if (hero && window.THREE) {
     try { initDepthField(hero, heroState); } catch (e) { /* static hero remains */ }
   }
+
+  /* ================= Story — "Một ngày cùng FaceAttend" =================
+     A pinned stage between the hero and "how it works": four chapters of
+     one workday crossfade as the visitor scrolls, while a time rail
+     scrubs a clock readout from 07:58 to 17:32. Copy moves with
+     opacity/translate only — no overflow masks anywhere near the text
+     (they clipped Vietnamese diacritics in an earlier pass).
+     Gated three ways: cinematic.js itself only runs with motion welcome
+     and GSAP present; this block also needs ScrollTrigger; and the stage
+     layout only applies at >= 768px via gsap.matchMedia + the
+     html.story-on CSS gate. Everywhere else the chapters stay as the
+     stacked cards defined in styles.css. */
+  var story = document.querySelector(".story");
+  if (story && window.ScrollTrigger) {
+    gsap.registerPlugin(window.ScrollTrigger);
+    var storyStage = story.querySelector(".story-stage");
+    var storyChapters = gsap.utils.toArray(story.querySelectorAll(".story-chapter"));
+    var storyClock = story.querySelector(".story-clock-num");
+    var storyCount = story.querySelector(".story-count-num");
+    var storyFill = story.querySelector(".story-fill");
+    var storyDot = story.querySelector(".story-dot");
+    var DAY_START = 7 * 60 + 58;   // 07:58
+    var DAY_END = 17 * 60 + 32;    // 17:32
+
+    function storyClockText(progress) {
+      var mins = Math.round(DAY_START + progress * (DAY_END - DAY_START));
+      var h = Math.floor(mins / 60);
+      var m = mins % 60;
+      return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+    }
+
+    function buildStory() {
+      html.classList.add("story-on");
+
+      storyChapters.forEach(function (ch, i) {
+        gsap.set(ch.querySelector(".story-photo"), { opacity: i === 0 ? 1 : 0 });
+        gsap.set(ch.querySelector(".story-text"), { opacity: i === 0 ? 1 : 0, y: i === 0 ? 0 : 28 });
+      });
+
+      var tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: storyStage,
+          start: "top top",
+          end: "+=320%",
+          scrub: 0.6,
+          pin: true,
+          anticipatePin: 1,
+          onUpdate: function (self) {
+            var p = self.progress;
+            if (storyClock) storyClock.textContent = storyClockText(p);
+            if (storyCount) {
+              var idx = Math.min(3, Math.floor(p * 4));
+              storyCount.textContent = "0" + (idx + 1);
+            }
+          }
+        }
+      });
+
+      // The rail fills across the whole story, start to end.
+      if (storyFill) tl.fromTo(storyFill, { scaleY: 0 }, { scaleY: 1, duration: 4 }, 0);
+      if (storyDot) tl.fromTo(storyDot, { top: "0%" }, { top: "100%", duration: 4 }, 0);
+
+      storyChapters.forEach(function (ch, i) {
+        // Each chapter's photo drifts slowly toward rest while it holds.
+        var img = ch.querySelector(".story-photo img");
+        if (img) tl.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 1 }, i);
+
+        if (i === 0) return;
+        var prev = storyChapters[i - 1];
+        var at = i - 0.35;
+        tl.to(prev.querySelector(".story-photo"),
+          { opacity: 0, duration: 0.5, ease: "power1.inOut" }, at);
+        tl.fromTo(ch.querySelector(".story-photo"),
+          { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, at);
+        tl.to(prev.querySelector(".story-text"),
+          { opacity: 0, y: -24, duration: 0.35, ease: "power1.in" }, at);
+        tl.fromTo(ch.querySelector(".story-text"),
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, i - 0.02);
+      });
+
+      return function () { html.classList.remove("story-on"); };
+    }
+
+    if (gsap.matchMedia) {
+      var storyMM = gsap.matchMedia();
+      storyMM.add("(min-width: 768px)", buildStory);
+    } else if (!window.matchMedia("(max-width: 767px)").matches) {
+      buildStory();
+    }
+  }
 })();

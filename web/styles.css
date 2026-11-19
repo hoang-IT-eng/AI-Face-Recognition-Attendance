@@ -480,6 +480,239 @@ a { color: inherit; text-decoration: none; }
 .tech-list strong { font-family: "Plus Jakarta Sans", sans-serif; font-size: 1.05rem; color: var(--ink); }
 .tech-list span { color: var(--ink-soft); font-size: 0.9rem; }
 
+/* ---------- Story — "Một ngày cùng FaceAttend" ----------
+   Base layout (no JS, reduced motion, mobile): the four chapters are
+   stacked cards, photo above copy, everything visible. When cinematic.js
+   builds the pinned stage it adds html.story-on; only then (and only on
+   wider screens) do the chapters become an absolute-stacked stage whose
+   photos crossfade and whose copy changes with scroll. Story copy is
+   revealed with opacity/translate only — never overflow masks, which
+   clipped Vietnamese diacritics in the hero pass. */
+.story {
+  padding: 6.5rem 0 5.5rem;
+  position: relative;
+  border-top: 1px solid var(--line-soft);
+  background: var(--bg);
+}
+.story-head { max-width: 44rem; margin-bottom: 3.2rem; }
+.story-head h2 {
+  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+  font-weight: 800;
+  line-height: 1.16;
+  color: var(--ink);
+}
+.story-head .eyebrow { margin-bottom: 1.1rem; }
+.story-lede {
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  margin: 1.1rem 0 0;
+  max-width: 36rem;
+}
+.story-stage { position: relative; }
+.story-chapter {
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.3rem;
+  box-shadow: var(--shadow);
+}
+.story-chapter:last-of-type { margin-bottom: 0; }
+.story-photo {
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-2);
+}
+.story-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.85) contrast(1.06) brightness(0.9);
+}
+.story-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 9, 11, 0.05), rgba(8, 9, 11, 0.28));
+  pointer-events: none;
+}
+.story-text { padding: 1.7rem 1.6rem 2rem; }
+.story-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+.story-time {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-size: clamp(2.7rem, 9vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin: 0.55rem 0 0.35rem;
+}
+.story-text h3 {
+  font-size: 1.35rem;
+  line-height: 1.25;
+  margin-bottom: 0.55rem;
+  color: var(--ink);
+}
+.story-text p { margin: 0; color: var(--ink-soft); max-width: 32rem; }
+.story-caption {
+  color: var(--ink-dim);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  margin-top: 1.6rem;
+}
+/* The time rail exists only in the pinned stage. */
+.story-rail { display: none; }
+
+/* Pinned stage — JS-gated (html.story-on), desktop widths only. */
+@media (min-width: 768px) {
+  .story-on .story-stage {
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    background: #060607;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .story-on .story-chapter {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .story-on .story-photo {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    opacity: 0;
+  }
+  .story-on .story-chapter:first-of-type .story-photo { opacity: 1; }
+  .story-on .story-photo img {
+    filter: saturate(0.82) contrast(1.07) brightness(0.86);
+  }
+  .story-on .story-photo::after {
+    background:
+      linear-gradient(90deg, rgba(8, 9, 11, 0.84) 0%, rgba(8, 9, 11, 0.58) 44%, rgba(8, 9, 11, 0.16) 76%),
+      linear-gradient(180deg, rgba(8, 9, 11, 0.55) 0%, rgba(8, 9, 11, 0.05) 30%, rgba(8, 9, 11, 0.12) 62%, rgba(8, 9, 11, 0.8) 100%);
+  }
+  .story-on .story-text {
+    position: relative;
+    z-index: 3;
+    width: min(1200px, 100% - 3rem);
+    margin-inline: auto;
+    padding: 0 9rem 0 0;
+    opacity: 0;
+  }
+  .story-on .story-chapter:first-of-type .story-text { opacity: 1; }
+  .story-on .story-kicker { text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6); }
+  .story-on .story-time {
+    font-size: clamp(4.6rem, 9.5vw, 8.2rem);
+    line-height: 1.06;
+    margin: 0.7rem 0 0.5rem;
+    text-shadow: 0 4px 44px rgba(0, 0, 0, 0.5);
+  }
+  .story-on .story-text h3 {
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    line-height: 1.18;
+    max-width: 30rem;
+    text-shadow: 0 2px 26px rgba(0, 0, 0, 0.55);
+  }
+  .story-on .story-text p {
+    color: #d8dae0;
+    font-size: 1.06rem;
+    max-width: 32rem;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  }
+
+  /* Time rail — a clock readout over a progress track that scrubs
+     07:58 → 17:32 across the whole story scroll. */
+  .story-on .story-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.95rem;
+    position: absolute;
+    z-index: 6;
+    top: 50%;
+    right: clamp(1.4rem, 4vw, 3.4rem);
+    transform: translateY(-50%);
+  }
+  .story-on .story-clock-num {
+    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+  }
+  .story-on .story-count {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .story-on .story-count-num { color: var(--accent-bright); }
+  .story-on .story-trackwrap { position: relative; }
+  .story-on .story-track {
+    position: relative;
+    width: 2px;
+    height: 34vh;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .story-on .story-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+  .story-on .story-dot {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--accent-bright);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 4px rgba(47, 107, 255, 0.18);
+  }
+  .story-on .story-mark {
+    position: absolute;
+    right: 16px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .story-on .story-mark-start { top: -0.3rem; }
+  .story-on .story-mark-end { bottom: -0.3rem; }
+}
+
 /* ---------- Demo band ---------- */
 .demo-band {
   padding: 7rem 0;
@@ -633,5 +866,8 @@ html.lenis { scroll-behavior: auto !important; }
   .step-tag { justify-self: start; }
   .features, .tech-list, .pipeline { grid-template-columns: 1fr; }
   .section { padding: 4.5rem 0; }
+  .story { padding: 4.5rem 0 4rem; }
+  .story-head { margin-bottom: 2.2rem; }
+  .story-text { padding: 1.4rem 1.25rem 1.7rem; }
   .demo-band { padding: 5rem 0; }
 }
