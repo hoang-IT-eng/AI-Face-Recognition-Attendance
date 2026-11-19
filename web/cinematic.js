@@ -45,7 +45,8 @@
       gsap.set(masked, { yPercent: 118, opacity: 1 });
       gsap.to(masked, {
         yPercent: 0, duration: 1.15, ease: "power4.out",
-        stagger: 0.09, delay: 0.12
+        stagger: 0.09, delay: 0.12,
+        onComplete: function () { hero.classList.add("revealed"); }
       });
     }
     var strip = [specs, caption].filter(Boolean);
@@ -56,6 +57,7 @@
     }
     // Watchdog: hero copy must never stay hidden, whatever happens.
     window.setTimeout(function () {
+      hero.classList.add("revealed");
       if (masked.length) gsap.set(masked, { yPercent: 0, opacity: 1 });
       if (strip.length) gsap.set(strip, { opacity: 1, y: 0 });
     }, 3500);
