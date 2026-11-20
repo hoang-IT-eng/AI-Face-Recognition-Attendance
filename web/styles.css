@@ -348,3 +348,47 @@ picture { display: contents; }
   .grain { animation: none; }
   .btn, .btn-text, .door-t { transition: none; }
 }
+
+/* ------------------------------------------------------------- depth field
+   WebGL interlude (depthfield.js). The band is absent from the layout
+   unless the engine is live (html.df-on); with the engine off — gates,
+   reduced motion, ?attend=off, any failure — the page is exactly the
+   static design above. Tungsten amber, like everywhere the camera
+   "sees" on this page. */
+.depth { display: none; }
+html.df-on .depth {
+  display: block;
+  background: #000;
+  padding: clamp(48px, 9vh, 96px) var(--gutter);
+}
+.depth-host {
+  position: relative;
+  width: min(80vh, 92vw, 720px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+.depth-cap {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.depth-close-host {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+}
+.close-copy { z-index: 2; }
+.df-host { position: absolute; inset: 0; }
+.df-canvas { display: block; width: 100%; height: 100%; }
+#dfVeil {
+  position: fixed; inset: 0; z-index: 71;
+  background: var(--ink);
+  transition: opacity 0.85s ease;
+}
+#dfVeil.df-out { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .depth { display: none !important; }
+  #dfVeil { transition: none; }
+}

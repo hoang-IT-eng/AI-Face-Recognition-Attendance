@@ -113,6 +113,14 @@
         <h2 id="turnTitle" class="turn-title" data-i18n="turn.title">FaceAttend thay tất cả bằng một lần nhìn vào camera.</h2>
       </section>
 
+      <!-- Depth field: the camera's own view of that one look, as a
+           depth map. Purely visual; rendered only when the WebGL
+           engine runs (see depthfield.js), otherwise absent. -->
+      <section class="depth" id="depthBand" aria-hidden="true">
+        <div class="depth-host" id="depthHost"></div>
+        <p class="depth-cap" id="depthCap">Bản đồ chiều sâu của một khuôn mặt</p>
+      </section>
+
       <!-- Recognition close-up -->
       <section class="recog" id="nhan-dien" aria-labelledby="recogTitle">
         <div class="recog-pin">
@@ -245,6 +253,7 @@
             <img class="close-img" src="assets/photos/night-1280.webp" width="1920" height="1080" loading="lazy" decoding="async" data-i18n-attr="alt:alt.night" alt="Một văn phòng sáng đèn nhìn từ ngoài vào lúc trời tối" />
           </picture>
         </div>
+        <div class="depth-close-host" id="depthCloseHost" aria-hidden="true"></div>
         <div class="close-copy">
           <h2 id="closeTitle" class="close-title" data-i18n="close.title">Cuối ngày, bảng công đã sẵn sàng.</h2>
           <ul class="doors">
@@ -269,5 +278,6 @@
     <script src="vendor/ScrollTrigger.min.js" defer></script>
     <script src="vendor/lenis.min.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="depthfield.js" defer></script>
   </body>
 </html>
